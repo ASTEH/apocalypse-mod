@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** The core character flow, learning, noise/horde behavior, day progression, firearm proficiency, and M7 bleeding/first aid are implemented. User-roadmap Stage 1 (trait expansion) is in progress on its own branch; this adds JSON-defined traits and server/client hooks without replacing the existing character flow.
+> **Status:** Core character creation, learning, noise/horde behavior, day progression, firearm proficiency, injuries/first aid, trait expansion, profession expansion, and the SDM UI Lib character screen are implemented in `main`. Roadmap Stage 4 (firearm trait effects and proficiency-based reload handling) is under development on `stage-4-firearm-control`.
 
 ## Requirements
 
@@ -33,7 +33,10 @@ Minecraft 1.21.1 · NeoForge · Java 21
 - [ ] **M5 — Day progression & performance:** progression stages, goal throttling, bounded searches, optional door interaction, profiling.
 - [x] **M6 — Optional integrations:** TaCZ firearm XP/noise adapter with custom-gunpack ID inference and explicit datapack overrides. Other gun mods remain separate adapters.
 - [x] **M7 — Injuries & first aid:** hostile-hit bleeding, persistent wound severity, bandage treatment, medic profession advantage, configurable balance.
-- [ ] **Roadmap Stage 1 — Traits expansion:** 18 new trait definitions, signed point costs, profession requirements, conflicts, server hooks, and isolated client sound/fog effects.
+- [x] **Roadmap Stage 1 — Traits expansion:** 18 new trait definitions, signed point costs, profession requirements, conflicts, server hooks, and isolated client sound/fog effects.
+- [x] **Roadmap Stage 2 — Profession expansion:** data-driven professions and starting skill bonuses.
+- [x] **Roadmap Stage 3 — Character UI:** SDM UI Lib screen with profession/trait selection, dossier and synced result handling.
+- [ ] **Roadmap Stage 4 — Firearm control:** Eagle Eye, Quick Reload, and proficiency-based reload bonuses for TaCZ firearms; manual acceptance testing remains.
 
 ## Initial data layout
 
