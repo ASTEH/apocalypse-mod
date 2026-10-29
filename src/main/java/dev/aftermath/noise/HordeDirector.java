@@ -26,6 +26,25 @@ public final class HordeDirector {
     private static final Map<UUID, HordeOrder> ORDERS = new HashMap<>();
     private static final Map<ResourceLocation, PathBudget> PATH_BUDGETS = new HashMap<>();
     private static final Map<Mob, Boolean> INSTALLED = new WeakHashMap<>();
+    /** Optional in-memory administrator override; null means use the server config value. */
+    private static volatile Boolean runtimeBehaviorOverride;
+
+    public static boolean isHordeBehaviorEnabled() {
+        Boolean override = runtimeBehaviorOverride;
+        return override != null ? override : AftermathServerConfig.ENABLE_HORDE_BEHAVIOR.get();
+    }
+
+    public static boolean hasRuntimeBehaviorOverride() {
+        return runtimeBehaviorOverride != null;
+    }
+
+    public static void setRuntimeBehaviorOverride(boolean enabled) {
+        runtimeBehaviorOverride = enabled;
+    }
+
+    public static void resetRuntimeBehaviorOverride() {
+        runtimeBehaviorOverride = null;
+    }
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (!(event.getLevel() instanceof ServerLevel) || !(event.getEntity() instanceof Mob mob) || !mob.getType().is(MEMBERS)) return;
         if (INSTALLED.putIfAbsent(mob, Boolean.TRUE) == null) mob.goalSelector.addGoal(5, new BehaviorGoal(mob));
@@ -91,6 +110,7 @@ public final class HordeDirector {
     }
     public static void onServerStopping(ServerStoppingEvent event) {
         ORDERS.clear(); PATH_BUDGETS.clear(); INSTALLED.clear();
+        runtimeBehaviorOverride = null;
     }
     public enum Role { INVESTIGATE, LEADER, FOLLOWER }
     public record HordeOrder(ResourceLocation dimension, Role role, UUID leaderId, Vec3 targetPosition,
@@ -112,7 +132,7 @@ public final class HordeDirector {
             long now = level.getGameTime();
             if (now < nextPathUpdate) return;
             nextPathUpdate = now + Math.max(5, AftermathServerConfig.AI_RECALC_INTERVAL_TICKS.get());
-            if (order.role() == Role.FOLLOWER && AftermathServerConfig.ENABLE_HORDE_BEHAVIOR.get()
+            if (order.role() == Role.FOLLOWER && isHordeBehaviorEnabled()
                     && order.leaderId() != null) {
                 Entity e = level.getEntity(order.leaderId());
                 if (e instanceof Mob leader && leader.isAlive() && !leader.isRemoved()) {

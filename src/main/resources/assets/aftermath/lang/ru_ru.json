@@ -70,5 +70,13 @@
   "message.aftermath.noise.disabled": "Система шума отключена на сервере.",
   "message.aftermath.noise.unknown_event": "Определение шума не загружено. Проверь datapack и перезапусти мир.",
   "message.aftermath.noise.cooldown": "Шумовой сигнал пока на перезарядке. Повтори через секунду.",
-  "message.aftermath.noise.emitted": "Шумовой сигнал отправлен. Существующих существ затронуто: %1$s; последователей в группе: %2$s."
+  "message.aftermath.noise.emitted": "Шумовой сигнал отправлен. Существующих существ затронуто: %1$s; последователей в группе: %2$s.",
+  "message.aftermath.horde.enabled": "включено",
+  "message.aftermath.horde.disabled": "выключено",
+  "message.aftermath.horde.mode_temporary": "временный режим (до остановки сервера)",
+  "message.aftermath.horde.mode_config": "режим из конфигурации сервера",
+  "message.aftermath.horde.status": "Групповое поведение зомби: %1$s; источник настройки: %2$s.",
+  "message.aftermath.horde.enabled_temporary": "Групповое поведение зомби включено до остановки сервера. Теперь выполни /aftermath noise test.",
+  "message.aftermath.horde.disabled_temporary": "Групповое поведение зомби временно выключено до остановки сервера.",
+  "message.aftermath.horde.reset": "Временное переопределение снято. Текущее состояние: %1$s."
 }
