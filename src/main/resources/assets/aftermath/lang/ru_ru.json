@@ -181,7 +181,7 @@
   "screen.aftermath.character.error.invalid_data": "Не удалось загрузить данные персонажа. Перезайди в мир.",
   "hud.aftermath.zombie_kills": "Убито зомби: %1$s",
   "message.aftermath.zombie_kills.status": "Ты убил зомби: %1$s.",
-  "message.aftermath.day_zombies.status": "Подавление дневного спавна зомби: %1$s. Разрешённый шанс: %2$s%.",
+  "message.aftermath.day_zombies.status": "Подавление дневного спавна зомби: %1$s. Разрешённый шанс из 100: %2$s.",
   "message.aftermath.day_zombies.enabled": "включено",
   "message.aftermath.day_zombies.disabled": "выключено"
 }
