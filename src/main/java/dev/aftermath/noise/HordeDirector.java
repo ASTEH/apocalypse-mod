@@ -51,7 +51,7 @@ public final class HordeDirector {
                                   ResourceLocation signalId, UUID sourceId,
                                   boolean grouping, int stageGroupLimit,
                                   NoiseDefinitions.HordeArchetypeDefinition archetype) {
-        if (mobs.isEmpty() || signalId == null) return 0;
+        if (mobs.isEmpty() || signalId == null) return new AssignmentResult(0, 0);
         int priority = signalPriority(signalId);
         List<Mob> receptive = new java.util.ArrayList<>(mobs.size());
         for (Mob mob : mobs) {
@@ -59,7 +59,7 @@ public final class HordeDirector {
             if (shouldAcceptSignal(current, signalId, sourceId, priority)) receptive.add(mob);
         }
         // A weaker stimulus must not steal a zombie from an active, higher-priority investigation.
-        if (receptive.isEmpty()) return 0;
+        if (receptive.isEmpty()) return new AssignmentResult(0, 0);
 
         Mob leader = null;
         if (grouping && archetype != null && archetype.leader()) {
@@ -74,7 +74,7 @@ public final class HordeDirector {
         for (Mob mob : receptive) ORDERS.put(mob.getUUID(),
                 new HordeOrder(dim, Role.INVESTIGATE, null, target, expires, 1.0D,
                         signalId, sourceId, priority));
-        if (leader == null) return 0;
+        if (leader == null) return new AssignmentResult(receptive.size(), 0);
 
         int maxGroup = Math.min(AftermathServerConfig.MAX_HORDE_SIZE.get(),
                 Math.min(Math.max(1, stageGroupLimit), archetype.maxFollowers() + 1));
@@ -88,8 +88,10 @@ public final class HordeDirector {
                     target, expires, archetype.speedMultiplier(), signalId, sourceId, priority));
             followers++;
         }
-        return followers;
+        return new AssignmentResult(receptive.size(), followers);
     }
+
+    public record AssignmentResult(int acceptedTargets, int groupedFollowers) {}
 
     /**
      * Priorities are intentionally categorical: blood is persistent and must not be displaced by
