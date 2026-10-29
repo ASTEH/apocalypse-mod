@@ -103,7 +103,7 @@ public final class NoiseService {
                 .stream().filter(a -> a.leader() && a.entityTag().equals(def.targetTag()))
                 .min(Comparator.comparing(a -> a.id().toString())).orElse(null);
         int followers = HordeDirector.assignNoise(level, origin, mobs, def.lureDurationTicks(),
-                HordeDirector.isHordeBehaviorEnabled(), stageGroupLimit, archetype);
+                eventId, sourceId, HordeDirector.isHordeBehaviorEnabled(), stageGroupLimit, archetype);
         AftermathMod.LOGGER.debug("Noise {} at {} in {} affected {} loaded mobs; followers={}; day={}, radius={}.",
                 eventId, origin, dim, mobs.size(), followers, day, radius);
         if (LAST_EMITTED.size() > 4096) LAST_EMITTED.entrySet().removeIf(e -> {
