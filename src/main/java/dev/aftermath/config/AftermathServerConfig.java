@@ -20,6 +20,8 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_DAY_PROGRESSION;
     public static final ModConfigSpec.BooleanValue ENABLE_BLEEDING;
     public static final ModConfigSpec.BooleanValue ENABLE_DAYTIME_ZOMBIE_SUPPRESSION;
+    public static final ModConfigSpec.BooleanValue ENABLE_BLOOD_SCENT;
+    public static final ModConfigSpec.BooleanValue ENABLE_LIGHT_SOURCE_AWARENESS;
 
     public static final ModConfigSpec.IntValue WEAPON_XP_PER_KILL;
     public static final ModConfigSpec.IntValue MAX_XP_PER_VICTIM_PER_MINUTE;
@@ -30,6 +32,15 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.IntValue MAX_PATH_REQUESTS_PER_TICK;
     public static final ModConfigSpec.IntValue MAX_SOUND_NOISE_SCANS_PER_TICK;
     public static final ModConfigSpec.IntValue DAYTIME_ZOMBIE_SPAWN_CHANCE_PERCENT;
+    public static final ModConfigSpec.IntValue BLOOD_SCENT_DROP_INTERVAL_TICKS;
+    public static final ModConfigSpec.IntValue BLOOD_SCENT_LIFETIME_TICKS;
+    public static final ModConfigSpec.IntValue MAX_BLOOD_SCENT_SPOTS;
+    public static final ModConfigSpec.IntValue MAX_BLOOD_SCENT_PULSES_PER_TICK;
+    public static final ModConfigSpec.IntValue LIGHT_SOURCE_SCAN_RADIUS;
+    public static final ModConfigSpec.IntValue LIGHT_SOURCE_MIN_EMISSION;
+    public static final ModConfigSpec.IntValue LIGHT_SOURCE_PULSE_INTERVAL_TICKS;
+    public static final ModConfigSpec.IntValue MAX_TRACKED_LIGHT_SOURCES;
+    public static final ModConfigSpec.IntValue MAX_LIGHT_SOURCE_SCANS_PER_TICK;
 
     public static final ModConfigSpec.IntValue BLEEDING_CHANCE_PERCENT;
     public static final ModConfigSpec.IntValue MAX_BLEEDING_SEVERITY;
@@ -70,11 +81,36 @@ public final class AftermathServerConfig {
                 .define("enableBleeding", true);
         ENABLE_DAYTIME_ZOMBIE_SUPPRESSION = builder.comment("Suppress automated zombie-like mob spawns in the Overworld during daytime.")
                 .define("enableDaytimeZombieSuppression", true);
+        ENABLE_BLOOD_SCENT = builder.comment("Allow zombie-like mobs to track fresh blood from injured and bleeding players.")
+                .define("enableBloodScent", true);
+        ENABLE_LIGHT_SOURCE_AWARENESS = builder.comment("Allow zombie-like mobs to investigate visible, exposed light-emitting blocks.")
+                .define("enableLightSourceAwareness", true);
         builder.pop();
 
         builder.push("zombie_population");
         DAYTIME_ZOMBIE_SPAWN_CHANCE_PERCENT = builder.comment("Chance (0-100) for a zombie-like mob to be allowed to spawn naturally in the Overworld during daytime. 0 means none; 5 means very rare.")
                 .defineInRange("daytimeZombieSpawnChancePercent", 0, 0, 100);
+        builder.pop();
+
+        builder.push("zombie_senses");
+        BLOOD_SCENT_DROP_INTERVAL_TICKS = builder.comment("Ticks between blood trail spots while a player is bleeding (20 ticks = 1 second).")
+                .defineInRange("bloodScentDropIntervalTicks", 40, 10, 1200);
+        BLOOD_SCENT_LIFETIME_TICKS = builder.comment("How long a blood scent spot remains detectable.")
+                .defineInRange("bloodScentLifetimeTicks", 600, 40, 72000);
+        MAX_BLOOD_SCENT_SPOTS = builder.comment("Maximum retained blood scent spots per dimension; oldest spots are discarded first.")
+                .defineInRange("maxBloodScentSpots", 128, 8, 1024);
+        MAX_BLOOD_SCENT_PULSES_PER_TICK = builder.comment("Maximum blood scent spots that may alert mobs per dimension per tick.")
+                .defineInRange("maxBloodScentPulsesPerTick", 2, 1, 16);
+        LIGHT_SOURCE_SCAN_RADIUS = builder.comment("Radius around an active player scanned periodically to discover pre-existing light sources. Placed light blocks are registered immediately.")
+                .defineInRange("lightSourceScanRadius", 10, 2, 24);
+        LIGHT_SOURCE_MIN_EMISSION = builder.comment("Minimum block light emission level to qualify as a detectable light source.")
+                .defineInRange("lightSourceMinEmission", 9, 1, 15);
+        LIGHT_SOURCE_PULSE_INTERVAL_TICKS = builder.comment("Minimum interval between checks of a tracked light source.")
+                .defineInRange("lightSourcePulseIntervalTicks", 200, 40, 2400);
+        MAX_TRACKED_LIGHT_SOURCES = builder.comment("Maximum cached light sources per dimension; older entries are discarded first.")
+                .defineInRange("maxTrackedLightSources", 512, 32, 4096);
+        MAX_LIGHT_SOURCE_SCANS_PER_TICK = builder.comment("Maximum tracked light sources checked for visible zombies per dimension per tick.")
+                .defineInRange("maxLightSourceScansPerTick", 2, 1, 16);
         builder.pop();
 
         builder.push("firearm_traits");
