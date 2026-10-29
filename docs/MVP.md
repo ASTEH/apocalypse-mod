@@ -31,7 +31,9 @@
 - [x] Manually verified in game by the maintainer.
 - [x] Optional TaCZ 1.21.1 NeoForge adapter resolves the actual server bullet owner and gun ID without a hard dependency.
 - [x] Pistol, shotgun, rifle/SMG, and heavy weapon XP, status and level-based damage bonuses.
-- [x] Gunshots emit the existing configurable noise event; unknown gun IDs fail closed for XP.
+- [x] Unmapped TaCZ custom-gunpack IDs use best-effort class inference; explicit datapack mappings override it.
+- [x] `/aftermath weapons held` reports the held gun ID and class-assignment source.
+- [x] Gunshots emit the existing configurable noise event.
 
 ## M3 — Learning
 
@@ -85,7 +87,21 @@
 - [ ] Manual acceptance tests in a world with TaCZ installed and another world without TaCZ.
 - [ ] Manually validate custom gunpack IDs and tune per-class balance after the fallback/diagnostic update.
 
-**Acceptance:** firearm kills only award XP to the mapped gun class; swapping weapons before a bullet hits does not misattribute it; no crash occurs without TaCZ; firing attracts already-loaded zombies; melee proficiency remains unchanged.
+**Acceptance:** firearm kills award XP to the mapped or inferred class; exact mappings override inference; swapping weapons before a bullet hits does not misattribute it; no crash occurs without TaCZ; firing attracts already-loaded zombies; melee proficiency remains unchanged.
+
+## M7 — Injuries and first aid
+
+- [x] Persistent bleeding status with severity and countdown; saved across relogs and cleared on death.
+- [x] Configurable chance of bleeding from a damaging hostile hit and configurable severity/damage cadence.
+- [x] Craftable bandage item and Russian/English translations.
+- [x] Bandage reduces bleeding severity; one bandage stops a mild wound.
+- [x] Medic profession fully treats bleeding with one bandage and starts with three bandages.
+- [x] `/aftermath wounds` displays injury status; `/aftermath status` includes the bleeding toggle.
+- [ ] CI build and clean client/dedicated-server startup.
+- [ ] Manual test: chance 100% causes bleeding, severity stacks only to the configured cap, periodic damage occurs, and bandages stop/reduce bleeding.
+- [ ] Manual test: relog preserves a wound timer; death clears it; Medic bonus works; disabling bleeding prevents damage.
+
+**Acceptance:** only hostile damage can trigger bleeding; the server owns all wound state and damage; failed bandage use does not consume an item; injury status persists safely without TaCZ or other optional mods.
 
 ## Release gate
 

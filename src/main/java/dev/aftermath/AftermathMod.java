@@ -9,6 +9,7 @@ import dev.aftermath.content.AftermathContent;
 import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.learning.LearningDefinitions;
 import dev.aftermath.learning.LearningService;
+import dev.aftermath.medical.FirstAidService;
 import dev.aftermath.weapon.FirearmDefinitions;
 import dev.aftermath.weapon.TaczCompatibility;
 import dev.aftermath.noise.HordeDirector;
@@ -42,6 +43,8 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerRespawn);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDeath);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDamage);
+        NeoForge.EVENT_BUS.addListener(FirstAidService::onLivingDamage);
+        NeoForge.EVENT_BUS.addListener(FirstAidService::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(LearningDefinitions::register);
         NeoForge.EVENT_BUS.addListener(FirearmDefinitions::register);
         NeoForge.EVENT_BUS.addListener(LearningService::onPlayerTick);

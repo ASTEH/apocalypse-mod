@@ -19,7 +19,7 @@
   "screen.aftermath.character.error.conflicting_traits": "Those traits conflict with each other.",
   "screen.aftermath.character.error.not_enough_points": "Choose fewer positive traits or take negative traits.",
   "profession.aftermath.medic": "Medic",
-  "profession.aftermath.medic.description": "Starts with bread and honey bottles.",
+  "profession.aftermath.medic.description": "Starts with bread, honey bottles, and bandages.",
   "profession.aftermath.mechanic": "Mechanic",
   "profession.aftermath.mechanic.description": "Starts with a stone pickaxe, iron nuggets and sticks.",
   "profession.aftermath.scavenger": "Scavenger",
@@ -92,5 +92,15 @@
   "message.aftermath.weapon_held.none": "No TaCZ gun recognized in your main hand. Hold a TaCZ gun and try again.",
   "message.aftermath.weapon_held.info": "TaCZ gun ID: %1$s. Class: %2$s (%3$s).",
   "message.aftermath.weapon_held.mapped": "explicit datapack mapping",
-  "message.aftermath.weapon_held.inferred": "inferred from ID; ambiguous names default to rifles"
+  "message.aftermath.weapon_held.inferred": "inferred from ID; ambiguous names default to rifles",
+  "item.aftermath.bandage": "Bandage",
+  "message.aftermath.bleeding.started": "You are bleeding (severity %1$s). Use a bandage!",
+  "message.aftermath.bleeding.worsened": "Bleeding worsened (severity %1$s). Use a bandage!",
+  "message.aftermath.bleeding.bandaged": "Bandage applied. Bleeding severity is now %1$s.",
+  "message.aftermath.bleeding.stopped": "Bleeding stopped.",
+  "message.aftermath.bleeding.disabled": "Bleeding and first aid are disabled on this server.",
+  "message.aftermath.bleeding.none": "You have no active bleeding.",
+  "message.aftermath.bleeding.status": "Bleeding severity: %1$s/%2$s. Next blood loss in about %3$s sec.",
+  "message.aftermath.bandage.not_bleeding": "You are not bleeding; the bandage was not used.",
+  "message.aftermath.first_aid.medic_treated": "As a medic, you fully treated the bleeding with one bandage."
 }

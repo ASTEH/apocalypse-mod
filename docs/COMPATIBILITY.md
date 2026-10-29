@@ -1,12 +1,12 @@
 # Compatibility matrix
 
-The core requires only Minecraft/NeoForge. TaCZ compatibility is isolated and uses reflection, so TaCZ is never a hard dependency.
+The core requires only Minecraft/NeoForge. TaCZ compatibility is isolated and uses reflection, so TaCZ is never a hard dependency. The M7 injury system uses vanilla/NeoForge damage and item events only; it does not require a health, fracture, infection, or wound mod.
 
 | Mod/group in the target pack | Planned integration | Fallback |
 |---|---|---|
-| TaCZ 1.21.1 NeoForge port | Implemented optional adapter: identifies server bullets, shooter, gun ID, shot noise, kill XP and class damage bonuses; known default gun IDs are mapped in `firearm_classes/tacz.json` | No TaCZ references are loaded when absent; unknown custom gun IDs grant no guessed XP until mapped in a datapack. |
-| TaCZ Additions, Magazines, Guns Lights, Elite X Quality Guns, Fallout Gunpack and other gun packs | Follow-up validation for custom gun IDs; mappings can be added with datapack JSON | Core remains independent; unknown gun IDs are ignored for progression. |
-| Other firearms mods | Not yet individually integrated | No guessed firearm XP. |
+| TaCZ 1.21.1 NeoForge port | Implemented optional adapter: identifies server bullets, shooter, gun ID, shot noise, kill XP and class damage bonuses; known default gun IDs are mapped in `firearm_classes/tacz.json` | No TaCZ references are loaded when absent; unmapped custom gun IDs use best-effort name inference (explicit datapack mappings take priority). |
+| TaCZ Additions, Magazines, Guns Lights, Elite X Quality Guns, Fallout Gunpack and other gun packs | Custom-gunpack XP inference is implemented, but per-pack balance still needs validation; exact mappings can be added with datapack JSON | Core remains independent; ambiguous IDs default to rifle. |
+| Other firearms mods | Not yet individually integrated | No firearm XP until an isolated adapter is added. |
 | Farmer's Delight | Optional cooking adapter and food tags | Vanilla cooking/crafting remain learning sources. |
 | Create family | Optional production-completion adapter only if needed | No Create imports or dependency. |
 | Cold Sweat / Serene Seasons | Optional environmental integration after API verification | Base traits work without temperature mods. |
