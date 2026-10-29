@@ -1,0 +1,10 @@
+{
+  "title": "lesson.aftermath.first_aid",
+  "skill": "aftermath:first_aid",
+  "item": "aftermath:training_manual",
+  "duration_ticks": 1200,
+  "xp_reward": 20,
+  "max_completions": 1,
+  "cancel_on_movement": true,
+  "cancel_on_damage": true
+}
