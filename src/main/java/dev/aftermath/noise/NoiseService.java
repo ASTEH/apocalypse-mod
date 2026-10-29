@@ -135,8 +135,6 @@ public final class NoiseService {
                 || !AftermathServerConfig.ENABLE_NOISE_EVENTS.get()
                 || event.getSound() == null
                 || event.getNewVolume() <= 0.05F) return;
-        if (isIgnoredSoundCategory(event.getSource())) return;
-
         ResourceLocation soundId = event.getSound().unwrapKey().map(key -> key.location()).orElse(null);
         if (soundId == null) return;
         String path = soundId.getPath().toLowerCase(Locale.ROOT);
@@ -252,15 +250,17 @@ public final class NoiseService {
     }
 
     private static ResourceLocation classifySound(ResourceLocation soundId, SoundSource source, float volume) {
-        if (isIgnoredSoundCategory(source)) return null;
         String id = (soundId.getNamespace() + ":" + soundId.getPath()).toLowerCase(Locale.ROOT);
-        if (containsAny(id, "door", "trapdoor", "fence_gate", "chest", "barrel",
-                "shulker_box", "dispenser", "dropper", "lever", "button", "pressure_plate")) {
-            return BLOCK_ACTION;
-        }
+        // Explicit high-impact sounds such as thunder/explosions can attract zombies even though
+        // Minecraft categorizes some of them as WEATHER or AMBIENT.
         if (containsAny(id, "explosion", "explode", "tnt", "firework", "thunder",
                 "sonic_boom", "warden", "anvil", "bell", "cannon", "gunshot", "shotgun_blast")) {
             return LOUD_SOUND;
+        }
+        if (isIgnoredSoundCategory(source)) return null;
+        if (containsAny(id, "door", "trapdoor", "fence_gate", "chest", "barrel",
+                "shulker_box", "dispenser", "dropper", "lever", "button", "pressure_plate")) {
+            return BLOCK_ACTION;
         }
         if (volume >= 1.45F) return LOUD_SOUND;
         return volume < 0.45F ? QUIET_SOUND : MEDIUM_SOUND;
