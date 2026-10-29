@@ -1,0 +1,16 @@
+{
+  "name": "trait.aftermath.tough",
+  "description": "trait.aftermath.tough.description",
+  "category": "positive",
+  "point_cost": 4,
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "max_health",
+      "value": 1.1
+    }
+  ],
+  "conflicts": [
+    "aftermath:frail"
+  ]
+}

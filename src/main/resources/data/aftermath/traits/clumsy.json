@@ -1,0 +1,16 @@
+{
+  "name": "trait.aftermath.clumsy",
+  "description": "trait.aftermath.clumsy.description",
+  "category": "negative",
+  "point_credit": 3,
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "movement_speed",
+      "value": 0.92
+    }
+  ],
+  "conflicts": [
+    "aftermath:fit"
+  ]
+}

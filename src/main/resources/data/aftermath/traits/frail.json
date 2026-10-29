@@ -1,0 +1,17 @@
+{
+  "name": "trait.aftermath.frail",
+  "description": "trait.aftermath.frail.description",
+  "category": "negative",
+  "point_credit": 2,
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "max_health",
+      "value": 0.85
+    }
+  ],
+  "conflicts": [
+    "aftermath:fit",
+    "aftermath:tough"
+  ]
+}

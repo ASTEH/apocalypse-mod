@@ -1,0 +1,17 @@
+{
+  "name": "trait.aftermath.fit",
+  "description": "trait.aftermath.fit.description",
+  "category": "positive",
+  "point_cost": 3,
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "movement_speed",
+      "value": 1.08
+    }
+  ],
+  "conflicts": [
+    "aftermath:frail",
+    "aftermath:clumsy"
+  ]
+}

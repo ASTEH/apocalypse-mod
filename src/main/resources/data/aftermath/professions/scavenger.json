@@ -1,0 +1,27 @@
+{
+  "name": "profession.aftermath.scavenger",
+  "description": "profession.aftermath.scavenger.description",
+  "starting_points": 8,
+  "allowed_traits": [
+    "aftermath:fit",
+    "aftermath:strong",
+    "aftermath:tough",
+    "aftermath:frail",
+    "aftermath:clumsy",
+    "aftermath:weak"
+  ],
+  "starting_items": [
+    {
+      "item": "minecraft:stone_axe",
+      "count": 1
+    },
+    {
+      "item": "minecraft:bread",
+      "count": 6
+    },
+    {
+      "item": "minecraft:torch",
+      "count": 8
+    }
+  ]
+}
