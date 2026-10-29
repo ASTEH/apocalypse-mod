@@ -82,5 +82,11 @@
   "message.aftermath.day.status": "День апокалипсиса: %1$s. Стадия действует с %2$s по %3$s день; радиус обнаружения ×%4$s; размер группы до %5$s. Прогрессия: %6$s.",
   "message.aftermath.day.enabled": "включена",
   "message.aftermath.day.disabled": "выключена",
-  "message.aftermath.day.set": "Установлен день апокалипсиса: %1$s. Значение сохраняется в мире."
+  "message.aftermath.day.set": "Установлен день апокалипсиса: %1$s. Значение сохраняется в мире.",
+  "weapon_class.aftermath.pistol": "Пистолеты",
+  "weapon_class.aftermath.shotgun": "Дробовики",
+  "weapon_class.aftermath.rifle": "Винтовки и автоматы",
+  "weapon_class.aftermath.heavy": "Тяжёлое оружие",
+  "message.aftermath.weapon_class_status": "%1$s: ур. %2$s, %3$s XP",
+  "message.aftermath.weapons_status": "Навыки оружия — %1$s; %2$s; %3$s; %4$s; %5$s."
 }

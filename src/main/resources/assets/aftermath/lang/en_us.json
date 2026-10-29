@@ -82,5 +82,11 @@
   "message.aftermath.day.status": "Apocalypse day: %1$s. Stage range: days %2$s–%3$s; detection radius ×%4$s; group size up to %5$s. Progression: %6$s.",
   "message.aftermath.day.enabled": "enabled",
   "message.aftermath.day.disabled": "disabled",
-  "message.aftermath.day.set": "Apocalypse day set to %1$s. The value is saved with the world."
+  "message.aftermath.day.set": "Apocalypse day set to %1$s. The value is saved with the world.",
+  "weapon_class.aftermath.pistol": "Pistols",
+  "weapon_class.aftermath.shotgun": "Shotguns",
+  "weapon_class.aftermath.rifle": "Rifles and SMGs",
+  "weapon_class.aftermath.heavy": "Heavy weapons",
+  "message.aftermath.weapon_class_status": "%1$s: Lv. %2$s, %3$s XP",
+  "message.aftermath.weapons_status": "Weapon proficiency — %1$s; %2$s; %3$s; %4$s; %5$s."
 }

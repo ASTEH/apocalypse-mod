@@ -1,11 +1,12 @@
 # Compatibility matrix
 
-The core requires only Minecraft/NeoForge. Entries below are planned optional integrations, not hard dependencies.
+The core requires only Minecraft/NeoForge. TaCZ compatibility is isolated and uses reflection, so TaCZ is never a hard dependency.
 
 | Mod/group in the target pack | Planned integration | Fallback |
 |---|---|---|
-| TaCZ, TaCZ Additions, Magazines, Guns Lights, Elite X Quality Guns, Fallout Gunpack | First optional weapon adapter for reliable shot attribution; tags still determine class | Unsupported shots grant no guessed weapon XP. |
-| Timeless & Classics Guns: Zero | Separate adapter if server-side attribution is reliable | Core stays independent. |
+| TaCZ 1.21.1 NeoForge port | Implemented optional adapter: identifies server bullets, shooter, gun ID, shot noise, kill XP and class damage bonuses; known default gun IDs are mapped in `firearm_classes/tacz.json` | No TaCZ references are loaded when absent; unknown custom gun IDs grant no guessed XP until mapped in a datapack. |
+| TaCZ Additions, Magazines, Guns Lights, Elite X Quality Guns, Fallout Gunpack and other gun packs | Follow-up validation for custom gun IDs; mappings can be added with datapack JSON | Core remains independent; unknown gun IDs are ignored for progression. |
+| Other firearms mods | Not yet individually integrated | No guessed firearm XP. |
 | Farmer's Delight | Optional cooking adapter and food tags | Vanilla cooking/crafting remain learning sources. |
 | Create family | Optional production-completion adapter only if needed | No Create imports or dependency. |
 | Cold Sweat / Serene Seasons | Optional environmental integration after API verification | Base traits work without temperature mods. |
