@@ -135,15 +135,18 @@ public final class CharacterSelectionScreen extends Screen {
         clearWidgets();
         if (professions.isEmpty()) return;
 
-        int visibleProfessionCount = Math.min(professionsPerPage(), professions.size());
+        int professionPageSize = professionsPerPage();
+        int professionPageCount = Math.max(1, (professions.size() + professionPageSize - 1) / professionPageSize);
+        professionPage = Math.max(0, Math.min(professionPage, professionPageCount - 1));
+        int professionStart = professionPage * professionPageSize;
+        int visibleProfessionCount = Math.min(professionPageSize, professions.size() - professionStart);
+        if (visibleProfessionCount <= 0) return;
+
         int professionGap = 6;
         int professionWidth = Math.max(72, Math.min(148,
-                (width - 72 - (visibleProfessionCount - 1) * professionGap) / Math.max(1, visibleProfessionCount)));
+                (width - 72 - (visibleProfessionCount - 1) * professionGap) / visibleProfessionCount));
         int professionTotal = professionWidth * visibleProfessionCount + professionGap * (visibleProfessionCount - 1);
         int professionX = (width - professionTotal) / 2;
-        int professionPageCount = Math.max(1, (professions.size() + professionsPerPage() - 1) / professionsPerPage());
-        professionPage = Math.max(0, Math.min(professionPage, professionPageCount - 1));
-        int professionStart = professionPage * professionsPerPage();
         for (int slot = 0; slot < visibleProfessionCount; slot++) {
             ProfessionOption option = professions.get(professionStart + slot);
             Component label = Component.literal("    ")
@@ -293,13 +296,17 @@ public final class CharacterSelectionScreen extends Screen {
     private void drawProfessionIcons(GuiGraphics graphics) {
         if (professions.isEmpty()) return;
         int pageSize = professionsPerPage();
-        int visibleCount = Math.min(pageSize, professions.size());
+        int pageCount = Math.max(1, (professions.size() + pageSize - 1) / pageSize);
+        int safePage = Math.max(0, Math.min(professionPage, pageCount - 1));
+        int startIndex = safePage * pageSize;
+        int visibleCount = Math.min(pageSize, professions.size() - startIndex);
+        if (visibleCount <= 0) return;
+
         int gap = 6;
         int buttonWidth = Math.max(72, Math.min(148,
-                (width - 72 - (visibleCount - 1) * gap) / Math.max(1, visibleCount)));
+                (width - 72 - (visibleCount - 1) * gap) / visibleCount));
         int totalWidth = buttonWidth * visibleCount + gap * (visibleCount - 1);
         int startX = (width - totalWidth) / 2;
-        int startIndex = professionPage * pageSize;
         for (int slot = 0; slot < visibleCount; slot++) {
             ProfessionOption profession = professions.get(startIndex + slot);
             ResourceLocation itemId = ResourceLocation.tryParse(profession.icon);
