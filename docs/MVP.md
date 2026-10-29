@@ -56,9 +56,10 @@
 - [x] Temporary leader/follower groups, capped by server config and archetype JSON.
 - [x] Movement goal added alongside existing goals; per-entity path cooldown and global path request budget.
 - [x] Server sound events at entity/position map to quiet, medium, loud, or block-action noise profiles with per-source cooldowns.
-- [x] Non-command chat and openable block interactions trigger noise.
+- [x] Non-command chat, openable block interactions, block breaking and block placement trigger noise.
 - [x] Walking and sprinting use distinct ranges/cadence; crouching is quiet by default, while Clumsy increases movement noise.
 - [x] Common modded zombie IDs are recognized as a fallback in addition to datapack tags.
+- [x] Generic sound-driven scans have a configurable per-dimension/per-tick budget; positional block sounds share a cooldown key with direct interactions to avoid duplicate scans.
 - [ ] Manual test expanded sound matrix: open/close doors, trapdoors, gates, chests/barrels, breaking/using blocks, ordinary chat vs slash commands, walking vs sprinting, and quiet/loud sound effects.
 - [ ] Verify position-based ambient audio does not create excessive false alarms when many blocks/entities emit sounds at once.
 
