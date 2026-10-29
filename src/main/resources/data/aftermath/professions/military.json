@@ -1,0 +1,37 @@
+{
+  "id": "aftermath:military",
+  "name": "profession.aftermath.military",
+  "description": "profession.aftermath.military.description",
+  "icon": "minecraft:crossbow",
+  "startPoints": 8,
+  "allowed_traits": [],
+  "grantedTraits": [
+    "aftermath:strong"
+  ],
+  "skillBonuses": {
+    "firearms": 2,
+    "melee": 1
+  },
+  "startItems": [
+    {
+      "item": "minecraft:crossbow",
+      "count": 1
+    },
+    {
+      "item": "minecraft:arrow",
+      "count": 24
+    },
+    {
+      "item": "minecraft:chainmail_chestplate",
+      "count": 1
+    },
+    {
+      "item": "minecraft:bread",
+      "count": 4
+    },
+    {
+      "item": "minecraft:iron_sword",
+      "count": 1
+    }
+  ]
+}

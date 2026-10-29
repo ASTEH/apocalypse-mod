@@ -1,0 +1,32 @@
+{
+  "id": "aftermath:cook",
+  "name": "profession.aftermath.cook",
+  "description": "profession.aftermath.cook.description",
+  "icon": "minecraft:cooked_beef",
+  "startPoints": 8,
+  "allowed_traits": [],
+  "grantedTraits": [
+    "aftermath:iron_stomach"
+  ],
+  "skillBonuses": {
+    "cooking": 1
+  },
+  "startItems": [
+    {
+      "item": "minecraft:campfire",
+      "count": 1
+    },
+    {
+      "item": "minecraft:cooked_beef",
+      "count": 8
+    },
+    {
+      "item": "minecraft:bread",
+      "count": 4
+    },
+    {
+      "item": "minecraft:stone_axe",
+      "count": 1
+    }
+  ]
+}

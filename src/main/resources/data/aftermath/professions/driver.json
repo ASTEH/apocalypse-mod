@@ -1,0 +1,36 @@
+{
+  "id": "aftermath:driver",
+  "name": "profession.aftermath.driver",
+  "description": "profession.aftermath.driver.description",
+  "icon": "minecraft:compass",
+  "startPoints": 8,
+  "allowed_traits": [],
+  "grantedTraits": [
+    "aftermath:speed_demon"
+  ],
+  "skillBonuses": {
+    "driving": 1
+  },
+  "startItems": [
+    {
+      "item": "minecraft:compass",
+      "count": 1
+    },
+    {
+      "item": "minecraft:map",
+      "count": 1
+    },
+    {
+      "item": "minecraft:minecart",
+      "count": 1
+    },
+    {
+      "item": "minecraft:bread",
+      "count": 4
+    },
+    {
+      "item": "minecraft:leather_boots",
+      "count": 1
+    }
+  ]
+}

@@ -44,10 +44,10 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
 
         Map<ResourceLocation, ProfessionDefinition> validProfessions = new LinkedHashMap<>();
         for (ProfessionDefinition profession : professions.values()) {
-            if (profession.allowedTraits().isEmpty() || profession.allowedTraits().stream().allMatch(traits::containsKey)) {
+            if (isValidProfession(profession, traits)) {
                 validProfessions.put(profession.id(), profession);
             } else {
-                AftermathMod.LOGGER.error("Ignoring profession {} because one or more allowed traits are missing.", profession.id());
+                AftermathMod.LOGGER.error("Ignoring profession {} because its allowed/granted traits are missing, incompatible, or invalid for this profession.", profession.id());
             }
         }
         return new Snapshot(Map.copyOf(validProfessions), Map.copyOf(traits));
@@ -77,17 +77,47 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
             if (id == null) return;
             try (Reader reader = entry.getValue().openAsReader()) {
                 JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+                if (json.has("id") && !id.toString().equals(requiredString(json, "id"))) {
+                    throw new IllegalArgumentException("id field must match profession resource location " + id);
+                }
                 String name = requiredString(json, "name");
                 String description = requiredString(json, "description");
-                int points = boundedInt(json, "starting_points", 0, 100);
-                List<ResourceLocation> allowedTraits = idList(json, "allowed_traits");
+                String pointsKey = json.has("startPoints") ? "startPoints" : "starting_points";
+                int points = boundedInt(json, pointsKey, 0, 100);
+                String allowedKey = json.has("allowedTraits") ? "allowedTraits" : "allowed_traits";
+                List<ResourceLocation> allowedTraits = idList(json, allowedKey);
+                ResourceLocation icon = ResourceLocation.tryParse(json.has("icon")
+                        ? requiredString(json, "icon") : "minecraft:player_head");
+                if (icon == null) throw new IllegalArgumentException("invalid profession icon resource ID");
                 List<StartingItem> startingItems = startingItems(json);
-                result.put(id, new ProfessionDefinition(id, name, description, points, allowedTraits, startingItems));
+                String grantsKey = json.has("grantedTraits") ? "grantedTraits" : "granted_traits";
+                List<ResourceLocation> grantedTraits = idList(json, grantsKey);
+                Map<String, Integer> skillBonuses = skillBonuses(json);
+                result.put(id, new ProfessionDefinition(id, name, description, icon, points,
+                        allowedTraits, startingItems, grantedTraits, skillBonuses));
             } catch (Exception exception) {
                 AftermathMod.LOGGER.error("Could not load character profession {}: {}", entry.getKey(), exception.getMessage());
             }
         });
         return result;
+    }
+
+    private static boolean isValidProfession(ProfessionDefinition profession,
+                                             Map<ResourceLocation, TraitDefinition> traits) {
+        if (!profession.allowedTraits().isEmpty()
+                && profession.allowedTraits().stream().anyMatch(id -> !traits.containsKey(id))) {
+            return false;
+        }
+        Set<ResourceLocation> granted = Set.copyOf(profession.grantedTraits());
+        if (granted.size() != profession.grantedTraits().size()) return false;
+        for (ResourceLocation id : profession.grantedTraits()) {
+            TraitDefinition trait = traits.get(id);
+            if (trait == null) return false;
+            if (!profession.allowedTraits().isEmpty() && !profession.allowedTraits().contains(id)) return false;
+            if (trait.requiresProfession() != null && !trait.requiresProfession().equals(profession.id())) return false;
+            if (trait.conflicts().stream().anyMatch(granted::contains)) return false;
+        }
+        return true;
     }
 
     private static Map<ResourceLocation, TraitDefinition> loadTraits(ResourceManager manager) {
@@ -182,16 +212,36 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
     }
 
     private static List<StartingItem> startingItems(JsonObject json) {
+        String key = json.has("startItems") ? "startItems" : "starting_items";
         List<StartingItem> result = new ArrayList<>();
-        if (!json.has("starting_items") || !json.get("starting_items").isJsonArray()) return result;
-        for (JsonElement element : json.getAsJsonArray("starting_items")) {
+        if (!json.has(key) || !json.get(key).isJsonArray()) return result;
+        for (JsonElement element : json.getAsJsonArray(key)) {
             JsonObject item = element.getAsJsonObject();
-            ResourceLocation id = ResourceLocation.tryParse(requiredString(item, "item"));
-            if (id == null) throw new IllegalArgumentException("invalid item id in starting_items");
+            String itemKey = item.has("item") ? "item" : "id";
+            ResourceLocation id = ResourceLocation.tryParse(requiredString(item, itemKey));
+            if (id == null) throw new IllegalArgumentException("invalid item ID in " + key);
             int count = boundedInt(item, "count", 1, 64);
             result.add(new StartingItem(id, count));
         }
         return List.copyOf(result);
+    }
+
+    private static Map<String, Integer> skillBonuses(JsonObject json) {
+        String key = json.has("skillBonuses") ? "skillBonuses" : "skill_bonuses";
+        if (!json.has(key)) return Map.of();
+        if (!json.get(key).isJsonObject()) throw new IllegalArgumentException(key + " must be an object of skill IDs to starting levels");
+        Map<String, Integer> result = new LinkedHashMap<>();
+        for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject(key).entrySet()) {
+            String skillId = entry.getKey().toLowerCase(Locale.ROOT);
+            if (!skillId.matches("[a-z0-9_.-]+")) throw new IllegalArgumentException("invalid skill ID " + entry.getKey());
+            if (!entry.getValue().isJsonPrimitive() || !entry.getValue().getAsJsonPrimitive().isNumber()) {
+                throw new IllegalArgumentException("starting skill level must be a number: " + skillId);
+            }
+            int level = entry.getValue().getAsInt();
+            if (level < 0 || level > 10) throw new IllegalArgumentException("starting skill level must be between 0 and 10: " + skillId);
+            if (level > 0) result.put(skillId, level);
+        }
+        return Map.copyOf(result);
     }
 
     private static List<TraitEffect> effects(JsonObject json) {
@@ -249,10 +299,25 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                     json.addProperty("id", value.id().toString());
                     json.addProperty("name", value.nameKey());
                     json.addProperty("description", value.descriptionKey());
+                    json.addProperty("icon", value.icon().toString());
                     json.addProperty("starting_points", value.startingPoints());
                     JsonArray allowed = new JsonArray();
                     value.allowedTraits().forEach(id -> allowed.add(id.toString()));
                     json.add("allowed_traits", allowed);
+                    JsonArray granted = new JsonArray();
+                    value.grantedTraits().forEach(id -> granted.add(id.toString()));
+                    json.add("granted_traits", granted);
+                    JsonObject bonuses = new JsonObject();
+                    value.skillBonuses().forEach((skill, level) -> bonuses.addProperty(skill, level));
+                    json.add("skill_bonuses", bonuses);
+                    JsonArray startingItems = new JsonArray();
+                    value.startingItems().forEach(startingItem -> {
+                        JsonObject item = new JsonObject();
+                        item.addProperty("item", startingItem.itemId().toString());
+                        item.addProperty("count", startingItem.count());
+                        startingItems.add(item);
+                    });
+                    json.add("starting_items", startingItems);
                     professions.add(json);
                 });
         JsonArray traits = new JsonArray();
@@ -291,8 +356,16 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
     }
 
     public record ProfessionDefinition(ResourceLocation id, String nameKey, String descriptionKey,
-                                       int startingPoints, List<ResourceLocation> allowedTraits,
-                                       List<StartingItem> startingItems) {}
+                                       ResourceLocation icon, int startingPoints,
+                                       List<ResourceLocation> allowedTraits, List<StartingItem> startingItems,
+                                       List<ResourceLocation> grantedTraits, Map<String, Integer> skillBonuses) {
+        public ProfessionDefinition {
+            allowedTraits = List.copyOf(allowedTraits);
+            startingItems = List.copyOf(startingItems);
+            grantedTraits = List.copyOf(grantedTraits);
+            skillBonuses = Map.copyOf(skillBonuses);
+        }
+    }
 
     public record TraitDefinition(ResourceLocation id, String nameKey, String descriptionKey,
                                   String category, int pointCost, int pointCredit,

@@ -1,0 +1,36 @@
+{
+  "id": "aftermath:engineer",
+  "name": "profession.aftermath.engineer",
+  "description": "profession.aftermath.engineer.description",
+  "icon": "minecraft:redstone",
+  "startPoints": 8,
+  "allowed_traits": [],
+  "grantedTraits": [
+    "aftermath:dextrous"
+  ],
+  "skillBonuses": {
+    "mechanics": 1
+  },
+  "startItems": [
+    {
+      "item": "minecraft:iron_pickaxe",
+      "count": 1
+    },
+    {
+      "item": "minecraft:redstone",
+      "count": 16
+    },
+    {
+      "item": "minecraft:iron_ingot",
+      "count": 4
+    },
+    {
+      "item": "minecraft:lever",
+      "count": 2
+    },
+    {
+      "item": "minecraft:redstone_torch",
+      "count": 4
+    }
+  ]
+}
