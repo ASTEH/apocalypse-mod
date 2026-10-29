@@ -83,9 +83,10 @@
 - [x] `/aftermath weapons held` displays the held gun's TaCZ ID and the source of its class assignment.
 - [x] Firearm kill XP, level damage bonuses, and all weapon classes shown by `/aftermath weapons`.
 - [x] Server-side TaCZ bullets emit the existing gunshot noise event.
-- [ ] CI build and clean client/dedicated-server startup for this milestone.
-- [ ] Manual acceptance tests in a world with TaCZ installed and another world without TaCZ.
-- [ ] Manually validate custom gunpack IDs and tune per-class balance after the fallback/diagnostic update.
+- [x] CI build passes for the TaCZ and custom-gunpack XP implementation.
+- [x] Manual acceptance with a TaCZ add-on gunpack confirmed by maintainer.
+- [ ] Confirm clean client/dedicated-server startup without TaCZ.
+- [ ] Validate more custom gunpack IDs and tune per-class balance.
 
 **Acceptance:** firearm kills award XP to the mapped or inferred class; exact mappings override inference; swapping weapons before a bullet hits does not misattribute it; no crash occurs without TaCZ; firing attracts already-loaded zombies; melee proficiency remains unchanged.
 
