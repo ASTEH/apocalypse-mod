@@ -4,7 +4,6 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.CharacterSelectionResultPayload;
 import dev.aftermath.network.SelectCharacterPayload;
-import dev.aftermath.network.TraitStatePayload;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -104,7 +103,7 @@ public final class CharacterSelectionService {
         List<String> savedTraits = selectedTraits.stream().map(trait -> trait.id().toString()).toList();
         player.setData(AftermathAttachments.CHARACTER_PROFILE,
                 new CharacterProfile(profession.id().toString(), savedTraits, true, profession.skillBonuses()));
-        PacketDistributor.sendToPlayer(player, new TraitStatePayload(String.join(",", savedTraits)));
+        PacketDistributor.sendToPlayer(player, TraitRuntimeService.createClientStatePayload(player));
 
         CharacterEffectApplier.apply(player, selectedTraits);
         grantStartingItems(player, profession);

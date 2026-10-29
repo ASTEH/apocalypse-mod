@@ -52,13 +52,18 @@
 
 - [x] Data-driven gunshot noise definition and public server-side noise API.
 - [x] `/aftermath noise test` for testing without a firearm-mod adapter.
-- [x] Only already-loaded, tag-eligible mobs inside the radius are considered; no spawn calls or chunk forcing.
+- [x] Only already-loaded eligible mobs inside the radius are considered; no spawn calls or chunk forcing.
 - [x] Temporary leader/follower groups, capped by server config and archetype JSON.
 - [x] Movement goal added alongside existing goals; per-entity path cooldown and global path request budget.
-- [x] CI build and clean client/dedicated-server startup.
-- [x] Manual acceptance tests in game.
+- [x] Server sound events at entity/position map to quiet, medium, loud, or block-action noise profiles with per-source cooldowns.
+- [x] Non-command chat, openable block interactions, block breaking and block placement trigger noise.
+- [x] Walking and sprinting use distinct ranges/cadence; crouching is quiet by default, while Clumsy increases movement noise.
+- [x] Common modded zombie IDs are recognized as a fallback in addition to datapack tags.
+- [x] Generic sound-driven scans have a configurable per-dimension/per-tick budget; positional block sounds share a cooldown key with direct interactions to avoid duplicate scans.
+- [ ] Manual test expanded sound matrix: open/close doors, trapdoors, gates, chests/barrels, breaking/using blocks, ordinary chat vs slash commands, walking vs sprinting, and quiet/loud sound effects.
+- [ ] Verify position-based ambient audio does not create excessive false alarms when many blocks/entities emit sounds at once.
 
-**Acceptance:** noise attracts existing zombies; no mobs appear because of noise; no chunk is loaded solely for migration; foreign AI goals remain.
+**Acceptance:** noise attracts existing zombies; no mobs appear because of noise; no chunk is loaded solely for migration; foreign AI goals remain; every sound scan has a radius, cooldown, and entity cap.
 
 ## M5 — Day progression
 
@@ -118,6 +123,37 @@ This is distinct from the historical M1–M7 milestones above. It extends the ex
 - [ ] TODO: Eagle Eye and Quick Reload become functional with Stage 4 firearm control; vehicle-specific Speed Demon effects are Stage 5; Sleepyhead awaits a dedicated rest/fatigue mechanic.
 
 **Acceptance:** all active trait definitions load without errors; the UI and server agree on points and compatibility; relog restores selected client-side sound/visual behavior; standalone NeoForge works with optional mods absent.
+
+## User roadmap — Zombie senses: blood and exposed light
+
+- [x] Player damage creates a temporary blood scent spot; ongoing Aftermath bleeding leaves additional trail spots.
+- [x] Blood spots are time-limited, merged only for immediate duplicates, and capped per dimension; pulses use the existing attraction service and entity budget.
+- [x] Player-placed light-emitting blocks are indexed immediately; broken blocks and changed light states are removed, and a slow scan discovers existing lights near active players.
+- [x] Light signals require a clear block ray from zombie eye position to the light source; tracked sources, scans, and attraction checks are capped, and unloaded chunks are never requested.
+- [ ] Manually test hurt once vs ongoing bleeding, bandage stopping further trails, scent expiry, torch/lantern/redstone lamp placement/removal, wall/door line-of-sight, modded lamps, and dense zombie populations.
+
+**Acceptance:** damage and active bleeding leave short-lived signals; nearby zombie-like mobs investigate blood and visible light sources using the existing horde destination path; blocked light sources do not alert through solid walls; no extra dependency on Zombie Awareness/CoroUtil is introduced.
+  
+## User roadmap — Stage 4: firearm handling and mastery
+
+This stage implements uncomfortable novice firearm handling and improves it as the player uses each weapon class. TaCZ remains optional.
+
+- [x] Zero-XP weapon classes start with a pronounced spread penalty; spread falls progressively toward the mastered value.
+- [x] Zero-XP weapon classes start with stronger pitch/yaw camera recoil; TaCZ's active recoil cache is scaled rather than changing only its displayed default.
+- [x] Aiming with a TaCZ firearm adds low-frequency camera tremor; movement increases it and crouching reduces it.
+- [x] Eagle Eye reduces the spread penalty and aiming sway, using server-derived values synced to the client.
+- [x] Quick Reload accelerates TaCZ's active reload clock rather than changing only a client animation.
+- [x] Firearm proficiency adds reload-duration bonuses at levels 2, 5 and 10, layered with Quick Reload when both are active.
+- [x] Server config exposes novice/mastered spread, recoil, aiming sway and trait strength controls.
+- [x] All TaCZ access remains reflective so clean NeoForge can load without TaCZ.
+- [ ] Manual test zero-XP, mid-level and level-10 spread/recoil/sway in game; tune the novice values by feel.
+- [ ] Manual test Eagle Eye against the novice penalty and verify it does not make a novice instantly perfect.
+- [ ] Manual test Quick Reload on empty/tactical reload and reload cancellation, without duplicate or lost ammo.
+- [ ] Manual test level 2 / 5 / 10 reload bonuses using the active weapon class and while switching between guns.
+- [ ] Manual test custom TaCZ gunpacks and a clean NeoForge client/server without TaCZ.
+- [ ] Verify no regression to melee XP/damage, zombie noise response, character creation, or the SDM UI screen.
+
+**Acceptance:** CI passes; zero-XP handling feels distinctly less stable than experienced handling; reload timing remains server-authoritative; missing/changed TaCZ reflection methods fall back safely.
 
 ## Release gate
 

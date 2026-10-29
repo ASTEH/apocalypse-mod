@@ -19,6 +19,10 @@ import dev.aftermath.noise.NoiseService;
 import dev.aftermath.command.AftermathCommands;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.AftermathNetworking;
+import dev.aftermath.zombie.ZombieKillService;
+import dev.aftermath.zombie.ZombiePopulationService;
+import dev.aftermath.zombie.BloodScentService;
+import dev.aftermath.zombie.LightSourceAwarenessService;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -45,9 +49,22 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerRespawn);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDeath);
+        NeoForge.EVENT_BUS.addListener(ZombieKillService::onLivingDeath);
+        NeoForge.EVENT_BUS.addListener(ZombiePopulationService::onFinalizeSpawn);
+        NeoForge.EVENT_BUS.addListener(BloodScentService::onLivingDamage);
+        NeoForge.EVENT_BUS.addListener(BloodScentService::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(BloodScentService::onLevelTick);
+        NeoForge.EVENT_BUS.addListener(BloodScentService::onPlayerLogout);
+        NeoForge.EVENT_BUS.addListener(BloodScentService::onServerStopping);
+        NeoForge.EVENT_BUS.addListener(LightSourceAwarenessService::onBlockPlace);
+        NeoForge.EVENT_BUS.addListener(LightSourceAwarenessService::onBlockBreak);
+        NeoForge.EVENT_BUS.addListener(LightSourceAwarenessService::onNeighborNotify);
+        NeoForge.EVENT_BUS.addListener(LightSourceAwarenessService::onLevelTick);
+        NeoForge.EVENT_BUS.addListener(LightSourceAwarenessService::onServerStopping);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onLivingHeal);
+        NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onPlayerTickPre);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(FirstAidService::onLivingDamage);
@@ -59,13 +76,21 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(LearningService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(NoiseDefinitions::register);
         NeoForge.EVENT_BUS.addListener(NoiseService::onLevelTick);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onLevelSoundAtEntity);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onLevelSoundAtPosition);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onServerChat);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onBlockInteraction);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onBlockBreak);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onBlockPlace);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(NoiseService::onServerStopping);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onEntityJoinLevel);
         NeoForge.EVENT_BUS.addListener(TaczCompatibility::onEntityJoinLevel);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onEntityLeaveLevel);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onServerStopping);
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            AftermathNetworking.registerClientHooks();
+            AftermathNetworking.registerClientHooks(modEventBus);
         }
 
         LOGGER.info("Aftermath Survival Framework {} initialised for Minecraft 1.21.1.",

@@ -178,5 +178,10 @@
   "screen.aftermath.character.ui.empty_professions": "No professions available",
   "screen.aftermath.character.ui.empty_traits": "No available traits",
   "screen.aftermath.character.ui.footer_hint": "Choose a profession and traits, then confirm your survivor.",
-  "screen.aftermath.character.error.invalid_data": "Could not load character data. Rejoin the world."
+  "screen.aftermath.character.error.invalid_data": "Could not load character data. Rejoin the world.",
+  "hud.aftermath.zombie_kills": "Zombies killed: %1$s",
+  "message.aftermath.zombie_kills.status": "Zombies killed by you: %1$s.",
+  "message.aftermath.day_zombies.status": "Daytime zombie spawn suppression: %1$s. Allowed chance: %2$s out of 100.",
+  "message.aftermath.day_zombies.enabled": "enabled",
+  "message.aftermath.day_zombies.disabled": "disabled"
 }

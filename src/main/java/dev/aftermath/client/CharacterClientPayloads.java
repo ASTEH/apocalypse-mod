@@ -3,6 +3,7 @@ package dev.aftermath.client;
 import dev.aftermath.network.CharacterScreenPayload;
 import dev.aftermath.network.CharacterSelectionResultPayload;
 import dev.aftermath.network.TraitStatePayload;
+import dev.aftermath.network.ZombieKillCountPayload;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -15,7 +16,13 @@ public final class CharacterClientPayloads {
     }
 
     public static void handleTraitState(TraitStatePayload payload) {
-        TraitClientState.setSelectedTraits(payload.selectedTraitIdsCsv());
+        TraitClientState.setSelectedTraits(payload.selectedTraitIdsCsv(), payload.firearmSpreadMultiplier(),
+                payload.firearmRecoilMultiplier(), payload.aimingSwayDegrees(),
+                payload.quickReloadDurationMultiplier());
+    }
+
+    public static void handleZombieKillCount(ZombieKillCountPayload payload) {
+        ZombieKillHud.setCount(payload.count());
     }
 
     public static void handleResult(CharacterSelectionResultPayload payload) {

@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** The core character flow, learning, noise/horde behavior, day progression, firearm proficiency, and M7 bleeding/first aid are implemented. User-roadmap Stage 1 (trait expansion) is in progress on its own branch; this adds JSON-defined traits and server/client hooks without replacing the existing character flow.
+> **Status:** Core character creation, learning, noise/horde behavior, day progression, firearm proficiency, injuries/first aid, trait expansion, profession expansion, and the SDM UI Lib character screen are implemented in `main`. Roadmap Stage 4 adds severe novice firearm handling (spread, recoil, aiming sway) that improves with weapon XP, plus reload handling. The sound-response system also covers world sounds, block interactions, chat, walking, sprinting, blood scent, and exposed light sources; in-game tuning remains to be tested.
 
 ## Requirements
 
@@ -33,7 +33,11 @@ Minecraft 1.21.1 · NeoForge · Java 21
 - [ ] **M5 — Day progression & performance:** progression stages, goal throttling, bounded searches, optional door interaction, profiling.
 - [x] **M6 — Optional integrations:** TaCZ firearm XP/noise adapter with custom-gunpack ID inference and explicit datapack overrides. Other gun mods remain separate adapters.
 - [x] **M7 — Injuries & first aid:** hostile-hit bleeding, persistent wound severity, bandage treatment, medic profession advantage, configurable balance.
-- [ ] **Roadmap Stage 1 — Traits expansion:** 18 new trait definitions, signed point costs, profession requirements, conflicts, server hooks, and isolated client sound/fog effects.
+- [x] **Roadmap Stage 1 — Traits expansion:** 18 new trait definitions, signed point costs, profession requirements, conflicts, server hooks, and isolated client sound/fog effects.
+- [x] **Roadmap Stage 2 — Profession expansion:** data-driven professions and starting skill bonuses.
+- [x] **Roadmap Stage 3 — Character UI:** SDM UI Lib screen with profession/trait selection, dossier and synced result handling.
+- [ ] **Roadmap Stage 4 — Firearm control:** novice spread/recoil/aim sway, mastery-based handling, Eagle Eye, Quick Reload, and proficiency-based reload bonuses for TaCZ; manual acceptance testing remains.
+- [ ] **Noise-response expansion:** classify server-emitted sounds, block interactions, non-command chat, and walking/sprinting into distinct radius profiles; include common modded zombie IDs. CI passes before the release gate, but in-game sound/radius tuning remains.
 
 ## Initial data layout
 
@@ -77,3 +81,16 @@ The bootstrap wrapper downloads the official Gradle Wrapper JAR on first launch 
 - Unknown NeoForge 1.21.1 APIs must be checked against the MDK sources and official 1.21.1 docs; no guessed signatures.
 
 See [the build guide](docs/BUILDING.md), [architecture plan](docs/ARCHITECTURE.md), [compatibility matrix](docs/COMPATIBILITY.md), and [MVP checklist](docs/MVP.md).
+
+
+### Zombie-awareness integration
+
+Aftermath implements its own server-side sound, blood-scent, and exposed-light awareness with bounded searches and no required gameplay dependencies. Zombie Awareness is not required for those senses. Running both can duplicate sound processing and zombie attraction; keep it only if you specifically want its separate behavior, such as its optional wandering-horde system.
+
+### Daytime zombie population and kill counter
+
+In the server config, `enableDaytimeZombieSuppression=true` suppresses automated zombie-like spawns in the Overworld during daylight. `daytimeZombieSpawnChancePercent=0` blocks them entirely; set it to 3–5 for a small daytime chance. This does not delete zombies already present or block manual spawn eggs/commands and spawners.
+
+The HUD shows the player's persistent lifetime zombie-like kill count. `/aftermath kills` prints the value in chat, while `/aftermath dayzombies` reports the current daytime spawn settings.
+
+The zombie senses use the existing `NoiseService` and `HordeDirector`: damage and active bleeding leave temporary scent spots, while visible light-emitting blocks are cached and periodically checked with a per-tick work budget. No chunks are loaded just to find a target.

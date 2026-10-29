@@ -1,11 +1,14 @@
 package dev.aftermath.character;
 
 import dev.aftermath.AftermathMod;
-import dev.aftermath.noise.NoiseService;
+import dev.aftermath.config.AftermathServerConfig;
+import dev.aftermath.network.TraitStatePayload;
+import dev.aftermath.weapon.TaczCompatibility;
+import dev.aftermath.weapon.FirearmDefinitions;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -27,12 +30,118 @@ import java.util.UUID;
  * TraitClientEvents and receive only a server-authoritative list of selected trait IDs.
  */
 public final class TraitRuntimeService {
-    public static final ResourceLocation CLUMSY_FOOTSTEPS =
-            ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "footsteps");
-
     private static final Map<UUID, Float> LAST_EXHAUSTION = new HashMap<>();
+    private static final Map<UUID, TraitStatePayload> LAST_SENT_FIREARM_STATE = new HashMap<>();
 
     private TraitRuntimeService() {}
+
+    /**
+     * Computes weapon control from the active firearm class. A class with zero XP is deliberately
+     * treated as completely untrained: tighter handling is earned through actual use.
+     */
+    public static TraitStatePayload createClientStatePayload(ServerPlayer player) {
+        CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
+        String csv = profile.created() ? String.join(",", profile.traitIds()) : "";
+        return new TraitStatePayload(csv,
+                (float) firearmSpreadMultiplier(player),
+                (float) firearmRecoilMultiplier(player),
+                (float) aimingSwayDegrees(player),
+                (float) effectiveReloadMultiplier(player));
+    }
+
+    public static double effectiveFirearmTraitMultiplier(ServerPlayer player, String hook,
+                                                          double strengthScale) {
+        if (!AftermathServerConfig.ENABLE_FIREARM_TRAIT_EFFECTS.get() || !hasHook(player, hook)) {
+            return 1.0D;
+        }
+        return Math.max(0.1D, Math.min(1.0D, hookValue(player, hook, 1.0D) * strengthScale));
+    }
+
+    public static double firearmSpreadMultiplier(ServerPlayer player) {
+        double spread = AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
+                ? handlingValueForCurrentWeapon(player,
+                        AftermathServerConfig.UNTRAINED_SPREAD_MULTIPLIER.get(),
+                        AftermathServerConfig.STANDARD_SPREAD_MULTIPLIER.get(),
+                        AftermathServerConfig.MASTERED_SPREAD_MULTIPLIER.get())
+                : 1.0D;
+        spread *= effectiveFirearmTraitMultiplier(player, "eagle_eye",
+                AftermathServerConfig.EAGLE_EYE_STRENGTH_SCALE.get());
+        return Math.max(0.1D, Math.min(4.0D, spread));
+    }
+
+    public static double firearmRecoilMultiplier(ServerPlayer player) {
+        if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()) return 1.0D;
+        return handlingValueForCurrentWeapon(player,
+                AftermathServerConfig.UNTRAINED_RECOIL_MULTIPLIER.get(),
+                AftermathServerConfig.STANDARD_RECOIL_MULTIPLIER.get(),
+                AftermathServerConfig.MASTERED_RECOIL_MULTIPLIER.get());
+    }
+
+    public static double aimingSwayDegrees(ServerPlayer player) {
+        if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()) return 0.0D;
+        double sway = handlingValueForCurrentWeapon(player,
+                AftermathServerConfig.UNTRAINED_AIM_SWAY_DEGREES.get(),
+                AftermathServerConfig.STANDARD_AIM_SWAY_DEGREES.get(),
+                AftermathServerConfig.MASTERED_AIM_SWAY_DEGREES.get());
+        // Eagle Eye steadies the sight picture as well as reducing projectile spread.
+        return Math.max(0.0D, Math.min(3.0D, sway * effectiveFirearmTraitMultiplier(player, "eagle_eye",
+                AftermathServerConfig.EAGLE_EYE_STRENGTH_SCALE.get())));
+    }
+
+    public static double effectiveReloadMultiplier(ServerPlayer player) {
+        double reload = effectiveFirearmTraitMultiplier(player, "quick_reload",
+                AftermathServerConfig.QUICK_RELOAD_STRENGTH_SCALE.get());
+        if (AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()) {
+            reload *= TaczCompatibility.proficiencyReloadDurationMultiplier(player);
+        }
+        return Math.max(0.1D, Math.min(1.0D, reload));
+    }
+
+    /**
+     * Handling returns to the weapon's native baseline by level 4. Higher levels still grant
+     * incremental, deliberately modest control improvements up to level 10.
+     */
+    private static double handlingValueForCurrentWeapon(ServerPlayer player,
+                                                        double novice, double standard, double mastered) {
+        int level = currentFirearmLevel(player);
+        if (level <= 4) {
+            return interpolate(novice, standard, (level - 1) / 3.0D);
+        }
+        return interpolate(standard, mastered, (level - 4) / 6.0D);
+    }
+
+    public static int currentFirearmLevel(ServerPlayer player) {
+        return WeaponProgressionService.levelFor(currentFirearmExperience(player));
+    }
+
+    public static int currentFirearmExperienceForHeldWeapon(ServerPlayer player) {
+        return currentFirearmExperience(player);
+    }
+
+    private static int currentFirearmExperience(ServerPlayer player) {
+        ResourceLocation gunId = TaczCompatibility.gunIdFromHeldItem(player.getMainHandItem());
+        if (gunId == null || "empty".equals(gunId.getPath())) return 0;
+        String weaponClass = FirearmDefinitions.classForGun(gunId);
+        return weaponClass == null ? 0
+                : player.getData(AftermathAttachments.WEAPON_PROGRESS).experienceFor(weaponClass);
+    }
+
+    private static double interpolate(double novice, double mastered, double progress) {
+        return novice + (mastered - novice) * Math.max(0.0D, Math.min(1.0D, progress));
+    }
+
+    /** Runs before the entity tick so TaCZ sees the current multipliers before it updates its weapon state. */
+    public static void onPlayerTickPre(PlayerTickEvent.Pre event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        TraitStatePayload state = createClientStatePayload(player);
+        TaczCompatibility.applyFirearmTraitEffects(player, state.firearmSpreadMultiplier(),
+                state.firearmRecoilMultiplier(), state.quickReloadDurationMultiplier());
+
+        TraitStatePayload previous = LAST_SENT_FIREARM_STATE.put(player.getUUID(), state);
+        if (!state.equals(previous)) {
+            PacketDistributor.sendToPlayer(player, state);
+        }
+    }
 
     public static boolean hasHook(ServerPlayer player, String hook) {
         return effects(player, "custom_hook").stream().anyMatch(effect -> effect.target().equals(hook));
@@ -134,7 +243,6 @@ public final class TraitRuntimeService {
         }
 
         applyExhaustionHooks(player);
-        emitClumsyFootsteps(player);
     }
 
     private static void applyExhaustionHooks(ServerPlayer player) {
@@ -157,18 +265,8 @@ public final class TraitRuntimeService {
         }
     }
 
-    private static void emitClumsyFootsteps(ServerPlayer player) {
-        if (!hasHook(player, "clumsy_noise")
-                || !(player.level() instanceof ServerLevel level)
-                || !player.onGround() || player.isCrouching()
-                || player.getDeltaMovement().horizontalDistanceSqr() <= 0.0025D
-                || level.getGameTime() % 40L != 0L) return;
-
-        // This low-radius noise uses the same loaded-entity-only pipeline as other noise events.
-        NoiseService.emitNoise(level, player.position(), CLUMSY_FOOTSTEPS, player.getUUID());
-    }
-
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         LAST_EXHAUSTION.remove(event.getEntity().getUUID());
+        LAST_SENT_FIREARM_STATE.remove(event.getEntity().getUUID());
     }
 }

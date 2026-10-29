@@ -1,11 +1,8 @@
 package dev.aftermath.noise;
 import dev.aftermath.config.AftermathServerConfig;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
@@ -21,8 +18,6 @@ import java.util.WeakHashMap;
 
 /** Transient horde state; adds a goal without replacing any vanilla or third-party AI goals. */
 public final class HordeDirector {
-    private static final TagKey<EntityType<?>> MEMBERS = TagKey.create(
-            Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("aftermath", "horde_members"));
     private static final Map<UUID, HordeOrder> ORDERS = new HashMap<>();
     private static final Map<ResourceLocation, PathBudget> PATH_BUDGETS = new HashMap<>();
     private static final Map<Mob, Boolean> INSTALLED = new WeakHashMap<>();
@@ -46,42 +41,86 @@ public final class HordeDirector {
         runtimeBehaviorOverride = null;
     }
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-        if (!(event.getLevel() instanceof ServerLevel) || !(event.getEntity() instanceof Mob mob) || !mob.getType().is(MEMBERS)) return;
+        if (!(event.getLevel() instanceof ServerLevel) || !(event.getEntity() instanceof Mob mob)
+                || !ZombieEntityClassifier.isZombieLikeType(mob)) return;
         if (INSTALLED.putIfAbsent(mob, Boolean.TRUE) == null) mob.goalSelector.addGoal(5, new BehaviorGoal(mob));
     }
     public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) { ORDERS.remove(event.getEntity().getUUID()); }
 
-    public static int assignNoise(ServerLevel level, Vec3 target, List<Mob> mobs, int duration,
+    public static AssignmentResult assignNoise(ServerLevel level, Vec3 target, List<Mob> mobs, int duration,
+                                  ResourceLocation signalId, UUID sourceId,
                                   boolean grouping, int stageGroupLimit,
                                   NoiseDefinitions.HordeArchetypeDefinition archetype) {
-        if (mobs.isEmpty()) return 0;
+        if (mobs.isEmpty() || signalId == null) return new AssignmentResult(0, 0);
+        int priority = signalPriorityForDiagnostics(signalId);
+        List<Mob> receptive = new java.util.ArrayList<>(mobs.size());
+        for (Mob mob : mobs) {
+            HordeOrder current = activeOrder(mob);
+            if (shouldAcceptSignal(current, signalId, sourceId, priority)) receptive.add(mob);
+        }
+        // A weaker stimulus must not steal a zombie from an active, higher-priority investigation.
+        if (receptive.isEmpty()) return new AssignmentResult(0, 0);
+
         Mob leader = null;
         if (grouping && archetype != null && archetype.leader()) {
-            for (Mob mob : mobs) {
+            for (Mob mob : receptive) {
                 HordeOrder old = activeOrder(mob);
                 if (old != null && old.role() == Role.LEADER) { leader = mob; break; }
             }
-            if (leader == null) leader = mobs.get(0);
+            if (leader == null) leader = receptive.get(0);
         }
         long expires = level.getGameTime() + Math.max(1, duration);
         ResourceLocation dim = level.dimension().location();
-        for (Mob mob : mobs) ORDERS.put(mob.getUUID(),
-                new HordeOrder(dim, Role.INVESTIGATE, null, target, expires, 1.0D));
-        if (leader == null) return 0;
+        for (Mob mob : receptive) ORDERS.put(mob.getUUID(),
+                new HordeOrder(dim, Role.INVESTIGATE, null, target, expires, 1.0D,
+                        signalId, sourceId, priority));
+        if (leader == null) return new AssignmentResult(receptive.size(), 0);
 
         int maxGroup = Math.min(AftermathServerConfig.MAX_HORDE_SIZE.get(),
                 Math.min(Math.max(1, stageGroupLimit), archetype.maxFollowers() + 1));
         ORDERS.put(leader.getUUID(), new HordeOrder(dim, Role.LEADER, leader.getUUID(),
-                target, expires, archetype.speedMultiplier()));
+                target, expires, archetype.speedMultiplier(), signalId, sourceId, priority));
         double radiusSqr = (double) archetype.followerRadius() * archetype.followerRadius();
         int followers = 0;
-        for (Mob mob : mobs) {
+        for (Mob mob : receptive) {
             if (mob == leader || followers >= maxGroup - 1 || mob.distanceToSqr(leader) > radiusSqr) continue;
             ORDERS.put(mob.getUUID(), new HordeOrder(dim, Role.FOLLOWER, leader.getUUID(),
-                    target, expires, archetype.speedMultiplier()));
+                    target, expires, archetype.speedMultiplier(), signalId, sourceId, priority));
             followers++;
         }
-        return followers;
+        return new AssignmentResult(receptive.size(), followers);
+    }
+
+    public record AssignmentResult(int acceptedTargets, int groupedFollowers) {}
+
+    /**
+     * Priorities are intentionally categorical: blood is persistent and must not be displaced by
+     * incidental lights or footsteps. A genuine gunshot can still supersede non-blood objectives.
+     */
+    static int signalPriorityForDiagnostics(ResourceLocation signalId) {
+        String path = signalId.getPath();
+        if (path.equals("blood_scent")) return 100;
+        if (path.equals("gunshot")) return 90;
+        if (path.equals("sound_loud") || path.equals("clumsy_sprint")) return 80;
+        if (path.equals("sprint_footsteps")) return 75;
+        if (path.equals("light_source")) return 60;
+        if (path.equals("chat")) return 50;
+        if (path.equals("block_action")) return 45;
+        return 40;
+    }
+
+    private static boolean shouldAcceptSignal(HordeOrder current, ResourceLocation signalId,
+                                              UUID sourceId, int priority) {
+        if (current == null) return true;
+        if (priority > current.priority()) return true;
+        if (priority < current.priority()) return false;
+
+        // Blood spots form a trail: an equal-priority blood scent may advance the pursuit to a
+        // newer nearby spot, while other sources cannot make the zombie oscillate between targets.
+        if (signalId.getPath().equals("blood_scent")
+                && current.signalId().getPath().equals("blood_scent")) return true;
+        return current.signalId().equals(signalId)
+                && java.util.Objects.equals(current.sourceId(), sourceId);
     }
 
     public static HordeOrder activeOrder(Mob mob) {
@@ -116,39 +155,74 @@ public final class HordeDirector {
     }
     public enum Role { INVESTIGATE, LEADER, FOLLOWER }
     public record HordeOrder(ResourceLocation dimension, Role role, UUID leaderId, Vec3 targetPosition,
-                             long expiresAt, double speedMultiplier) {}
+                             long expiresAt, double speedMultiplier, ResourceLocation signalId,
+                             UUID sourceId, int priority) {}
     private record PathBudget(long tick, int remaining) {}
 
     private static final class BehaviorGoal extends Goal {
-        private static final double ARRIVAL_SQR = 9.0D;
+        private static final double ARRIVAL_SQR = 1.0D;
+        private static final double FOLLOWER_ARRIVAL_SQR = 2.25D;
         private final Mob mob;
         private long nextPathUpdate;
         private BehaviorGoal(Mob mob) { this.mob = mob; setFlags(EnumSet.of(Goal.Flag.MOVE)); }
         @Override public boolean canUse() { return activeOrder(mob) != null; }
         @Override public boolean canContinueToUse() { return canUse(); }
-        @Override public void start() { nextPathUpdate = 0L; }
+        @Override public void start() {
+            if (mob.level() instanceof ServerLevel level) {
+                int interval = Math.max(5, AftermathServerConfig.AI_RECALC_INTERVAL_TICKS.get());
+                // Spread first path requests across the interval. Otherwise every zombie assigned
+                // by one scent pulse asks for a path on the same tick and the per-tick budget can
+                // starve the same mobs repeatedly.
+                nextPathUpdate = level.getGameTime()
+                        + Math.floorMod(mob.getUUID().hashCode(), interval);
+            } else {
+                nextPathUpdate = 0L;
+            }
+        }
         @Override public void tick() {
             if (!(mob.level() instanceof ServerLevel level)) return;
             HordeOrder order = activeOrder(mob);
             if (order == null) return;
             long now = level.getGameTime();
             if (now < nextPathUpdate) return;
-            nextPathUpdate = now + Math.max(5, AftermathServerConfig.AI_RECALC_INTERVAL_TICKS.get());
+            long interval = Math.max(5, AftermathServerConfig.AI_RECALC_INTERVAL_TICKS.get());
             if (order.role() == Role.FOLLOWER && isHordeBehaviorEnabled()
                     && order.leaderId() != null) {
                 Entity e = level.getEntity(order.leaderId());
                 if (e instanceof Mob leader && leader.isAlive() && !leader.isRemoved()) {
-                    if (mob.distanceToSqr(leader) > ARRIVAL_SQR) {
-                        if (consumePathRequest(level)) mob.getNavigation().moveTo(leader, Math.max(0.1D, order.speedMultiplier()));
-                    } else if (!mob.getNavigation().isDone()) mob.getNavigation().stop();
+                    if (mob.distanceToSqr(leader) > FOLLOWER_ARRIVAL_SQR) {
+                        if (consumePathRequest(level)) {
+                            mob.getNavigation().moveTo(leader, Math.max(0.1D, order.speedMultiplier()));
+                            nextPathUpdate = now + interval;
+                        } else {
+                            nextPathUpdate = retrySoon(now);
+                        }
+                    } else {
+                        nextPathUpdate = now + interval;
+                        if (!mob.getNavigation().isDone()) mob.getNavigation().stop();
+                    }
                     return;
                 }
             }
             Vec3 target = order.targetPosition();
             if (mob.position().distanceToSqr(target) > ARRIVAL_SQR) {
-                if (consumePathRequest(level)) mob.getNavigation().moveTo(target.x, target.y, target.z,
-                        Math.max(0.1D, order.speedMultiplier()));
-            } else if (!mob.getNavigation().isDone()) mob.getNavigation().stop();
+                if (consumePathRequest(level)) {
+                    mob.getNavigation().moveTo(target.x, target.y, target.z,
+                            Math.max(0.1D, order.speedMultiplier()));
+                    nextPathUpdate = now + interval;
+                } else {
+                    // A denied budget request is retried quickly rather than after the full AI
+                    // interval, preventing a group from getting permanently stuck on the same
+                    // unlucky update cadence.
+                    nextPathUpdate = retrySoon(now);
+                }
+            } else {
+                nextPathUpdate = now + interval;
+                if (!mob.getNavigation().isDone()) mob.getNavigation().stop();
+            }
+        }
+        private long retrySoon(long now) {
+            return now + 1L + Math.floorMod(mob.getUUID().hashCode() ^ (int) now, 5);
         }
         @Override public void stop() { if (!mob.getNavigation().isDone()) mob.getNavigation().stop(); }
     }

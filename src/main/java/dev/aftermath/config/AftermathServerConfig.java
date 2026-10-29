@@ -12,12 +12,16 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_CHARACTER_CREATION;
     public static final ModConfigSpec.BooleanValue ALLOW_CHARACTER_RESELECTION;
     public static final ModConfigSpec.BooleanValue ENABLE_WEAPON_PROGRESSION;
+    public static final ModConfigSpec.BooleanValue ENABLE_FIREARM_TRAIT_EFFECTS;
     public static final ModConfigSpec.BooleanValue ENABLE_LEARNING;
     public static final ModConfigSpec.BooleanValue ENABLE_NOISE_EVENTS;
     public static final ModConfigSpec.BooleanValue ENABLE_HORDE_BEHAVIOR;
     public static final ModConfigSpec.BooleanValue ENABLE_BLOCK_BREAKING;
     public static final ModConfigSpec.BooleanValue ENABLE_DAY_PROGRESSION;
     public static final ModConfigSpec.BooleanValue ENABLE_BLEEDING;
+    public static final ModConfigSpec.BooleanValue ENABLE_DAYTIME_ZOMBIE_SUPPRESSION;
+    public static final ModConfigSpec.BooleanValue ENABLE_BLOOD_SCENT;
+    public static final ModConfigSpec.BooleanValue ENABLE_LIGHT_SOURCE_AWARENESS;
 
     public static final ModConfigSpec.IntValue WEAPON_XP_PER_KILL;
     public static final ModConfigSpec.IntValue MAX_XP_PER_VICTIM_PER_MINUTE;
@@ -26,11 +30,33 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.IntValue AI_RECALC_INTERVAL_TICKS;
     public static final ModConfigSpec.IntValue MAX_NOISE_TARGETS;
     public static final ModConfigSpec.IntValue MAX_PATH_REQUESTS_PER_TICK;
+    public static final ModConfigSpec.IntValue MAX_SOUND_NOISE_SCANS_PER_TICK;
+    public static final ModConfigSpec.IntValue DAYTIME_ZOMBIE_SPAWN_CHANCE_PERCENT;
+    public static final ModConfigSpec.IntValue BLOOD_SCENT_DROP_INTERVAL_TICKS;
+    public static final ModConfigSpec.IntValue BLOOD_SCENT_LIFETIME_TICKS;
+    public static final ModConfigSpec.IntValue MAX_BLOOD_SCENT_SPOTS;
+    public static final ModConfigSpec.IntValue MAX_BLOOD_SCENT_PULSES_PER_TICK;
+    public static final ModConfigSpec.IntValue LIGHT_SOURCE_SCAN_RADIUS;
+    public static final ModConfigSpec.IntValue LIGHT_SOURCE_MIN_EMISSION;
+    public static final ModConfigSpec.IntValue LIGHT_SOURCE_PULSE_INTERVAL_TICKS;
+    public static final ModConfigSpec.IntValue MAX_TRACKED_LIGHT_SOURCES;
+    public static final ModConfigSpec.IntValue MAX_LIGHT_SOURCE_SCANS_PER_TICK;
 
     public static final ModConfigSpec.IntValue BLEEDING_CHANCE_PERCENT;
     public static final ModConfigSpec.IntValue MAX_BLEEDING_SEVERITY;
     public static final ModConfigSpec.IntValue BLEEDING_TICK_INTERVAL_TICKS;
     public static final ModConfigSpec.DoubleValue BLEEDING_DAMAGE_PER_SEVERITY;
+    public static final ModConfigSpec.DoubleValue EAGLE_EYE_STRENGTH_SCALE;
+    public static final ModConfigSpec.DoubleValue QUICK_RELOAD_STRENGTH_SCALE;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_SPREAD_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue MASTERED_SPREAD_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_RECOIL_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue MASTERED_RECOIL_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_AIM_SWAY_DEGREES;
+    public static final ModConfigSpec.DoubleValue STANDARD_SPREAD_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue STANDARD_RECOIL_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue STANDARD_AIM_SWAY_DEGREES;
+    public static final ModConfigSpec.DoubleValue MASTERED_AIM_SWAY_DEGREES;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -42,6 +68,8 @@ public final class AftermathServerConfig {
                 .define("allowCharacterReselection", true);
         ENABLE_WEAPON_PROGRESSION = builder.comment("Enable weapon-class XP and levels.")
                 .define("enableWeaponProgression", true);
+        ENABLE_FIREARM_TRAIT_EFFECTS = builder.comment("Enable the Eagle Eye and Quick Reload character-trait effects for supported TaCZ firearms.")
+                .define("enableFirearmTraitEffects", true);
         ENABLE_LEARNING = builder.comment("Enable manual and television learning systems.")
                 .define("enableLearning", true);
         ENABLE_NOISE_EVENTS = builder.comment("Enable server-side noise events. Noise never spawns mobs near players.")
@@ -54,6 +82,63 @@ public final class AftermathServerConfig {
                 .define("enableDayProgression", true);
         ENABLE_BLEEDING = builder.comment("Enable bleeding caused by hostile attacks and treatment with bandages.")
                 .define("enableBleeding", true);
+        ENABLE_DAYTIME_ZOMBIE_SUPPRESSION = builder.comment("Suppress automated zombie-like mob spawns in the Overworld during daytime.")
+                .define("enableDaytimeZombieSuppression", true);
+        ENABLE_BLOOD_SCENT = builder.comment("Allow zombie-like mobs to track fresh blood from injured and bleeding players.")
+                .define("enableBloodScent", true);
+        ENABLE_LIGHT_SOURCE_AWARENESS = builder.comment("Allow zombie-like mobs to investigate visible, exposed light-emitting blocks.")
+                .define("enableLightSourceAwareness", true);
+        builder.pop();
+
+        builder.push("zombie_population");
+        DAYTIME_ZOMBIE_SPAWN_CHANCE_PERCENT = builder.comment("Chance (0-100) for a zombie-like mob to be allowed to spawn naturally in the Overworld during daytime. 0 means none; 5 means very rare.")
+                .defineInRange("daytimeZombieSpawnChancePercent", 0, 0, 100);
+        builder.pop();
+
+        builder.push("zombie_senses");
+        BLOOD_SCENT_DROP_INTERVAL_TICKS = builder.comment("Ticks between blood trail spots while a player is bleeding (20 ticks = 1 second).")
+                .defineInRange("bloodScentDropIntervalTicks", 40, 10, 1200);
+        BLOOD_SCENT_LIFETIME_TICKS = builder.comment("How long a blood scent spot remains detectable.")
+                .defineInRange("bloodScentLifetimeTicks", 600, 40, 72000);
+        MAX_BLOOD_SCENT_SPOTS = builder.comment("Maximum retained blood scent spots per dimension; oldest spots are discarded first.")
+                .defineInRange("maxBloodScentSpots", 128, 8, 1024);
+        MAX_BLOOD_SCENT_PULSES_PER_TICK = builder.comment("Maximum blood scent spots that may alert mobs per dimension per tick.")
+                .defineInRange("maxBloodScentPulsesPerTick", 2, 1, 16);
+        LIGHT_SOURCE_SCAN_RADIUS = builder.comment("Radius around an active player scanned periodically to discover pre-existing light sources. Placed light blocks are registered immediately.")
+                .defineInRange("lightSourceScanRadius", 10, 2, 24);
+        LIGHT_SOURCE_MIN_EMISSION = builder.comment("Minimum block light emission level to qualify as a detectable light source.")
+                .defineInRange("lightSourceMinEmission", 9, 1, 15);
+        LIGHT_SOURCE_PULSE_INTERVAL_TICKS = builder.comment("Minimum interval between checks of a tracked light source.")
+                .defineInRange("lightSourcePulseIntervalTicks", 200, 40, 2400);
+        MAX_TRACKED_LIGHT_SOURCES = builder.comment("Maximum cached light sources per dimension; older entries are discarded first.")
+                .defineInRange("maxTrackedLightSources", 512, 32, 4096);
+        MAX_LIGHT_SOURCE_SCANS_PER_TICK = builder.comment("Maximum tracked light sources checked for visible zombies per dimension per tick.")
+                .defineInRange("maxLightSourceScansPerTick", 2, 1, 16);
+        builder.pop();
+
+        builder.push("firearm_traits");
+        EAGLE_EYE_STRENGTH_SCALE = builder.comment("Scale applied to the Eagle Eye trait value from datapacks. 1.0 uses the datapack value; lower values make the spread tighter.")
+                .defineInRange("eagleEyeStrengthScale", 1.0D, 0.1D, 2.0D);
+        QUICK_RELOAD_STRENGTH_SCALE = builder.comment("Scale applied to the Quick Reload trait value from datapacks. 1.0 uses the datapack value; lower values make reloads faster.")
+                .defineInRange("quickReloadStrengthScale", 1.0D, 0.1D, 2.0D);
+        UNTRAINED_SPREAD_MULTIPLIER = builder.comment("Firearm spread multiplier for a character with no experience in that weapon class.")
+                .defineInRange("untrainedSpreadMultiplier", 2.20D, 1.0D, 4.0D);
+        STANDARD_SPREAD_MULTIPLIER = builder.comment("Native firearm spread multiplier reached at weapon level 4.")
+                .defineInRange("standardSpreadMultiplier", 1.0D, 0.5D, 2.0D);
+        MASTERED_SPREAD_MULTIPLIER = builder.comment("Firearm spread multiplier at weapon proficiency level 10; slight improvement beyond native handling.")
+                .defineInRange("masteredSpreadMultiplier", 0.90D, 0.5D, 2.0D);
+        UNTRAINED_RECOIL_MULTIPLIER = builder.comment("Camera recoil multiplier for a character with no experience in that weapon class.")
+                .defineInRange("untrainedRecoilMultiplier", 2.35D, 1.0D, 4.0D);
+        STANDARD_RECOIL_MULTIPLIER = builder.comment("Native camera recoil multiplier reached at weapon level 4.")
+                .defineInRange("standardRecoilMultiplier", 1.0D, 0.5D, 2.0D);
+        MASTERED_RECOIL_MULTIPLIER = builder.comment("Camera recoil multiplier at weapon proficiency level 10; slight improvement beyond native handling.")
+                .defineInRange("masteredRecoilMultiplier", 0.90D, 0.5D, 2.0D);
+        UNTRAINED_AIM_SWAY_DEGREES = builder.comment("Maximum low-frequency aiming sway in degrees for a character with no weapon experience.")
+                .defineInRange("untrainedAimSwayDegrees", 1.15D, 0.0D, 3.0D);
+        STANDARD_AIM_SWAY_DEGREES = builder.comment("Residual aiming sway in degrees at native firearm handling (weapon level 4).")
+                .defineInRange("standardAimSwayDegrees", 0.08D, 0.0D, 1.0D);
+        MASTERED_AIM_SWAY_DEGREES = builder.comment("Aiming sway in degrees at weapon proficiency level 10.")
+                .defineInRange("masteredAimSwayDegrees", 0.04D, 0.0D, 1.0D);
         builder.pop();
 
         builder.push("weapon_progression");
@@ -74,6 +159,8 @@ public final class AftermathServerConfig {
                 .defineInRange("maxNoiseTargetsPerEvent", 32, 1, 128);
         MAX_PATH_REQUESTS_PER_TICK = builder.comment("Global Aftermath path requests allowed per tick in each dimension.")
                 .defineInRange("maxPathRequestsPerTick", 16, 1, 256);
+        MAX_SOUND_NOISE_SCANS_PER_TICK = builder.comment("Maximum server sound events converted to zombie noise per tick per dimension; chat, movement, and weapon adapters have their own throttles.")
+                .defineInRange("maxSoundNoiseScansPerTick", 24, 1, 128);
         builder.pop();
 
         builder.push("injuries_and_first_aid");
