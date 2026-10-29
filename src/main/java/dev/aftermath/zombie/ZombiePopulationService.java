@@ -16,7 +16,7 @@ public final class ZombiePopulationService {
         if (!AftermathServerConfig.ENABLE_DAYTIME_ZOMBIE_SUPPRESSION.get()) return;
 
         Mob mob = event.getEntity();
-        if (!ZombieEntityClassifier.isZombieLike(mob) || !isNaturalSpawn(event.getSpawnType())) return;
+        if (!ZombieEntityClassifier.isZombieLike(mob) || !isDaytimeSuppressedSpawn(event.getSpawnType())) return;
 
         Level level = mob.level();
         if (level.isClientSide || !Level.OVERWORLD.equals(level.dimension()) || !level.isDay()) return;
@@ -30,10 +30,14 @@ public final class ZombiePopulationService {
         event.setCanceled(true);
     }
 
-    private static boolean isNaturalSpawn(MobSpawnType type) {
+    private static boolean isDaytimeSuppressedSpawn(MobSpawnType type) {
         return type == MobSpawnType.NATURAL
                 || type == MobSpawnType.REINFORCEMENT
-                || type == MobSpawnType.CHUNK_GENERATION;
+                || type == MobSpawnType.CHUNK_GENERATION
+                || type == MobSpawnType.EVENT
+                || type == MobSpawnType.MOB_SUMMONED
+                || type == MobSpawnType.TRIGGERED
+                || type == MobSpawnType.PATROL;
     }
 
     private ZombiePopulationService() {}
