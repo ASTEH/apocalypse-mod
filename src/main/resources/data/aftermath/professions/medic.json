@@ -1,0 +1,14 @@
+{
+  "name": "profession.aftermath.medic",
+  "description": "profession.aftermath.medic.description",
+  "starting_points": 8,
+  "allowed_traits": [
+    "aftermath:fit",
+    "aftermath:quick_learner",
+    "aftermath:steady_hands",
+    "aftermath:frail",
+    "aftermath:slow_learner",
+    "aftermath:poor_aim"
+  ],
+  "starting_items": []
+}
