@@ -116,7 +116,8 @@ public final class HordeDirector {
     private record PathBudget(long tick, int remaining) {}
 
     private static final class BehaviorGoal extends Goal {
-        private static final double ARRIVAL_SQR = 2.25D;
+        private static final double ARRIVAL_SQR = 1.0D;
+        private static final double FOLLOWER_ARRIVAL_SQR = 2.25D;
         private final Mob mob;
         private long nextPathUpdate;
         private BehaviorGoal(Mob mob) { this.mob = mob; setFlags(EnumSet.of(Goal.Flag.MOVE)); }
@@ -145,7 +146,7 @@ public final class HordeDirector {
                     && order.leaderId() != null) {
                 Entity e = level.getEntity(order.leaderId());
                 if (e instanceof Mob leader && leader.isAlive() && !leader.isRemoved()) {
-                    if (mob.distanceToSqr(leader) > ARRIVAL_SQR) {
+                    if (mob.distanceToSqr(leader) > FOLLOWER_ARRIVAL_SQR) {
                         if (consumePathRequest(level)) {
                             mob.getNavigation().moveTo(leader, Math.max(0.1D, order.speedMultiplier()));
                             nextPathUpdate = now + interval;
