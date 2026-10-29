@@ -534,8 +534,16 @@ public final class CharacterSelectionScreen extends Screen {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player != null) {
             ResourceLocation skin = minecraft.player.getSkin().texture();
-            graphics.blit(skin, headX, headY, 8.0F, 8.0F, headSize, headSize, 64, 64);
-            graphics.blit(skin, headX, headY, 40.0F, 8.0F, headSize, headSize, 64, 64);
+
+            // Draw only the 8x8 face region and its hat layer, then scale the pose to the dossier size.
+            // GuiGraphics uses the skin's nearest-neighbour texture sampler, keeping pixels crisp.
+            graphics.pose().pushPose();
+            graphics.pose().translate(headX, headY, 0.0D);
+            float headScale = headSize / 8.0F;
+            graphics.pose().scale(headScale, headScale, 1.0F);
+            graphics.blit(skin, 0, 0, 8.0F, 8.0F, 8, 8, 64, 64);
+            graphics.blit(skin, 0, 0, 40.0F, 8.0F, 8, 8, 64, 64);
+            graphics.pose().popPose();
         } else {
             graphics.renderItem(new ItemStack(Items.PLAYER_HEAD), headX, headY);
         }
