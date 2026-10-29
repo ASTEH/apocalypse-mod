@@ -3,6 +3,7 @@ package dev.aftermath.character;
 import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.CharacterScreenPayload;
+import dev.aftermath.zombie.ZombieKillService;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -14,6 +15,7 @@ public final class AftermathServerEvents {
 
         CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
         PacketDistributor.sendToPlayer(player, TraitRuntimeService.createClientStatePayload(player));
+        ZombieKillService.sync(player);
         if (profile.created() || !AftermathServerConfig.ENABLE_CHARACTER_CREATION.get()) return;
 
         CharacterDefinitions.Snapshot definitions = CharacterDefinitions.snapshot();
@@ -31,6 +33,7 @@ public final class AftermathServerEvents {
             CharacterSelectionService.reapplyProfile(player);
             CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
             PacketDistributor.sendToPlayer(player, TraitRuntimeService.createClientStatePayload(player));
+            ZombieKillService.sync(player);
         }
     }
 
