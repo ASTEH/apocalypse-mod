@@ -27,6 +27,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.IntValue AI_RECALC_INTERVAL_TICKS;
     public static final ModConfigSpec.IntValue MAX_NOISE_TARGETS;
     public static final ModConfigSpec.IntValue MAX_PATH_REQUESTS_PER_TICK;
+    public static final ModConfigSpec.IntValue MAX_SOUND_NOISE_SCANS_PER_TICK;
 
     public static final ModConfigSpec.IntValue BLEEDING_CHANCE_PERCENT;
     public static final ModConfigSpec.IntValue MAX_BLEEDING_SEVERITY;
@@ -104,6 +105,8 @@ public final class AftermathServerConfig {
                 .defineInRange("maxNoiseTargetsPerEvent", 32, 1, 128);
         MAX_PATH_REQUESTS_PER_TICK = builder.comment("Global Aftermath path requests allowed per tick in each dimension.")
                 .defineInRange("maxPathRequestsPerTick", 16, 1, 256);
+        MAX_SOUND_NOISE_SCANS_PER_TICK = builder.comment("Maximum server sound events converted to zombie noise per tick per dimension; chat, movement, and weapon adapters have their own throttles.")
+                .defineInRange("maxSoundNoiseScansPerTick", 24, 1, 128);
         builder.pop();
 
         builder.push("injuries_and_first_aid");
