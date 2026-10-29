@@ -60,6 +60,12 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(LearningService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(NoiseDefinitions::register);
         NeoForge.EVENT_BUS.addListener(NoiseService::onLevelTick);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onLevelSoundAtEntity);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onLevelSoundAtPosition);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onServerChat);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onBlockInteraction);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(NoiseService::onServerStopping);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onEntityJoinLevel);
         NeoForge.EVENT_BUS.addListener(TaczCompatibility::onEntityJoinLevel);
