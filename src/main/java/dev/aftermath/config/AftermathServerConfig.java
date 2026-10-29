@@ -19,6 +19,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_BLOCK_BREAKING;
     public static final ModConfigSpec.BooleanValue ENABLE_DAY_PROGRESSION;
     public static final ModConfigSpec.BooleanValue ENABLE_BLEEDING;
+    public static final ModConfigSpec.BooleanValue ENABLE_DAYTIME_ZOMBIE_SUPPRESSION;
 
     public static final ModConfigSpec.IntValue WEAPON_XP_PER_KILL;
     public static final ModConfigSpec.IntValue MAX_XP_PER_VICTIM_PER_MINUTE;
@@ -28,6 +29,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.IntValue MAX_NOISE_TARGETS;
     public static final ModConfigSpec.IntValue MAX_PATH_REQUESTS_PER_TICK;
     public static final ModConfigSpec.IntValue MAX_SOUND_NOISE_SCANS_PER_TICK;
+    public static final ModConfigSpec.IntValue DAYTIME_ZOMBIE_SPAWN_CHANCE_PERCENT;
 
     public static final ModConfigSpec.IntValue BLEEDING_CHANCE_PERCENT;
     public static final ModConfigSpec.IntValue MAX_BLEEDING_SEVERITY;
@@ -66,6 +68,13 @@ public final class AftermathServerConfig {
                 .define("enableDayProgression", true);
         ENABLE_BLEEDING = builder.comment("Enable bleeding caused by hostile attacks and treatment with bandages.")
                 .define("enableBleeding", true);
+        ENABLE_DAYTIME_ZOMBIE_SUPPRESSION = builder.comment("Suppress natural zombie-like mob spawns in the Overworld during daytime.")
+                .define("enableDaytimeZombieSuppression", true);
+        builder.pop();
+
+        builder.push("zombie_population");
+        DAYTIME_ZOMBIE_SPAWN_CHANCE_PERCENT = builder.comment("Chance (0-100) for a zombie-like mob to be allowed to spawn naturally in the Overworld during daytime. 0 means none; 5 means very rare.")
+                .defineInRange("daytimeZombieSpawnChancePercent", 0, 0, 100);
         builder.pop();
 
         builder.push("firearm_traits");
