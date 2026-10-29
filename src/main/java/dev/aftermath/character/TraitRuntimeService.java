@@ -58,10 +58,11 @@ public final class TraitRuntimeService {
     }
 
     public static double firearmSpreadMultiplier(ServerPlayer player) {
-        double progress = weaponControlProgress(player);
         double spread = AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
-                ? interpolate(AftermathServerConfig.UNTRAINED_SPREAD_MULTIPLIER.get(),
-                        AftermathServerConfig.MASTERED_SPREAD_MULTIPLIER.get(), progress)
+                ? handlingValueForCurrentWeapon(player,
+                        AftermathServerConfig.UNTRAINED_SPREAD_MULTIPLIER.get(),
+                        AftermathServerConfig.STANDARD_SPREAD_MULTIPLIER.get(),
+                        AftermathServerConfig.MASTERED_SPREAD_MULTIPLIER.get())
                 : 1.0D;
         spread *= effectiveFirearmTraitMultiplier(player, "eagle_eye",
                 AftermathServerConfig.EAGLE_EYE_STRENGTH_SCALE.get());
@@ -70,14 +71,18 @@ public final class TraitRuntimeService {
 
     public static double firearmRecoilMultiplier(ServerPlayer player) {
         if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()) return 1.0D;
-        return interpolate(AftermathServerConfig.UNTRAINED_RECOIL_MULTIPLIER.get(),
-                AftermathServerConfig.MASTERED_RECOIL_MULTIPLIER.get(), weaponControlProgress(player));
+        return handlingValueForCurrentWeapon(player,
+                AftermathServerConfig.UNTRAINED_RECOIL_MULTIPLIER.get(),
+                AftermathServerConfig.STANDARD_RECOIL_MULTIPLIER.get(),
+                AftermathServerConfig.MASTERED_RECOIL_MULTIPLIER.get());
     }
 
     public static double aimingSwayDegrees(ServerPlayer player) {
         if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()) return 0.0D;
-        double sway = interpolate(AftermathServerConfig.UNTRAINED_AIM_SWAY_DEGREES.get(),
-                AftermathServerConfig.MASTERED_AIM_SWAY_DEGREES.get(), weaponControlProgress(player));
+        double sway = handlingValueForCurrentWeapon(player,
+                AftermathServerConfig.UNTRAINED_AIM_SWAY_DEGREES.get(),
+                AftermathServerConfig.STANDARD_AIM_SWAY_DEGREES.get(),
+                AftermathServerConfig.MASTERED_AIM_SWAY_DEGREES.get());
         // Eagle Eye steadies the sight picture as well as reducing projectile spread.
         return Math.max(0.0D, Math.min(3.0D, sway * effectiveFirearmTraitMultiplier(player, "eagle_eye",
                 AftermathServerConfig.EAGLE_EYE_STRENGTH_SCALE.get())));
@@ -92,11 +97,25 @@ public final class TraitRuntimeService {
         return Math.max(0.1D, Math.min(1.0D, reload));
     }
 
-    private static double weaponControlProgress(ServerPlayer player) {
-        if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()) return 1.0D;
-        int experience = currentFirearmExperience(player);
-        int level = WeaponProgressionService.levelFor(experience);
-        return Math.max(0.0D, Math.min(1.0D, (level - 1) / 9.0D));
+    /**
+     * Handling returns to the weapon's native baseline by level 4. Higher levels still grant
+     * incremental, deliberately modest control improvements up to level 10.
+     */
+    private static double handlingValueForCurrentWeapon(ServerPlayer player,
+                                                        double novice, double standard, double mastered) {
+        int level = currentFirearmLevel(player);
+        if (level <= 4) {
+            return interpolate(novice, standard, (level - 1) / 3.0D);
+        }
+        return interpolate(standard, mastered, (level - 4) / 6.0D);
+    }
+
+    public static int currentFirearmLevel(ServerPlayer player) {
+        return WeaponProgressionService.levelFor(currentFirearmExperience(player));
+    }
+
+    public static int currentFirearmExperienceForHeldWeapon(ServerPlayer player) {
+        return currentFirearmExperience(player);
     }
 
     private static int currentFirearmExperience(ServerPlayer player) {
