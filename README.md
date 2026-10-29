@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** Core character creation, learning, noise/horde behavior, day progression, firearm proficiency, injuries/first aid, trait expansion, profession expansion, and the SDM UI Lib character screen are implemented in `main`. Roadmap Stage 4 (firearm trait effects and proficiency-based reload handling) is under development on `stage-4-firearm-control`.
+> **Status:** Core character creation, learning, noise/horde behavior, day progression, firearm proficiency, injuries/first aid, trait expansion, profession expansion, and the SDM UI Lib character screen are implemented in `main`. Roadmap Stage 4 adds severe novice firearm handling (spread, recoil, aiming sway) that improves with weapon XP, plus reload handling. The sound-response expansion also covers world sounds, block interactions, chat, walking, sprinting, and common modded zombie variants; in-game tuning remains to be tested.
 
 ## Requirements
 
@@ -36,7 +36,8 @@ Minecraft 1.21.1 · NeoForge · Java 21
 - [x] **Roadmap Stage 1 — Traits expansion:** 18 new trait definitions, signed point costs, profession requirements, conflicts, server hooks, and isolated client sound/fog effects.
 - [x] **Roadmap Stage 2 — Profession expansion:** data-driven professions and starting skill bonuses.
 - [x] **Roadmap Stage 3 — Character UI:** SDM UI Lib screen with profession/trait selection, dossier and synced result handling.
-- [ ] **Roadmap Stage 4 — Firearm control:** Eagle Eye, Quick Reload, and proficiency-based reload bonuses for TaCZ firearms; manual acceptance testing remains.
+- [ ] **Roadmap Stage 4 — Firearm control:** novice spread/recoil/aim sway, mastery-based handling, Eagle Eye, Quick Reload, and proficiency-based reload bonuses for TaCZ; manual acceptance testing remains.
+- [ ] **Noise-response expansion:** classify server-emitted sounds, block interactions, non-command chat, and walking/sprinting into distinct radius profiles; include common modded zombie IDs. CI passes before the release gate, but in-game sound/radius tuning remains.
 
 ## Initial data layout
 
