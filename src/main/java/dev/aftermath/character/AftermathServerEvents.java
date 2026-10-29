@@ -3,7 +3,6 @@ package dev.aftermath.character;
 import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.CharacterScreenPayload;
-import dev.aftermath.network.TraitStatePayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -14,7 +13,7 @@ public final class AftermathServerEvents {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
         CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
-        PacketDistributor.sendToPlayer(player, new TraitStatePayload(String.join(",", profile.traitIds())));
+        PacketDistributor.sendToPlayer(player, TraitRuntimeService.createClientStatePayload(player));
         if (profile.created() || !AftermathServerConfig.ENABLE_CHARACTER_CREATION.get()) return;
 
         CharacterDefinitions.Snapshot definitions = CharacterDefinitions.snapshot();
@@ -31,7 +30,7 @@ public final class AftermathServerEvents {
         if (event.getEntity() instanceof ServerPlayer player) {
             CharacterSelectionService.reapplyProfile(player);
             CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
-            PacketDistributor.sendToPlayer(player, new TraitStatePayload(String.join(",", profile.traitIds())));
+            PacketDistributor.sendToPlayer(player, TraitRuntimeService.createClientStatePayload(player));
         }
     }
 
