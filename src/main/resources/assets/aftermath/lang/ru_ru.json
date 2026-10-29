@@ -122,7 +122,7 @@
   "trait.aftermath.quick_reload": "Быстрая перезарядка",
   "trait.aftermath.quick_reload.description": "Хук перезарядки готов; интеграция с огнестрельным оружием появится на этапе 4.",
   "trait.aftermath.deaf": "Глухота",
-  "trait.aftermath.deaf.description": "Отключает звуки, распознанные как шаги, стрельба или зомби; остальные звуки окружения сохраняются.",
+  "trait.aftermath.deaf.description": "Отключает все звуки игры, кроме категории MUSIC: окружение, интерфейс, мобы и звуки модов.",
   "trait.aftermath.hard_of_hearing": "Тугоухость",
   "trait.aftermath.hard_of_hearing.description": "Шаги, оружие и звуки зомби становятся значительно тише.",
   "trait.aftermath.short_sighted": "Близорукость",

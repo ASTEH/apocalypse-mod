@@ -122,7 +122,7 @@
   "trait.aftermath.quick_reload": "Quick Reload",
   "trait.aftermath.quick_reload.description": "Reload hook is defined; firearm integration arrives in Stage 4.",
   "trait.aftermath.deaf": "Deaf",
-  "trait.aftermath.deaf.description": "Mutes sounds identified as footsteps, gunfire or zombies; other ambience is left alone.",
+  "trait.aftermath.deaf.description": "Mutes every game sound category except MUSIC, including ambience, UI, mobs and modded sounds.",
   "trait.aftermath.hard_of_hearing": "Hard of Hearing",
   "trait.aftermath.hard_of_hearing.description": "Relevant footsteps, weapon and zombie sounds are much quieter.",
   "trait.aftermath.short_sighted": "Short-Sighted",

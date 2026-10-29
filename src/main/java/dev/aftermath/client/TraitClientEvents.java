@@ -31,16 +31,21 @@ public final class TraitClientEvents {
 
     public static void onPlaySound(PlaySoundEvent event) {
         if (Minecraft.getInstance().player == null) return;
-        String name = event.getName() == null ? "" : event.getName().toLowerCase(Locale.ROOT);
-        if (!isRelevantSound(name)) return;
+        SoundInstance original = event.getSound();
+        if (original == null) return;
 
+        // Deaf means genuinely deaf, not only deaf to known footsteps/zombie/gunfire IDs.
+        // Keep only the MUSIC category so custom ambience, UI, blocks, mobs and weapon addons
+        // are filtered too, without depending on their sound event names.
         if (TraitClientState.has("deaf")) {
-            event.setSound(null);
+            if (original.getSource() != SoundSource.MUSIC) {
+                event.setSound(null);
+            }
             return;
         }
 
-        SoundInstance original = event.getSound();
-        if (original == null) return;
+        String name = event.getName() == null ? "" : event.getName().toLowerCase(Locale.ROOT);
+        if (!isRelevantSound(name)) return;
 
         if (TraitClientState.has("hard_of_hearing")) {
             event.setSound(new ScaledSoundInstance(original, HARD_OF_HEARING_VOLUME));

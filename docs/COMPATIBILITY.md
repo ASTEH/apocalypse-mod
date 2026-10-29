@@ -15,7 +15,7 @@ The core requires only Minecraft/NeoForge. TaCZ compatibility is isolated and us
 | LostCities / Big Lost City / Abandoned City Buildings / TNAS | Optional tags for event weighting, if stable | No worldgen replacement or hard dependency. |
 | SecurityCraft / OutpostZero / Curios / DayZ Inventory / DayZ Hotbar | Future API/tag integration only after verification | Core works without them. |
 | ModernFix / Ferrite Core / EntityCulling / ImmediatelyFast / Sodium | No required integration; profile server AI separately from client rendering | Core works without optimizers. |
-| Sound Physics Remastered / AmbientSounds | Deafness filters only recognized step/weapon/zombie sound IDs; hearing traits wrap the SoundInstance while delegating sound ID, source, coordinates and resolution. Short-sightedness changes standard viewport fog distances without a custom shader. | Unknown sound IDs are untouched; optional audio/visual mods remain optional. Iris-specific shaders are not modified. |
+| Sound Physics Remastered / AmbientSounds | Deafness cancels every sound whose SoundSource is not MUSIC (including modded ambience, UI, mobs and weapons), independent of sound ID; hearing traits scale relevant SoundInstances while delegating sound ID, source, coordinates and resolution. Short-sightedness changes standard viewport fog distances without a custom shader. | With Deaf, all non-MUSIC categories are muted even for unknown sound IDs; AmbientSounds and Sound Physics remain optional and no mixin is installed. Iris-specific shaders are not modified. |
 
 ## Mod-list review
 

@@ -112,7 +112,7 @@ This is distinct from the historical M1–M7 milestones above. It extends the ex
 - [x] Existing positive and negative traits migrated to the new schema; 18 additional traits are defined in individual JSON files.
 - [x] Server-side points, profession requirements and incompatibility checks remain authoritative; empty profession allow-lists act as data-driven "allow all".
 - [x] Attribute modifiers, Night Vision, damage mitigation, reading speed, healing reduction, fear, food exhaustion and clumsy-footstep hooks are implemented.
-- [x] Server-to-client trait-state payload gates deafness, hearing volume and short-sighted fog effects; uses no mixins or custom shader.
+- [x] Server-to-client trait-state payload gates deafness, hearing volume and short-sighted fog effects; Deaf mutes all SoundSource categories except MUSIC; uses no mixins or custom shader.
 - [x] Trait selection list supports paging so all JSON-defined traits remain selectable in the existing screen.
 - [ ] Manual test all three current professions; point-cost validation; incompatible traits; Fast Learner; Illiterate/Slow Reader; sound/fog traits; Cat's Eyes; Thick-Skinned; Clumsy horde noise.
 - [ ] TODO: Eagle Eye and Quick Reload become functional with Stage 4 firearm control; vehicle-specific Speed Demon effects are Stage 5; Sleepyhead awaits a dedicated rest/fatigue mechanic.
