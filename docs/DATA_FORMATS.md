@@ -125,9 +125,11 @@ Noise affects existing entities only; it never spawns entities in response to pl
   "stages": [
     {"min_day": 1, "max_day": 3, "detection_multiplier": 1.0, "group_size": 4, "can_break_doors": false},
     {"min_day": 4, "max_day": 7, "detection_multiplier": 1.15, "group_size": 8, "can_break_doors": false},
-    {"min_day": 8, "max_day": 14, "detection_multiplier": 1.3, "group_size": 12, "can_break_doors": true}
+    {"min_day": 8, "max_day": 14, "detection_multiplier": 1.3, "group_size": 12, "can_break_doors": false}
   ]
 }
 ```
 
-Values are initial balance examples, not final commitments. Config hard-caps groups and disables block breaking by default.
+Stages must start on day 1, be sorted into contiguous non-overlapping ranges, and use bounded multipliers/group sizes. After the last `max_day`, the last stage remains active. The world day is stored in Overworld SavedData and advances with server game ticks (24,000 ticks per progression day); it survives restarts. Test commands: `/aftermath day status` and admin-only `/aftermath day set 8`.
+
+The `detection_multiplier` scales noise-event radius, while `group_size` caps the total leader-plus-followers count (still subject to global server caps). The `can_break_doors` flag is reserved for future block-interaction behavior and does not itself enable block breaking. Block breaking remains disabled by default.

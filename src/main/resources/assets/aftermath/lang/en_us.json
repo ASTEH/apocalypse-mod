@@ -78,5 +78,9 @@
   "message.aftermath.horde.status": "Zombie group behavior: %1$s; setting source: %2$s.",
   "message.aftermath.horde.enabled_temporary": "Zombie group behavior enabled until the server stops. Now run /aftermath noise test.",
   "message.aftermath.horde.disabled_temporary": "Zombie group behavior temporarily disabled until the server stops.",
-  "message.aftermath.horde.reset": "Temporary override cleared. Current state: %1$s."
+  "message.aftermath.horde.reset": "Temporary override cleared. Current state: %1$s.",
+  "message.aftermath.day.status": "Apocalypse day: %1$s. Stage range: days %2$s–%3$s; detection radius ×%4$s; group size up to %5$s. Progression: %6$s.",
+  "message.aftermath.day.enabled": "enabled",
+  "message.aftermath.day.disabled": "disabled",
+  "message.aftermath.day.set": "Apocalypse day set to %1$s. The value is saved with the world."
 }

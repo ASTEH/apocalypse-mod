@@ -52,7 +52,8 @@ public final class HordeDirector {
     public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) { ORDERS.remove(event.getEntity().getUUID()); }
 
     public static int assignNoise(ServerLevel level, Vec3 target, List<Mob> mobs, int duration,
-                                  boolean grouping, NoiseDefinitions.HordeArchetypeDefinition archetype) {
+                                  boolean grouping, int stageGroupLimit,
+                                  NoiseDefinitions.HordeArchetypeDefinition archetype) {
         if (mobs.isEmpty()) return 0;
         Mob leader = null;
         if (grouping && archetype != null && archetype.leader()) {
@@ -68,7 +69,8 @@ public final class HordeDirector {
                 new HordeOrder(dim, Role.INVESTIGATE, null, target, expires, 1.0D));
         if (leader == null) return 0;
 
-        int maxGroup = Math.min(AftermathServerConfig.MAX_HORDE_SIZE.get(), archetype.maxFollowers() + 1);
+        int maxGroup = Math.min(AftermathServerConfig.MAX_HORDE_SIZE.get(),
+                Math.min(Math.max(1, stageGroupLimit), archetype.maxFollowers() + 1));
         ORDERS.put(leader.getUUID(), new HordeOrder(dim, Role.LEADER, leader.getUUID(),
                 target, expires, archetype.speedMultiplier()));
         double radiusSqr = (double) archetype.followerRadius() * archetype.followerRadius();

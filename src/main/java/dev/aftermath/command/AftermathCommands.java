@@ -4,9 +4,12 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.character.WeaponProgressionService;
 import dev.aftermath.learning.LearningService;
+import dev.aftermath.day.DayProgressionDefinitions;
+import dev.aftermath.day.WorldProgressData;
 import dev.aftermath.noise.HordeDirector;
 import dev.aftermath.noise.NoiseService;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.IntegerArgumentType;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
@@ -24,7 +27,8 @@ public final class AftermathCommands {
                                             + ", weaponXP=" + AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
                                             + ", learning=" + AftermathServerConfig.ENABLE_LEARNING.get()
                                             + ", noise=" + AftermathServerConfig.ENABLE_NOISE_EVENTS.get()
-                                            + ", hordeAI=" + AftermathServerConfig.ENABLE_HORDE_BEHAVIOR.get()),
+                                            + ", hordeAI=" + HordeDirector.isHordeBehaviorEnabled()
+                                            + ", dayProgression=" + AftermathServerConfig.ENABLE_DAY_PROGRESSION.get()),
                                     false);
                             return 1;
                         }))
@@ -46,6 +50,31 @@ public final class AftermathCommands {
                                     () -> LearningService.buildStatusMessage(player), false);
                             return 1;
                         }))
+                        .then(Commands.literal("day")
+                                .then(Commands.literal("status").executes(context -> {
+                                    var server = context.getSource().getServer();
+                                    int day = WorldProgressData.currentDay(server);
+                                    DayProgressionDefinitions.Stage stage = DayProgressionDefinitions.stageForDay(day);
+                                    boolean enabled = AftermathServerConfig.ENABLE_DAY_PROGRESSION.get();
+                                    context.getSource().sendSuccess(() -> Component.translatable(
+                                            "message.aftermath.day.status", day,
+                                            stage.minDay(), stage.maxDay(), stage.detectionMultiplier(),
+                                            stage.groupSize(),
+                                            enabled ? Component.translatable("message.aftermath.day.enabled")
+                                                    : Component.translatable("message.aftermath.day.disabled")), false);
+                                    return 1;
+                                }))
+                                .then(Commands.literal("set")
+                                        .requires(source -> source.hasPermission(2))
+                                        .then(Commands.argument("day", IntegerArgumentType.integer(1, 36500))
+                                                .executes(context -> {
+                                                    int day = IntegerArgumentType.getInteger(context, "day");
+                                                    int applied = WorldProgressData.setDay(context.getSource().getServer(), day);
+                                                    context.getSource().sendSuccess(() -> Component.translatable(
+                                                            "message.aftermath.day.set", applied), true);
+                                                    return 1;
+                                                })))
+                        )
                         .then(Commands.literal("horde")
                                 .requires(source -> source.hasPermission(2))
                                 .then(Commands.literal("status").executes(context -> {

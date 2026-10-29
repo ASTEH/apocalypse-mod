@@ -16,6 +16,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_NOISE_EVENTS;
     public static final ModConfigSpec.BooleanValue ENABLE_HORDE_BEHAVIOR;
     public static final ModConfigSpec.BooleanValue ENABLE_BLOCK_BREAKING;
+    public static final ModConfigSpec.BooleanValue ENABLE_DAY_PROGRESSION;
 
     public static final ModConfigSpec.IntValue WEAPON_XP_PER_KILL;
     public static final ModConfigSpec.IntValue MAX_XP_PER_VICTIM_PER_MINUTE;
@@ -41,8 +42,10 @@ public final class AftermathServerConfig {
                 .define("enableNoiseEvents", true);
         ENABLE_HORDE_BEHAVIOR = builder.comment("Enable Aftermath-managed horde groups. Disabled until the AI MVP is tested.")
                 .define("enableHordeBehavior", false);
-        ENABLE_BLOCK_BREAKING = builder.comment("Allow configured zombies to break allowed blocks. Disabled by default.")
+        ENABLE_BLOCK_BREAKING = builder.comment("Allow configured zombies to break explicitly allow-listed blocks. Disabled by default.")
                 .define("enableBlockBreaking", false);
+        ENABLE_DAY_PROGRESSION = builder.comment("Scale noise detection and group sizes using the saved apocalypse day.")
+                .define("enableDayProgression", true);
         builder.pop();
 
         builder.push("weapon_progression");

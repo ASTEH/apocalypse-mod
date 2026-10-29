@@ -6,6 +6,7 @@ import dev.aftermath.character.AftermathServerEvents;
 import dev.aftermath.character.CharacterDefinitions;
 import dev.aftermath.character.WeaponProgressionService;
 import dev.aftermath.content.AftermathContent;
+import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.learning.LearningDefinitions;
 import dev.aftermath.learning.LearningService;
 import dev.aftermath.noise.HordeDirector;
@@ -34,6 +35,7 @@ public final class AftermathMod {
         modEventBus.addListener(AftermathNetworking::registerPayloads);
         NeoForge.EVENT_BUS.addListener(AftermathCommands::registerCommands);
         NeoForge.EVENT_BUS.addListener(CharacterDefinitions::register);
+        NeoForge.EVENT_BUS.addListener(DayProgressionDefinitions::register);
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerRespawn);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDeath);

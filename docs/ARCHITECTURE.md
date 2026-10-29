@@ -23,6 +23,8 @@
 - `NoiseDefinitions`: validates data-driven noise events and horde archetypes on datapack reload.
 - `NoiseService`: applies cooldowns and assigns only already-loaded, tagged mobs to a temporary noise destination.
 - `HordeDirector`: adds a movement goal without replacing other AI goals, groups nearby mobs, and enforces a per-dimension path request budget.
+- `DayProgressionDefinitions`: validates and reloads stages that scale noise radius and group size.
+- `WorldProgressData`: persists the global apocalypse day in Overworld `SavedData`, shared across dimensions.
 - `WorldEventDirector`: events and world-day stages.
 - `NoiseService`: typed noise events for already-existing eligible entities.
 - `HordeDirector`: capped groups, leaders and scheduled follower/path updates.
