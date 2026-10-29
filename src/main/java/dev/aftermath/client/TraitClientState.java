@@ -4,17 +4,20 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/** Holds selected trait IDs and server-derived effective trait strengths for the local player. */
+/** Holds selected trait IDs and server-derived firearm handling values for the local player. */
 public final class TraitClientState {
     private static volatile Set<String> selectedTraits = Set.of();
-    private static volatile float eagleEyeSpreadMultiplier = 1.0F;
+    private static volatile float firearmSpreadMultiplier = 1.0F;
+    private static volatile float firearmRecoilMultiplier = 1.0F;
+    private static volatile float aimingSwayDegrees = 0.0F;
     private static volatile float quickReloadDurationMultiplier = 1.0F;
 
     public static void setSelectedTraits(String csv) {
-        setSelectedTraits(csv, 1.0F, 1.0F);
+        setSelectedTraits(csv, 1.0F, 1.0F, 0.0F, 1.0F);
     }
 
-    public static void setSelectedTraits(String csv, float eagleEyeMultiplier, float quickReloadMultiplier) {
+    public static void setSelectedTraits(String csv, float spreadMultiplier, float recoilMultiplier,
+                                         float swayDegrees, float reloadMultiplier) {
         if (csv == null || csv.isBlank()) {
             selectedTraits = Set.of();
         } else {
@@ -23,25 +26,35 @@ public final class TraitClientState {
                     .filter(id -> !id.isEmpty())
                     .collect(Collectors.toUnmodifiableSet());
         }
-        eagleEyeSpreadMultiplier = sanitizeMultiplier(eagleEyeMultiplier);
-        quickReloadDurationMultiplier = sanitizeMultiplier(quickReloadMultiplier);
+        firearmSpreadMultiplier = sanitizeMultiplier(spreadMultiplier, 0.1F, 4.0F, 1.0F);
+        firearmRecoilMultiplier = sanitizeMultiplier(recoilMultiplier, 0.1F, 4.0F, 1.0F);
+        aimingSwayDegrees = Float.isFinite(swayDegrees) ? Math.max(0.0F, Math.min(3.0F, swayDegrees)) : 0.0F;
+        quickReloadDurationMultiplier = sanitizeMultiplier(reloadMultiplier, 0.1F, 1.0F, 1.0F);
     }
 
     public static boolean has(String traitPath) {
         return selectedTraits.contains("aftermath:" + traitPath);
     }
 
-    public static float eagleEyeSpreadMultiplier() {
-        return eagleEyeSpreadMultiplier;
+    public static float firearmSpreadMultiplier() {
+        return firearmSpreadMultiplier;
+    }
+
+    public static float firearmRecoilMultiplier() {
+        return firearmRecoilMultiplier;
+    }
+
+    public static float aimingSwayDegrees() {
+        return aimingSwayDegrees;
     }
 
     public static float quickReloadDurationMultiplier() {
         return quickReloadDurationMultiplier;
     }
 
-    private static float sanitizeMultiplier(float value) {
-        if (!Float.isFinite(value)) return 1.0F;
-        return Math.max(0.1F, Math.min(1.0F, value));
+    private static float sanitizeMultiplier(float value, float min, float max, float fallback) {
+        if (!Float.isFinite(value)) return fallback;
+        return Math.max(min, Math.min(max, value));
     }
 
     private TraitClientState() {}
