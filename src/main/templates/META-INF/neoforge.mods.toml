@@ -26,3 +26,10 @@ type="required"
 versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="luminaui"
+type="required"
+versionRange="[1.0.0,)"
+ordering="AFTER"
+side="CLIENT"
