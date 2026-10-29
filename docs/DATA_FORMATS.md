@@ -55,7 +55,24 @@ Negative traits use `category: "negative"` and a positive `point_credit`. A trai
 }
 ```
 
-Tags classify items; they do not prove which weapon caused a projectile. Unsupported shots must not receive guessed XP.
+Tags classify held item classes; they do not prove which weapon caused a projectile. Aftermath resolves projectile owner and class before awarding XP.
+
+## TaCZ gun ID mappings
+
+The optional TaCZ adapter reads the server bullet's public gun ID without importing TaCZ classes. Mappings are loaded from `data/aftermath/firearm_classes/*.json`:
+
+```json
+{
+  "guns": {
+    "tacz:glock_17": "pistol",
+    "tacz:m870": "shotgun",
+    "tacz:ak47": "rifle",
+    "tacz:m249": "heavy"
+  }
+}
+```
+
+Only `pistol`, `shotgun`, `rifle`, and `heavy` are accepted. Add mappings for third-party gun IDs in another JSON file under `firearm_classes`; an unknown gun ID deliberately grants no firearm XP. Weapon experience is stored separately for melee, pistol, shotgun, rifle, and heavy classes.
 
 ## Lesson
 

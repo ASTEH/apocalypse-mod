@@ -9,6 +9,8 @@ import dev.aftermath.content.AftermathContent;
 import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.learning.LearningDefinitions;
 import dev.aftermath.learning.LearningService;
+import dev.aftermath.weapon.FirearmDefinitions;
+import dev.aftermath.weapon.TaczCompatibility;
 import dev.aftermath.noise.HordeDirector;
 import dev.aftermath.noise.NoiseDefinitions;
 import dev.aftermath.noise.NoiseService;
@@ -41,6 +43,7 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDeath);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(LearningDefinitions::register);
+        NeoForge.EVENT_BUS.addListener(FirearmDefinitions::register);
         NeoForge.EVENT_BUS.addListener(LearningService::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(LearningService::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(LearningService::onPlayerLogout);
@@ -48,6 +51,7 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(NoiseService::onLevelTick);
         NeoForge.EVENT_BUS.addListener(NoiseService::onServerStopping);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onEntityJoinLevel);
+        NeoForge.EVENT_BUS.addListener(TaczCompatibility::onEntityJoinLevel);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onEntityLeaveLevel);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onServerStopping);
 

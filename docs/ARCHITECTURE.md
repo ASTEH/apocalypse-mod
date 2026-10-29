@@ -17,7 +17,9 @@
 ## Services
 
 - `CharacterSelectionService`: validates profession/traits and applies effects.
-- `WeaponProgressionService`: XP from verified server-side direct melee kills, with anti-farm controls.
+- `WeaponProgressionService`: XP and level damage bonuses for direct tagged melee hits and verified TaCZ projectile kills, with anti-farm controls.
+- `FirearmDefinitions`: reloads validated external gun-ID-to-class mappings from datapack JSON.
+- `TaczCompatibility`: reflection-only optional adapter for TaCZ server bullets; resolves actual projectile owner and gun ID, and emits shot noise without loading TaCZ types when absent.
 - `LearningDefinitions`: loads and validates lesson and TV JSON definitions.
 - `LearningService`: server-timed reading and scheduled TV sessions; persistent skill XP and per-material completion counts.
 - `NoiseDefinitions`: validates data-driven noise events and horde archetypes on datapack reload.
