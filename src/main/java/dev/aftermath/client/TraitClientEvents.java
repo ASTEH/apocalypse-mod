@@ -3,6 +3,8 @@ package dev.aftermath.client;
 import dev.aftermath.weapon.TaczCompatibility;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.WeighedSoundEvents;
 import net.minecraft.client.sounds.SoundManager;
@@ -14,6 +16,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.resources.ResourceLocation;
+import java.lang.reflect.Method;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.Locale;
@@ -33,6 +36,7 @@ public final class TraitClientEvents {
         NeoForge.EVENT_BUS.addListener(TraitClientEvents::onPlaySound);
         NeoForge.EVENT_BUS.addListener(TraitClientEvents::onRenderFog);
         NeoForge.EVENT_BUS.addListener(TraitClientEvents::onClientTick);
+        NeoForge.EVENT_BUS.addListener(TraitClientEvents::onComputeCameraAngles);
     }
 
     /**
@@ -42,14 +46,62 @@ public final class TraitClientEvents {
     public static void onClientTick(ClientTickEvent.Post event) {
         Player current = Minecraft.getInstance().player;
         if (lastFirearmTraitPlayer != null && lastFirearmTraitPlayer != current) {
-            TaczCompatibility.applyFirearmTraitEffects(lastFirearmTraitPlayer, 1.0D, 1.0D, false);
+            TaczCompatibility.applyFirearmTraitEffects(lastFirearmTraitPlayer, 1.0D, 1.0D, 1.0D);
         }
         if (current != null) {
             TaczCompatibility.applyFirearmTraitEffects(current,
-                    TraitClientState.eagleEyeSpreadMultiplier(),
-                    TraitClientState.quickReloadDurationMultiplier(), false);
+                    TraitClientState.firearmSpreadMultiplier(),
+                    TraitClientState.firearmRecoilMultiplier(),
+                    TraitClientState.quickReloadDurationMultiplier());
         }
         lastFirearmTraitPlayer = current;
+    }
+
+    /**
+     * Adds a visible but bounded low-frequency tremor to the camera while aiming a TaCZ gun.
+     * The amplitude is calculated by the server from this weapon class's mastery XP.
+     */
+    public static void onComputeCameraAngles(ViewportEvent.ComputeCameraAngles event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null || event.getCamera().getEntity() != player) return;
+
+        ItemStack held = player.getMainHandItem();
+        ResourceLocation gunId = TaczCompatibility.gunIdFromHeldItem(held);
+        if (gunId == null || "empty".equals(gunId.getPath())) return;
+
+        float aim = clientAimProgress(player, (float) event.getPartialTick());
+        if (aim < 0.18F) return;
+
+        double sway = TraitClientState.aimingSwayDegrees() * aim;
+        if (player.isSprinting()) sway *= 1.45D;
+        else if (player.getDeltaMovement().horizontalDistanceSqr() > 0.0025D) sway *= 1.20D;
+        if (player.isCrouching()) sway *= 0.52D;
+        if (sway < 0.001D) return;
+
+        double seconds = System.nanoTime() / 1_000_000_000.0D;
+        double pitchOscillation = Math.sin(seconds * 7.3D)
+                + Math.sin(seconds * 11.7D + 0.7D) * 0.36D
+                + Math.sin(seconds * 3.1D + 1.4D) * 0.42D;
+        double yawOscillation = Math.sin(seconds * 6.1D + 0.9D) * 0.72D
+                + Math.sin(seconds * 10.2D + 2.1D) * 0.28D;
+        event.setPitch(event.getPitch() + (float) (pitchOscillation * sway * 0.62D));
+        event.setYaw(event.getYaw() + (float) (yawOscillation * sway * 0.48D));
+    }
+
+    private static float clientAimProgress(LocalPlayer player, float partialTick) {
+        try {
+            Class<?> operatorType = Class.forName("com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator");
+            Method factory = operatorType.getMethod("fromLocalPlayer", LocalPlayer.class);
+            Object operator = factory.invoke(null, player);
+            Object result = operatorType.getMethod("getClientAimingProgress", float.class)
+                    .invoke(operator, partialTick);
+            if (result instanceof Number number) {
+                return Math.max(0.0F, Math.min(1.0F, number.floatValue()));
+            }
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            // No TaCZ installed or its client API changed: aiming sway safely stays disabled.
+        }
+        return 0.0F;
     }
 
     public static void onPlaySound(PlaySoundEvent event) {
