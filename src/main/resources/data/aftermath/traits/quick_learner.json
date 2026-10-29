@@ -2,6 +2,6 @@
   "name": "trait.aftermath.quick_learner",
   "description": "trait.aftermath.quick_learner.description",
   "category": "positive",
-  "point_cost": 3,
+  "point_cost": 4,
   "conflicts": ["aftermath:slow_learner"]
 }
