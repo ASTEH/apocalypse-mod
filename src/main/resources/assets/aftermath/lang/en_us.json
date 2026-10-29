@@ -168,5 +168,15 @@
   "profession.aftermath.farmer": "Farmer",
   "profession.aftermath.farmer.description": "Starts with seeds, vegetables and a hoe. Light Eater is granted.",
   "profession.aftermath.driver": "Driver",
-  "profession.aftermath.driver.description": "Starts with a compass, map and minecart; begins at Driving level 1. Speed Demon is granted."
+  "profession.aftermath.driver.description": "Starts with a compass, map and minecart; begins at Driving level 1. Speed Demon is granted.",
+  "screen.aftermath.character.ui.kicker": "AFTERMATH  /  SURVIVOR DOSSIER",
+  "screen.aftermath.character.ui.summary": "Dossier",
+  "screen.aftermath.character.ui.selected_traits": "Selected traits",
+  "screen.aftermath.character.ui.starting_items": "Starting loadout",
+  "screen.aftermath.character.ui.no_traits_selected": "No traits selected",
+  "screen.aftermath.character.ui.no_items": "No starting items",
+  "screen.aftermath.character.ui.empty_professions": "No professions available",
+  "screen.aftermath.character.ui.empty_traits": "No available traits",
+  "screen.aftermath.character.ui.footer_hint": "Choose a profession and traits, then confirm your survivor.",
+  "screen.aftermath.character.error.invalid_data": "Could not load character data. Rejoin the world."
 }

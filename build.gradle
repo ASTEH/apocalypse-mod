@@ -15,6 +15,10 @@ sourceSets.main.resources {
 }
 
 repositories {
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+    }
 }
 
 base {
@@ -73,7 +77,8 @@ configurations {
 }
 
 dependencies {
-    // Optional integrations must remain absent from the published core dependency graph.
+    // SDM UI Lib is installed as a separate client-side mod; this dependency makes its widgets available to the UI code.
+    implementation 'maven.modrinth:MdmRC4B5:WhvuOtbe'
 }
 
 def generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
