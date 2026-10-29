@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -191,15 +192,27 @@ public final class LightSourceAwarenessService {
         if (mob.isRemoved() || !mob.isAlive() || mob.isNoAi()) return false;
         Vec3 from = mob.getEyePosition();
         Vec3 center = Vec3.atCenterOf(source);
-        // Aim at the source's near face, not its center. For a wall-mounted torch, aiming through
-        // its center may make the ray hit the solid support block directly behind the flame,
-        // falsely treating a visible torch as occluded.
-        Vec3 towardMob = from.subtract(center);
-        if (towardMob.lengthSqr() < 1.0E-6D) return true;
-        Vec3 to = center.add(towardMob.normalize().scale(0.49D));
-        BlockHitResult hit = level.clip(new ClipContext(from, to,
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mob));
-        return hit.getType() == HitResult.Type.MISS || hit.getBlockPos().equals(source);
+        if (from.distanceToSqr(center) < 1.0E-6D) return true;
+
+        // One ray to a block center is too strict for torches, lanterns, and other blocks whose
+        // collision shape is smaller than their block space. Test the center and points near each
+        // face; any unobstructed ray (or ray that reaches the source block itself) counts as sight.
+        double edge = 0.49D;
+        Vec3[] aims = {
+                center,
+                center.add(edge, 0.0D, 0.0D),
+                center.add(-edge, 0.0D, 0.0D),
+                center.add(0.0D, edge, 0.0D),
+                center.add(0.0D, -edge, 0.0D),
+                center.add(0.0D, 0.0D, edge),
+                center.add(0.0D, 0.0D, -edge)
+        };
+        for (Vec3 to : aims) {
+            BlockHitResult hit = level.clip(new ClipContext(from, to,
+                    ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mob));
+            if (hit.getType() == HitResult.Type.MISS || hit.getBlockPos().equals(source)) return true;
+        }
+        return false;
     }
 
     private static UUID sourceId(ResourceLocation dimension, long packedPos) {
@@ -236,12 +249,26 @@ public final class LightSourceAwarenessService {
         if (bestPos == null) return new LightTestResult(false, null, 0);
 
         BlockPos targetPos = bestPos;
-        NoiseService.NoiseResult result = NoiseService.emitNoise(level, Vec3.atCenterOf(targetPos),
+        Vec3 origin = Vec3.atCenterOf(targetPos);
+        double diagnosticRadius = 64.0D;
+        AABB diagnosticBounds = new AABB(
+                origin.x - diagnosticRadius, origin.y - diagnosticRadius, origin.z - diagnosticRadius,
+                origin.x + diagnosticRadius, origin.y + diagnosticRadius, origin.z + diagnosticRadius);
+        int nearbyZombies = 0;
+        int visibleZombies = 0;
+        for (Mob mob : level.getEntitiesOfClass(Mob.class, diagnosticBounds,
+                dev.aftermath.noise.ZombieEntityClassifier::isZombieLike)) {
+            if (mob.position().distanceToSqr(origin) > diagnosticRadius * diagnosticRadius) continue;
+            nearbyZombies++;
+            if (canSeeLight(level, mob, targetPos)) visibleZombies++;
+        }
+        NoiseService.NoiseResult result = NoiseService.emitNoise(level, origin,
                 NoiseService.lightSourceEventId(), UUID.randomUUID(), mob -> canSeeLight(level, mob, targetPos));
-        return new LightTestResult(true, targetPos, result.affectedEntities());
+        return new LightTestResult(true, targetPos, nearbyZombies, visibleZombies, result.affectedEntities());
     }
 
-    public record LightTestResult(boolean foundSource, BlockPos source, int affectedEntities) {}
+    public record LightTestResult(boolean foundSource, BlockPos source, int nearbyZombies,
+                                  int visibleZombies, int affectedEntities) {}
 
     public static void onServerStopping(ServerStoppingEvent event) {
         SOURCES.clear();
