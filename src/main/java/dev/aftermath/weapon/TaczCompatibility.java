@@ -186,8 +186,8 @@ public final class TaczCompatibility {
         try {
             Field leftMultiplierField = multiplierField(left);
             Field rightMultiplierField = multiplierField(right);
-            double currentLeftMultiplier = leftMultiplierField.getDouble(left);
-            double currentRightMultiplier = rightMultiplierField.getDouble(right);
+            double currentLeftMultiplier = readNumericField(leftMultiplierField, left);
+            double currentRightMultiplier = readNumericField(rightMultiplierField, right);
 
             if (Math.abs(multiplier - 1.0D) <= 0.001D) {
                 restoreRecoil(cache);
@@ -209,11 +209,11 @@ public final class TaczCompatibility {
 
             double desiredLeft = originalLeft * multiplier;
             double desiredRight = originalRight * multiplier;
-            if (!nearlyEqual((float) currentLeftMultiplier, (float) desiredLeft)) {
-                leftMultiplierField.setDouble(left, desiredLeft);
+            if (!nearlyEqual(currentLeftMultiplier, desiredLeft)) {
+                writeNumericField(leftMultiplierField, left, desiredLeft);
             }
-            if (!nearlyEqual((float) currentRightMultiplier, (float) desiredRight)) {
-                rightMultiplierField.setDouble(right, desiredRight);
+            if (!nearlyEqual(currentRightMultiplier, desiredRight)) {
+                writeNumericField(rightMultiplierField, right, desiredRight);
             }
             RECOIL_STATES.put(cache, new RecoilState(currentPair, left, right,
                     originalLeft, originalRight, desiredLeft, desiredRight, multiplier));
@@ -229,15 +229,15 @@ public final class TaczCompatibility {
         try {
             Field leftMultiplierField = multiplierField(state.left);
             Field rightMultiplierField = multiplierField(state.right);
-            double currentLeft = leftMultiplierField.getDouble(state.left);
-            double currentRight = rightMultiplierField.getDouble(state.right);
+            double currentLeft = readNumericField(leftMultiplierField, state.left);
+            double currentRight = readNumericField(rightMultiplierField, state.right);
             // Restore only fields that still contain our last value; avoid overwriting a third-party
             // integration that changed the recoil modifier later.
-            if (nearlyEqual((float) currentLeft, (float) state.lastAppliedLeftMultiplier)) {
-                leftMultiplierField.setDouble(state.left, state.originalLeftMultiplier);
+            if (nearlyEqual(currentLeft, state.lastAppliedLeftMultiplier)) {
+                writeNumericField(leftMultiplierField, state.left, state.originalLeftMultiplier);
             }
-            if (nearlyEqual((float) currentRight, (float) state.lastAppliedRightMultiplier)) {
-                rightMultiplierField.setDouble(state.right, state.originalRightMultiplier);
+            if (nearlyEqual(currentRight, state.lastAppliedRightMultiplier)) {
+                writeNumericField(rightMultiplierField, state.right, state.originalRightMultiplier);
             }
         } catch (ReflectiveOperationException | RuntimeException ignored) {
             // Restore is best effort; keep the current weapon usable if TaCZ changes its cache API.
@@ -245,9 +245,32 @@ public final class TaczCompatibility {
     }
 
     private static Field multiplierField(Object parameterizedCache) throws ReflectiveOperationException {
-        Field field = parameterizedCache.getClass().getDeclaredField("multiplier");
-        field.setAccessible(true);
-        return field;
+        // Some TaCZ releases expose the cache through a concrete subclass. Search parent classes
+        // as well, otherwise private fields can silently evade the handling modifier.
+        for (Class<?> type = parameterizedCache.getClass(); type != null; type = type.getSuperclass()) {
+            try {
+                Field field = type.getDeclaredField("multiplier");
+                field.setAccessible(true);
+                return field;
+            } catch (NoSuchFieldException ignored) {
+                // Keep searching the class hierarchy.
+            }
+        }
+        throw new NoSuchFieldException("multiplier on " + parameterizedCache.getClass().getName());
+    }
+
+    private static double readNumericField(Field field, Object target) throws ReflectiveOperationException {
+        Object value = field.get(target);
+        if (value instanceof Number number) return number.doubleValue();
+        throw new IllegalStateException("TaCZ cache multiplier is not numeric: " + field.getType().getName());
+    }
+
+    private static void writeNumericField(Field field, Object target, double value) throws ReflectiveOperationException {
+        Class<?> type = field.getType();
+        if (type == double.class || type == Double.class) field.set(target, value);
+        else if (type == float.class || type == Float.class) field.set(target, (float) value);
+        else if (type == int.class || type == Integer.class) field.set(target, (int) Math.round(value));
+        else throw new IllegalStateException("Unsupported TaCZ cache multiplier type: " + type.getName());
     }
 
     private static final class RecoilState {
