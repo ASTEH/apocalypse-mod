@@ -75,8 +75,56 @@ public final class FirearmDefinitions extends SimplePreparableReloadListener<Fir
         return current;
     }
 
+    /**
+     * Explicit datapack mappings win. For TaCZ custom gunpacks, infer a class from the ID when no
+     * mapping exists; otherwise valid add-on guns would silently receive no progression at all.
+     * Ambiguous names default to rifle, and can be overridden with an explicit JSON mapping.
+     */
     public static String classForGun(ResourceLocation gunId) {
-        return gunId == null ? null : current.gunClasses().get(gunId);
+        if (gunId == null) return null;
+        String explicit = current.gunClasses().get(gunId);
+        return explicit != null ? explicit : inferClassFromId(gunId);
+    }
+
+    public static boolean hasExplicitClassForGun(ResourceLocation gunId) {
+        return gunId != null && current.gunClasses().containsKey(gunId);
+    }
+
+    private static String inferClassFromId(ResourceLocation gunId) {
+        String id = (gunId.getNamespace() + "_" + gunId.getPath())
+                .toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", "_");
+
+        if (containsAny(id, "minigun", "gatling", "machine_gun", "machinegun",
+                "light_machine_gun", "heavy", "m249", "m240", "m60", "m2_browning",
+                "m134", "rpk", "rpg", "rocket_launcher", "grenade_launcher", "flamethrower",
+                "mg42", "mg34", "pkm", "evolys", "hmg", "lmg")) {
+            return "heavy";
+        }
+        if (containsAny(id, "shotgun", "shot_gun", "aa12", "aa_12", "m1014", "m870",
+                "spas", "db_long", "db_short", "double_barrel", "doublebarrel", "sawed_off",
+                "sawedoff", "benelli", "mossberg", "remington_870", "ksg", "usas",
+                "striker", "super90", "ks23", "ks_23", "ithaca", "coach_gun")) {
+            return "shotgun";
+        }
+        if (containsAny(id, "pistol", "handgun", "glock", "deagle", "desert_eagle",
+                "m1911", "1911", "beretta", "usp", "mk23", "p320", "p226", "revolver",
+                "magnum", "taurus", "cz75", "cz_75", "m9a", "five_seven", "fn57",
+                "rhino", "walther", "p08", "p99", "px4", "snubnose", "timeless50",
+                "p2000", "p250", "p365", "g17", "g18", "g19", "vp9", "hi_power",
+                "browning_hp")) {
+            return "pistol";
+        }
+
+        // Rifles and SMGs are the broadest baseline class for an unknown long firearm.
+        return "rifle";
+    }
+
+    private static boolean containsAny(String value, String... tokens) {
+        for (String token : tokens) {
+            if (value.contains(token)) return true;
+        }
+        return false;
     }
 
     public record Snapshot(Map<ResourceLocation, String> gunClasses) {

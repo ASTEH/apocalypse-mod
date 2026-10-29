@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
@@ -36,7 +37,25 @@ public final class TaczCompatibility {
             if (result instanceof ResourceLocation id) return id;
             if (result instanceof String value) return ResourceLocation.tryParse(value);
         } catch (ReflectiveOperationException | RuntimeException ignored) {
-            // Unknown TaCZ API variant: fail closed, no guessed weapon XP.
+            // Unknown TaCZ API variant: no projectile XP can be attributed safely.
+        }
+        return null;
+    }
+
+    /**
+     * Reads the TaCZ gun ID from the item held in the main hand without linking to TaCZ classes.
+     * Used by the diagnostic command so custom gunpack IDs can be mapped precisely.
+     */
+    public static ResourceLocation gunIdFromHeldItem(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return null;
+        try {
+            Object item = stack.getItem();
+            Method method = item.getClass().getMethod("getGunId", ItemStack.class);
+            Object result = method.invoke(item, stack);
+            if (result instanceof ResourceLocation id) return id;
+            if (result instanceof String value) return ResourceLocation.tryParse(value);
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            // Items that do not expose the TaCZ gun-ID API are not TaCZ guns.
         }
         return null;
     }

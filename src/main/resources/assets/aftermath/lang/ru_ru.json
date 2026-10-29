@@ -88,5 +88,9 @@
   "weapon_class.aftermath.rifle": "Винтовки и автоматы",
   "weapon_class.aftermath.heavy": "Тяжёлое оружие",
   "message.aftermath.weapon_class_status": "%1$s: ур. %2$s, %3$s XP",
-  "message.aftermath.weapons_status": "Навыки оружия — %1$s; %2$s; %3$s; %4$s; %5$s."
+  "message.aftermath.weapons_status": "Навыки оружия — %1$s; %2$s; %3$s; %4$s; %5$s.",
+  "message.aftermath.weapon_held.none": "В главной руке не распознано оружие TaCZ. Возьми оружие TaCZ и повтори команду.",
+  "message.aftermath.weapon_held.info": "ID оружия TaCZ: %1$s. Класс: %2$s (%3$s).",
+  "message.aftermath.weapon_held.mapped": "точное сопоставление из datapack",
+  "message.aftermath.weapon_held.inferred": "определено по ID; неоднозначное оружие считается винтовкой"
 }

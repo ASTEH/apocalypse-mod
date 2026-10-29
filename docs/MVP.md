@@ -77,11 +77,13 @@
 - [x] Optional reflection-only adapter for the TaCZ 1.21.1 NeoForge port; core has no TaCZ dependency.
 - [x] Server bullet attribution verifies projectile owner and reads actual gun ID.
 - [x] Data-driven mappings for default TaCZ pistol, shotgun, rifle/SMG and heavy weapon IDs.
+- [x] Unmapped TaCZ custom-gunpack IDs receive a name-based class inference with rifle fallback; explicit datapack mappings override it.
+- [x] `/aftermath weapons held` displays the held gun's TaCZ ID and the source of its class assignment.
 - [x] Firearm kill XP, level damage bonuses, and all weapon classes shown by `/aftermath weapons`.
 - [x] Server-side TaCZ bullets emit the existing gunshot noise event.
 - [ ] CI build and clean client/dedicated-server startup for this milestone.
 - [ ] Manual acceptance tests in a world with TaCZ installed and another world without TaCZ.
-- [ ] Validate custom gunpack IDs and tune per-class balance.
+- [ ] Manually validate custom gunpack IDs and tune per-class balance after the fallback/diagnostic update.
 
 **Acceptance:** firearm kills only award XP to the mapped gun class; swapping weapons before a bullet hits does not misattribute it; no crash occurs without TaCZ; firing attracts already-loaded zombies; melee proficiency remains unchanged.
 

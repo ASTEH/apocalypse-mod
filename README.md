@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** M1–M5 are implemented and manually tested by the maintainer. M6 adds an optional TaCZ 1.21.1 NeoForge adapter for server-side firearm XP, damage bonuses, and shot noise; CI and in-game acceptance tests for the firearm integration are in progress. Other gun mods remain separate follow-up adapters.
+> **Status:** M1–M5 are implemented and manually tested by the maintainer. M6 adds an optional TaCZ 1.21.1 NeoForge adapter for server-side firearm XP, damage bonuses, and shot noise. Custom TaCZ gunpacks use name-based class inference when no explicit mapping exists; `/aftermath weapons held` reports the gun ID. Other gun mods remain separate follow-up adapters.
 
 ## Requirements
 
