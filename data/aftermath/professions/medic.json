@@ -1,0 +1,11 @@
+{
+  "name": "profession.aftermath.medic",
+  "description": "profession.aftermath.medic.description",
+  "starting_points": 8,
+  "allowed_traits": [
+    "aftermath:fit",
+    "aftermath:frail",
+    "aftermath:quick_learner"
+  ],
+  "starting_items": []
+}
