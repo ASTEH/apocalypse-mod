@@ -2,6 +2,7 @@ package dev.aftermath.character;
 
 import dev.aftermath.AftermathMod;
 import dev.aftermath.medical.BleedingStatus;
+import com.mojang.serialization.Codec;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -39,6 +40,15 @@ public final class AftermathAttachments {
     );
 
     /** Injuries persist through relogs, but deliberately do not copy to a new life on death. */
+    /** Lifetime zombie-like kill total; serialized and copied to the respawned player. */
+    public static final Supplier<AttachmentType<Integer>> ZOMBIE_KILLS = TYPES.register(
+            "zombie_kills",
+            () -> AttachmentType.builder(() -> 0)
+                    .serialize(Codec.INT)
+                    .copyOnDeath()
+                    .build()
+    );
+
     public static final Supplier<AttachmentType<BleedingStatus>> BLEEDING_STATUS = TYPES.register(
             "bleeding_status",
             () -> AttachmentType.builder(BleedingStatus::empty)
