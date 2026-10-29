@@ -72,7 +72,20 @@ The optional TaCZ adapter reads the server bullet's public gun ID without import
 }
 ```
 
-Only `pistol`, `shotgun`, `rifle`, and `heavy` are accepted. Add mappings for third-party gun IDs in another JSON file under `firearm_classes`; an unknown gun ID deliberately grants no firearm XP. Weapon experience is stored separately for melee, pistol, shotgun, rifle, and heavy classes.
+Only `pistol`, `shotgun`, `rifle`, and `heavy` are accepted. Explicit mappings always take priority. For unmapped TaCZ custom-gunpack IDs, Aftermath now guesses the class from common words in the ID (for example `pistol`, `shotgun`, `m249`, `rpg`, or `smg`); an ambiguous name defaults to `rifle` so it still earns XP. This is a best-effort fallback, not a guarantee of correct class balance.
+
+Hold the gun and run `/aftermath weapons held` to display the exact TaCZ gun ID and how its class was chosen. If the inferred class is wrong, add an explicit mapping in another JSON file under `data/<namespace>/firearm_classes/`, for example:
+
+```json
+{
+  "guns": {
+    "addon:example_handgun": "pistol",
+    "addon:example_shotgun": "shotgun"
+  }
+}
+```
+
+Weapon experience is stored separately for melee, pistol, shotgun, rifle, and heavy classes.
 
 ## Lesson
 

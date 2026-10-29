@@ -8,6 +8,8 @@ import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.day.WorldProgressData;
 import dev.aftermath.noise.HordeDirector;
 import dev.aftermath.noise.NoiseService;
+import dev.aftermath.weapon.FirearmDefinitions;
+import dev.aftermath.weapon.TaczCompatibility;
 import net.minecraft.commands.Commands;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.network.chat.Component;
@@ -38,12 +40,32 @@ public final class AftermathCommands {
                                     false);
                             return 1;
                         }))
-                        .then(Commands.literal("weapons").executes(context -> {
-                            var player = context.getSource().getPlayerOrException();
-                            context.getSource().sendSuccess(
-                                    () -> WeaponProgressionService.buildStatusMessage(player), false);
-                            return 1;
-                        }))
+                        .then(Commands.literal("weapons")
+                                .executes(context -> {
+                                    var player = context.getSource().getPlayerOrException();
+                                    context.getSource().sendSuccess(
+                                            () -> WeaponProgressionService.buildStatusMessage(player), false);
+                                    return 1;
+                                })
+                                .then(Commands.literal("held").executes(context -> {
+                                    var player = context.getSource().getPlayerOrException();
+                                    var gunId = TaczCompatibility.gunIdFromHeldItem(player.getMainHandItem());
+                                    if (gunId == null) {
+                                        context.getSource().sendFailure(
+                                                Component.translatable("message.aftermath.weapon_held.none"));
+                                        return 0;
+                                    }
+                                    String weaponClass = FirearmDefinitions.classForGun(gunId);
+                                    Component className = Component.translatable("weapon_class.aftermath." + weaponClass);
+                                    Component classification = Component.translatable(
+                                            FirearmDefinitions.hasExplicitClassForGun(gunId)
+                                                    ? "message.aftermath.weapon_held.mapped"
+                                                    : "message.aftermath.weapon_held.inferred");
+                                    context.getSource().sendSuccess(() -> Component.translatable(
+                                            "message.aftermath.weapon_held.info", gunId.toString(),
+                                            className, classification), false);
+                                    return 1;
+                                })))
                         .then(Commands.literal("learning").executes(context -> {
                             var player = context.getSource().getPlayerOrException();
                             context.getSource().sendSuccess(
