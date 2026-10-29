@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.function.Predicate;
 
 /** Server-side noise API for optional weapon adapters. */
 public final class NoiseService {
@@ -47,11 +48,24 @@ public final class NoiseService {
     private static final ResourceLocation SPRINT_FOOTSTEPS = eventId("sprint_footsteps");
     private static final ResourceLocation CLUMSY_FOOTSTEPS = eventId("clumsy_footsteps");
     private static final ResourceLocation CLUMSY_SPRINT = eventId("clumsy_sprint");
+    private static final ResourceLocation BLOOD_SCENT = eventId("blood_scent");
+    private static final ResourceLocation LIGHT_SOURCE = eventId("light_source");
     private static final Map<UUID, Long> LAST_MOVEMENT_NOISE = new HashMap<>();
     private static final Map<ResourceLocation, SoundScanBudget> SOUND_SCAN_BUDGETS = new HashMap<>();
     /** Call after the adapter has verified a sound-producing action. Null source is allowed for world-originated events. */
     public static NoiseResult emitNoise(ServerLevel level, Vec3 origin, ResourceLocation eventId, UUID sourceId) {
+        return emitNoise(level, origin, eventId, sourceId, mob -> true);
+    }
+
+    /**
+     * Emits a configured attraction signal, with an optional target filter such as line of sight.
+     * The same bounded, server-authoritative targeting and horde logic is shared by sound, blood,
+     * and light signals.
+     */
+    public static NoiseResult emitNoise(ServerLevel level, Vec3 origin, ResourceLocation eventId, UUID sourceId,
+                                        java.util.function.Predicate<Mob> additionalTargetFilter) {
         if (!AftermathServerConfig.ENABLE_NOISE_EVENTS.get()) return new NoiseResult(Status.DISABLED, 0, 0);
+        Predicate<Mob> targetFilter = additionalTargetFilter == null ? mob -> true : additionalTargetFilter;
         NoiseDefinitions.NoiseEventDefinition def = NoiseDefinitions.snapshot().noiseEvents().get(eventId);
         if (def == null) return new NoiseResult(Status.UNKNOWN_EVENT, 0, 0);
         long now = level.getGameTime();
@@ -78,7 +92,7 @@ public final class NoiseService {
         // This is a loaded-entity spatial query and never requests a chunk to be loaded.
         ArrayList<Mob> mobs = new ArrayList<>(level.getEntitiesOfClass(Mob.class, bounds,
                 mob -> ZombieEntityClassifier.isEligibleForNoise(mob, tag) && mob.isAlive()
-                        && !mob.isRemoved() && !mob.isNoAi()));
+                        && !mob.isRemoved() && !mob.isNoAi() && targetFilter.test(mob)));
         double r2 = (double) radius * radius;
         mobs.removeIf(mob -> mob.position().distanceToSqr(origin) > r2);
         mobs.sort(Comparator.comparingDouble(mob -> mob.position().distanceToSqr(origin)));
@@ -306,6 +320,8 @@ public final class NoiseService {
         SOUND_SCAN_BUDGETS.clear();
     }
     public static ResourceLocation gunshotEventId() { return GUNSHOT; }
+    public static ResourceLocation bloodScentEventId() { return BLOOD_SCENT; }
+    public static ResourceLocation lightSourceEventId() { return LIGHT_SOURCE; }
     public enum Status { EMITTED, DISABLED, UNKNOWN_EVENT, COOLDOWN }
     public record NoiseResult(Status status, int affectedEntities, int groupedFollowers) {}
     private record CooldownKey(ResourceLocation dimension, ResourceLocation eventId, UUID sourceId) {}
