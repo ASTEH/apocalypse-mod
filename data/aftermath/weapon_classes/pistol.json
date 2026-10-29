@@ -1,0 +1,19 @@
+{
+  "item_tag": "aftermath:weapon_classes/pistol",
+  "max_level": 10,
+  "base_xp_per_kill": 10,
+  "levels": [
+    {
+      "level": 2,
+      "damage_multiplier": 1.02
+    },
+    {
+      "level": 5,
+      "damage_multiplier": 1.05
+    },
+    {
+      "level": 10,
+      "damage_multiplier": 1.1
+    }
+  ]
+}
