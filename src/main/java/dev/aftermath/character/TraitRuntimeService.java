@@ -1,6 +1,9 @@
 package dev.aftermath.character;
 
 import dev.aftermath.AftermathMod;
+import dev.aftermath.config.AftermathServerConfig;
+import dev.aftermath.network.TraitStatePayload;
+import dev.aftermath.weapon.TaczCompatibility;
 import dev.aftermath.noise.NoiseService;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
