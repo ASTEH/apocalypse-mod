@@ -19,7 +19,7 @@
   "screen.aftermath.character.error.conflicting_traits": "Эти черты несовместимы друг с другом.",
   "screen.aftermath.character.error.not_enough_points": "Убери положительные черты или выбери отрицательные.",
   "profession.aftermath.medic": "Медик",
-  "profession.aftermath.medic.description": "Начальный набор: хлеб и бутылки мёда.",
+  "profession.aftermath.medic.description": "Начальный набор: хлеб, бутылки мёда и бинты.",
   "profession.aftermath.mechanic": "Механик",
   "profession.aftermath.mechanic.description": "Начальный набор: каменная кирка, железные самородки и палки.",
   "profession.aftermath.scavenger": "Мародёр",
@@ -92,5 +92,15 @@
   "message.aftermath.weapon_held.none": "В главной руке не распознано оружие TaCZ. Возьми оружие TaCZ и повтори команду.",
   "message.aftermath.weapon_held.info": "ID оружия TaCZ: %1$s. Класс: %2$s (%3$s).",
   "message.aftermath.weapon_held.mapped": "точное сопоставление из datapack",
-  "message.aftermath.weapon_held.inferred": "определено по ID; неоднозначное оружие считается винтовкой"
+  "message.aftermath.weapon_held.inferred": "определено по ID; неоднозначное оружие считается винтовкой",
+  "item.aftermath.bandage": "Бинт",
+  "message.aftermath.bleeding.started": "У тебя кровотечение (тяжесть %1$s). Используй бинт!",
+  "message.aftermath.bleeding.worsened": "Кровотечение усилилось (тяжесть %1$s). Используй бинт!",
+  "message.aftermath.bleeding.bandaged": "Бинт наложен. Тяжесть кровотечения теперь %1$s.",
+  "message.aftermath.bleeding.stopped": "Кровотечение остановлено.",
+  "message.aftermath.bleeding.disabled": "Кровотечения и первая помощь отключены на сервере.",
+  "message.aftermath.bleeding.none": "У тебя нет активного кровотечения.",
+  "message.aftermath.bleeding.status": "Тяжесть кровотечения: %1$s/%2$s. Следующая потеря крови примерно через %3$s сек.",
+  "message.aftermath.bandage.not_bleeding": "Кровотечения нет — бинт не израсходован.",
+  "message.aftermath.first_aid.medic_treated": "Как медик, ты полностью остановил кровотечение одним бинтом."
 }

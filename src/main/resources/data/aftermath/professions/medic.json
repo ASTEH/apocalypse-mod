@@ -18,6 +18,10 @@
     {
       "item": "minecraft:honey_bottle",
       "count": 2
+    },
+    {
+      "item": "aftermath:bandage",
+      "count": 3
     }
   ]
 }
