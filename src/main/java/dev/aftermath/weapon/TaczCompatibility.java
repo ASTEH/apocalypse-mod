@@ -166,92 +166,113 @@ public final class TaczCompatibility {
     private static void applyRecoilMultiplier(Object cache, double multiplier) {
         Object currentPair = invokeOneArg(cache, "getCache", String.class, "recoil");
         if (currentPair == null) {
-            RECOIL_STATES.remove(cache);
+            restoreRecoil(cache);
+            return;
+        }
+
+        Object left = invokeNoArgs(currentPair, "left");
+        Object right = invokeNoArgs(currentPair, "right");
+        if (left == null || right == null) {
+            restoreRecoil(cache);
             return;
         }
 
         RecoilState previous = RECOIL_STATES.get(cache);
-        Object originalPair = previous != null && previous.appliedPair == currentPair
-                ? previous.originalPair : currentPair;
-
-        if (Math.abs(multiplier - 1.0D) <= 0.001D) {
-            if (previous != null && previous.appliedPair == currentPair) {
-                setRecoilCache(cache, previous.originalPair);
-            }
-            RECOIL_STATES.remove(cache);
-            return;
+        if (previous != null && (previous.pair != currentPair || previous.left != left || previous.right != right)) {
+            restoreRecoil(cache);
+            previous = null;
         }
 
         try {
-            Object left = invokeNoArgs(originalPair, "left");
-            Object right = invokeNoArgs(originalPair, "right");
-            double basePitch = invokeDouble(left, "eval", 1.0D);
-            double baseYaw = invokeDouble(right, "eval", 1.0D);
-            Object scaledPair = makeRecoilPair(originalPair,
-                    (float) Math.max(0.0D, basePitch * multiplier),
-                    (float) Math.max(0.0D, baseYaw * multiplier));
-            if (scaledPair == null || !setRecoilCache(cache, scaledPair)) return;
-            RECOIL_STATES.put(cache, new RecoilState(originalPair, scaledPair));
+            Field leftMultiplierField = multiplierField(left);
+            Field rightMultiplierField = multiplierField(right);
+            double currentLeftMultiplier = leftMultiplierField.getDouble(left);
+            double currentRightMultiplier = rightMultiplierField.getDouble(right);
+
+            if (Math.abs(multiplier - 1.0D) <= 0.001D) {
+                restoreRecoil(cache);
+                return;
+            }
+
+            double originalLeft = previous == null ? currentLeftMultiplier : previous.originalLeftMultiplier;
+            double originalRight = previous == null ? currentRightMultiplier : previous.originalRightMultiplier;
+            if (previous != null) {
+                // If another TaCZ integration rebuilt or altered the cache multiplier, adopt that
+                // new value as baseline rather than stacking Aftermath's multiplier on top.
+                if (!nearlyEqual(previous.lastAppliedLeftMultiplier, currentLeftMultiplier)) {
+                    originalLeft = currentLeftMultiplier;
+                }
+                if (!nearlyEqual(previous.lastAppliedRightMultiplier, currentRightMultiplier)) {
+                    originalRight = currentRightMultiplier;
+                }
+            }
+
+            double desiredLeft = originalLeft * multiplier;
+            double desiredRight = originalRight * multiplier;
+            if (!nearlyEqual((float) currentLeftMultiplier, (float) desiredLeft)) {
+                leftMultiplierField.setDouble(left, desiredLeft);
+            }
+            if (!nearlyEqual((float) currentRightMultiplier, (float) desiredRight)) {
+                rightMultiplierField.setDouble(right, desiredRight);
+            }
+            RECOIL_STATES.put(cache, new RecoilState(currentPair, left, right,
+                    originalLeft, originalRight, desiredLeft, desiredRight, multiplier));
         } catch (ReflectiveOperationException | RuntimeException ignored) {
-            // Preserve the gun's native recoil if the optional TaCZ cache API has changed.
+            // If TaCZ's cache internals become inaccessible, leave the native recoil untouched.
+            restoreRecoil(cache);
         }
     }
 
     private static void restoreRecoil(Object cache) {
         RecoilState state = RECOIL_STATES.remove(cache);
         if (state == null) return;
-        Object currentPair = invokeOneArg(cache, "getCache", String.class, "recoil");
-        if (currentPair == state.appliedPair) setRecoilCache(cache, state.originalPair);
-    }
-
-    private static Object makeRecoilPair(Object pair, float pitch, float yaw)
-            throws ReflectiveOperationException {
-        // TaCZ's ParameterizedCachePair stores ParameterizedCache objects whose eval() uses
-        // modifier percentages, not the display-only defaultValue. Create percentage modifiers
-        // so the actual pitch/yaw evaluation is amplified during camera recoil.
-        Class<?> modifierClass = Class.forName("com.tacz.guns.resource.pojo.data.attachment.Modifier");
-        Object pitchModifier = modifierClass.getConstructor().newInstance();
-        Object yawModifier = modifierClass.getConstructor().newInstance();
-        modifierClass.getMethod("setPercent", double.class).invoke(pitchModifier, pitch - 1.0D);
-        modifierClass.getMethod("setPercent", double.class).invoke(yawModifier, yaw - 1.0D);
-
-        Object left = invokeNoArgs(pair, "left");
-        Object right = invokeNoArgs(pair, "right");
-        Object leftDefault = invokeNoArgs(left, "getDefaultValue");
-        Object rightDefault = invokeNoArgs(right, "getDefaultValue");
-        Method factory = pair.getClass().getMethod("of", java.util.List.class,
-                java.util.List.class, Object.class, Object.class);
-        return factory.invoke(null, java.util.List.of(pitchModifier), java.util.List.of(yawModifier),
-                leftDefault, rightDefault);
-    }
-
-    private static boolean setRecoilCache(Object cache, Object recoilPair) {
         try {
-            Class<?> gunPropertyClass = Class.forName("com.tacz.guns.api.GunProperty");
-            Object recoilProperty = Class.forName("com.tacz.guns.api.GunProperties")
-                    .getField("RECOIL").get(null);
-            Method setter = cache.getClass().getMethod("setCache", gunPropertyClass, Object.class);
-            setter.invoke(cache, recoilProperty, recoilPair);
-            return true;
+            Field leftMultiplierField = multiplierField(state.left);
+            Field rightMultiplierField = multiplierField(state.right);
+            double currentLeft = leftMultiplierField.getDouble(state.left);
+            double currentRight = rightMultiplierField.getDouble(state.right);
+            // Restore only fields that still contain our last value; avoid overwriting a third-party
+            // integration that changed the recoil modifier later.
+            if (nearlyEqual((float) currentLeft, (float) state.lastAppliedLeftMultiplier)) {
+                leftMultiplierField.setDouble(state.left, state.originalLeftMultiplier);
+            }
+            if (nearlyEqual((float) currentRight, (float) state.lastAppliedRightMultiplier)) {
+                rightMultiplierField.setDouble(state.right, state.originalRightMultiplier);
+            }
         } catch (ReflectiveOperationException | RuntimeException ignored) {
-            return false;
+            // Restore is best effort; keep the current weapon usable if TaCZ changes its cache API.
         }
     }
 
-    private static double invokeDouble(Object target, String methodName, double value)
-            throws ReflectiveOperationException {
-        if (target == null) return 0.0D;
-        Object result = target.getClass().getMethod(methodName, double.class).invoke(target, value);
-        return result instanceof Number number ? number.doubleValue() : 0.0D;
+    private static Field multiplierField(Object parameterizedCache) throws ReflectiveOperationException {
+        Field field = parameterizedCache.getClass().getDeclaredField("multiplier");
+        field.setAccessible(true);
+        return field;
     }
 
     private static final class RecoilState {
-        private final Object originalPair;
-        private final Object appliedPair;
+        private final Object pair;
+        private final Object left;
+        private final Object right;
+        private final double originalLeftMultiplier;
+        private final double originalRightMultiplier;
+        private final double lastAppliedLeftMultiplier;
+        private final double lastAppliedRightMultiplier;
+        @SuppressWarnings("unused")
+        private final double requestedMultiplier;
 
-        private RecoilState(Object originalPair, Object appliedPair) {
-            this.originalPair = originalPair;
-            this.appliedPair = appliedPair;
+        private RecoilState(Object pair, Object left, Object right,
+                            double originalLeftMultiplier, double originalRightMultiplier,
+                            double lastAppliedLeftMultiplier, double lastAppliedRightMultiplier,
+                            double requestedMultiplier) {
+            this.pair = pair;
+            this.left = left;
+            this.right = right;
+            this.originalLeftMultiplier = originalLeftMultiplier;
+            this.originalRightMultiplier = originalRightMultiplier;
+            this.lastAppliedLeftMultiplier = lastAppliedLeftMultiplier;
+            this.lastAppliedRightMultiplier = lastAppliedRightMultiplier;
+            this.requestedMultiplier = requestedMultiplier;
         }
     }
 
