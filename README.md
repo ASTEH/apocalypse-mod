@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** early development. The GitHub scaffold and MVP contracts are present; compilation and in-game verification are still pending. Features are implemented in small, testable increments.
+> **Status:** early development. M1 character creation (first-join screen, server-side choice validation, persistent profile, trait effects and starting kits) is implemented in source and awaiting CI plus in-game acceptance testing. Later MVP systems are still planned.
 
 ## Requirements
 

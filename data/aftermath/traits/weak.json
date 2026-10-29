@@ -1,0 +1,16 @@
+{
+  "name": "trait.aftermath.weak",
+  "description": "trait.aftermath.weak.description",
+  "category": "negative",
+  "point_credit": 3,
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "attack_damage",
+      "value": 0.9
+    }
+  ],
+  "conflicts": [
+    "aftermath:strong"
+  ]
+}

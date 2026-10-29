@@ -4,8 +4,24 @@
   "starting_points": 8,
   "allowed_traits": [
     "aftermath:fit",
+    "aftermath:strong",
+    "aftermath:tough",
     "aftermath:frail",
-    "aftermath:quick_learner"
+    "aftermath:clumsy",
+    "aftermath:weak"
   ],
-  "starting_items": []
+  "starting_items": [
+    {
+      "item": "minecraft:stone_pickaxe",
+      "count": 1
+    },
+    {
+      "item": "minecraft:iron_nugget",
+      "count": 6
+    },
+    {
+      "item": "minecraft:stick",
+      "count": 8
+    }
+  ]
 }

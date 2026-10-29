@@ -4,8 +4,20 @@
   "starting_points": 8,
   "allowed_traits": [
     "aftermath:fit",
+    "aftermath:strong",
+    "aftermath:tough",
     "aftermath:frail",
-    "aftermath:quick_learner"
+    "aftermath:clumsy",
+    "aftermath:weak"
   ],
-  "starting_items": []
+  "starting_items": [
+    {
+      "item": "minecraft:bread",
+      "count": 4
+    },
+    {
+      "item": "minecraft:honey_bottle",
+      "count": 2
+    }
+  ]
 }

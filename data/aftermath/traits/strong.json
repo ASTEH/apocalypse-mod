@@ -1,0 +1,16 @@
+{
+  "name": "trait.aftermath.strong",
+  "description": "trait.aftermath.strong.description",
+  "category": "positive",
+  "point_cost": 4,
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "attack_damage",
+      "value": 1.07
+    }
+  ],
+  "conflicts": [
+    "aftermath:weak"
+  ]
+}
