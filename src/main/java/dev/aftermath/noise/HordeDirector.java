@@ -52,7 +52,7 @@ public final class HordeDirector {
                                   boolean grouping, int stageGroupLimit,
                                   NoiseDefinitions.HordeArchetypeDefinition archetype) {
         if (mobs.isEmpty() || signalId == null) return new AssignmentResult(0, 0);
-        int priority = signalPriority(signalId);
+        int priority = signalPriorityForDiagnostics(signalId);
         List<Mob> receptive = new java.util.ArrayList<>(mobs.size());
         for (Mob mob : mobs) {
             HordeOrder current = activeOrder(mob);
@@ -97,7 +97,7 @@ public final class HordeDirector {
      * Priorities are intentionally categorical: blood is persistent and must not be displaced by
      * incidental lights or footsteps. A genuine gunshot can still supersede non-blood objectives.
      */
-    private static int signalPriority(ResourceLocation signalId) {
+    static int signalPriorityForDiagnostics(ResourceLocation signalId) {
         String path = signalId.getPath();
         if (path.equals("blood_scent")) return 100;
         if (path.equals("gunshot")) return 90;
