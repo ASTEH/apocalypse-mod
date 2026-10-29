@@ -58,10 +58,15 @@
 
 ## M5 — Day progression
 
-- Persistent world day/stages.
-- Configurable stages and archetypes.
-- Per-stage sensing/grouping and optional door interaction.
-- Block breaking disabled by default; allow-list only; no block entities.
+- [x] Persistent world day counter in Overworld SavedData, shared by dimensions and saved across restart.
+- [x] Reloadable and validated `day_progression/default.json` stage table.
+- [x] Per-stage noise detection radius multiplier and maximum horde group size, still bounded by server caps.
+- [x] `/aftermath day status` and admin-only `/aftermath day set <1..36500>` for diagnostics and tests.
+- [x] Day progression can be disabled independently; other mods' AI goals are not modified.
+- [ ] CI build and clean client/dedicated-server startup.
+- [ ] Manual acceptance tests in game, including world restart persistence and performance.
+
+**Safety scope:** no block breaking or door destruction is performed by M5. The stage schema retains a door-interaction flag for a later isolated feature, but all default stages set it to false and `enableBlockBreaking` stays disabled.
 
 **Acceptance:** stage changes with world days and survives restart; config can disable Aftermath AI without disabling foreign AI; profiler confirms bounded work.
 

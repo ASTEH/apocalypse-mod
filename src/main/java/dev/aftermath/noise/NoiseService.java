@@ -1,6 +1,8 @@
 package dev.aftermath.noise;
 import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
+import dev.aftermath.day.DayProgressionDefinitions;
+import dev.aftermath.day.WorldProgressData;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -34,8 +36,16 @@ public final class NoiseService {
         if (previous != null && now >= previous && now - previous < def.cooldownTicks())
             return new NoiseResult(Status.COOLDOWN, 0, 0);
         LAST_EMITTED.put(key, now);
-        int radius = def.noiseRadius() == 0 ? AftermathServerConfig.DEFAULT_NOISE_RADIUS.get() : def.noiseRadius();
+        int baseRadius = def.noiseRadius() == 0
+                ? AftermathServerConfig.DEFAULT_NOISE_RADIUS.get() : def.noiseRadius();
+        int day = WorldProgressData.currentDay(level.getServer());
+        DayProgressionDefinitions.Stage dayStage = DayProgressionDefinitions.stageForDay(day);
+        double detectionMultiplier = AftermathServerConfig.ENABLE_DAY_PROGRESSION.get()
+                ? dayStage.detectionMultiplier() : 1.0D;
+        int radius = (int) Math.ceil(baseRadius * detectionMultiplier);
         radius = Math.max(0, Math.min(512, radius));
+        int stageGroupLimit = AftermathServerConfig.ENABLE_DAY_PROGRESSION.get()
+                ? dayStage.groupSize() : AftermathServerConfig.MAX_HORDE_SIZE.get();
         if (radius == 0) return new NoiseResult(Status.EMITTED, 0, 0);
         AABB bounds = new AABB(origin.x - radius, origin.y - radius, origin.z - radius,
                 origin.x + radius, origin.y + radius, origin.z + radius);
@@ -53,9 +63,9 @@ public final class NoiseService {
                 .stream().filter(a -> a.leader() && a.entityTag().equals(def.targetTag()))
                 .min(Comparator.comparing(a -> a.id().toString())).orElse(null);
         int followers = HordeDirector.assignNoise(level, origin, mobs, def.lureDurationTicks(),
-                HordeDirector.isHordeBehaviorEnabled(), archetype);
-        AftermathMod.LOGGER.debug("Noise {} at {} in {} affected {} loaded mobs; followers={}.",
-                eventId, origin, dim, mobs.size(), followers);
+                HordeDirector.isHordeBehaviorEnabled(), stageGroupLimit, archetype);
+        AftermathMod.LOGGER.debug("Noise {} at {} in {} affected {} loaded mobs; followers={}; day={}, radius={}.",
+                eventId, origin, dim, mobs.size(), followers, day, radius);
         if (LAST_EMITTED.size() > 4096) LAST_EMITTED.entrySet().removeIf(e -> {
             long stamp = e.getValue();
             return now < stamp || (e.getKey().dimension().equals(dim) && now - stamp >= CLEANUP_AGE);

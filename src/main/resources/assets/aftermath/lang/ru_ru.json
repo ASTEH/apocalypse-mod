@@ -78,5 +78,9 @@
   "message.aftermath.horde.status": "Групповое поведение зомби: %1$s; источник настройки: %2$s.",
   "message.aftermath.horde.enabled_temporary": "Групповое поведение зомби включено до остановки сервера. Теперь выполни /aftermath noise test.",
   "message.aftermath.horde.disabled_temporary": "Групповое поведение зомби временно выключено до остановки сервера.",
-  "message.aftermath.horde.reset": "Временное переопределение снято. Текущее состояние: %1$s."
+  "message.aftermath.horde.reset": "Временное переопределение снято. Текущее состояние: %1$s.",
+  "message.aftermath.day.status": "День апокалипсиса: %1$s. Стадия действует с %2$s по %3$s день; радиус обнаружения ×%4$s; размер группы до %5$s. Прогрессия: %6$s.",
+  "message.aftermath.day.enabled": "включена",
+  "message.aftermath.day.disabled": "выключена",
+  "message.aftermath.day.set": "Установлен день апокалипсиса: %1$s. Значение сохраняется в мире."
 }
