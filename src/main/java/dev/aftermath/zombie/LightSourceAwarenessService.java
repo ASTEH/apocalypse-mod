@@ -207,6 +207,41 @@ public final class LightSourceAwarenessService {
         return UUID.nameUUIDFromBytes(bytes);
     }
 
+    public static int trackedLightCount(ServerLevel level) {
+        Map<Long, TrackedLight> lights = SOURCES.get(level.dimension().location());
+        return lights == null ? 0 : lights.size();
+    }
+
+    /**
+     * Diagnostic: force the shared light-attraction signal from the nearest tracked light within
+     * 64 blocks and report how many loaded zombies can actually see that source.
+     */
+    public static LightTestResult testNearestSource(ServerPlayer player) {
+        ServerLevel level = player.serverLevel();
+        LinkedHashMap<Long, TrackedLight> lights = SOURCES.get(level.dimension().location());
+        if (lights == null || lights.isEmpty()) return new LightTestResult(false, null, 0);
+
+        long now = level.getGameTime();
+        long bestDistance = 64L * 64L;
+        BlockPos bestPos = null;
+        for (Long packed : lights.keySet()) {
+            BlockPos pos = BlockPos.of(packed);
+            if (!level.hasChunkAt(pos) || !isDetectableLight(level, pos, level.getBlockState(pos))) continue;
+            long distance = pos.distSqr(player.blockPosition());
+            if (distance <= bestDistance) {
+                bestDistance = distance;
+                bestPos = pos.immutable();
+            }
+        }
+        if (bestPos == null) return new LightTestResult(false, null, 0);
+
+        NoiseService.NoiseResult result = NoiseService.emitNoise(level, Vec3.atCenterOf(bestPos),
+                NoiseService.lightSourceEventId(), UUID.randomUUID(), mob -> canSeeLight(level, mob, bestPos));
+        return new LightTestResult(true, bestPos, result.affectedEntities());
+    }
+
+    public record LightTestResult(boolean foundSource, BlockPos source, int affectedEntities) {}
+
     public static void onServerStopping(ServerStoppingEvent event) {
         SOURCES.clear();
     }
