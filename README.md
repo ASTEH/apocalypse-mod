@@ -64,7 +64,7 @@ On Windows:
 .\gradlew.bat build
 ```
 
-If a wrapper script is not present in a source checkout, run `gradle wrapper` once with Gradle installed, then use the generated wrapper.
+The bootstrap wrapper downloads the official Gradle Wrapper JAR on first launch if it is absent. See [the build guide](docs/BUILDING.md) for details.
 
 ## Development policy
 
@@ -74,4 +74,4 @@ If a wrapper script is not present in a source checkout, run `gradle wrapper` on
 - Every MVP step should pass the build, start a dedicated test server, and have explicit manual test criteria before the next system is added.
 - Unknown NeoForge 1.21.1 APIs must be checked against the MDK sources and official 1.21.1 docs; no guessed signatures.
 
-See [the architecture plan](docs/ARCHITECTURE.md), [compatibility matrix](docs/COMPATIBILITY.md), and [MVP checklist](docs/MVP.md).
+See [the build guide](docs/BUILDING.md), [architecture plan](docs/ARCHITECTURE.md), [compatibility matrix](docs/COMPATIBILITY.md), and [MVP checklist](docs/MVP.md).
