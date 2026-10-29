@@ -48,6 +48,7 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onLivingHeal);
+        NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onPlayerTickPre);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(FirstAidService::onLivingDamage);
