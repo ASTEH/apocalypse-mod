@@ -667,8 +667,9 @@ public final class CharacterSelectionScreen extends BaseScreen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-        int step = scrollDelta > 0 ? -3 : 3;
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (scrollY == 0) return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        int step = scrollY > 0 ? -3 : 3;
         if (inside(mouseX, mouseY, professionRowsX, professionRowsY, professionRowsW, professionRowsH)) {
             professionScrollOffset = clamp(professionScrollOffset + step, 0,
                     Math.max(0, professions.size() - visibleRows(professionRowsH)));
@@ -681,7 +682,7 @@ public final class CharacterSelectionScreen extends BaseScreen {
             layoutTraitRows();
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, scrollDelta);
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     private static boolean inside(double mouseX, double mouseY, int x, int y, int w, int h) {
