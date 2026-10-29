@@ -52,13 +52,17 @@
 
 - [x] Data-driven gunshot noise definition and public server-side noise API.
 - [x] `/aftermath noise test` for testing without a firearm-mod adapter.
-- [x] Only already-loaded, tag-eligible mobs inside the radius are considered; no spawn calls or chunk forcing.
+- [x] Only already-loaded eligible mobs inside the radius are considered; no spawn calls or chunk forcing.
 - [x] Temporary leader/follower groups, capped by server config and archetype JSON.
 - [x] Movement goal added alongside existing goals; per-entity path cooldown and global path request budget.
-- [x] CI build and clean client/dedicated-server startup.
-- [x] Manual acceptance tests in game.
+- [x] Server sound events at entity/position map to quiet, medium, loud, or block-action noise profiles with per-source cooldowns.
+- [x] Non-command chat and openable block interactions trigger noise.
+- [x] Walking and sprinting use distinct ranges/cadence; crouching is quiet by default, while Clumsy increases movement noise.
+- [x] Common modded zombie IDs are recognized as a fallback in addition to datapack tags.
+- [ ] Manual test expanded sound matrix: open/close doors, trapdoors, gates, chests/barrels, breaking/using blocks, ordinary chat vs slash commands, walking vs sprinting, and quiet/loud sound effects.
+- [ ] Verify position-based ambient audio does not create excessive false alarms when many blocks/entities emit sounds at once.
 
-**Acceptance:** noise attracts existing zombies; no mobs appear because of noise; no chunk is loaded solely for migration; foreign AI goals remain.
+**Acceptance:** noise attracts existing zombies; no mobs appear because of noise; no chunk is loaded solely for migration; foreign AI goals remain; every sound scan has a radius, cooldown, and entity cap.
 
 ## M5 — Day progression
 
@@ -119,23 +123,26 @@ This is distinct from the historical M1–M7 milestones above. It extends the ex
 
 **Acceptance:** all active trait definitions load without errors; the UI and server agree on points and compatibility; relog restores selected client-side sound/visual behavior; standalone NeoForge works with optional mods absent.
 
-## User roadmap — Stage 4: firearm traits and weapon mastery
+## User roadmap — Stage 4: firearm handling and mastery
 
-This stage adds the missing runtime behavior for the existing `Eagle Eye` and `Quick Reload` traits while keeping TaCZ optional.
+This stage implements uncomfortable novice firearm handling and improves it as the player uses each weapon class. TaCZ remains optional.
 
-- [x] Eagle Eye reduces TaCZ's active inaccuracy cache on client and server; the effective multiplier is computed server-side from the trait JSON and server config, then sent to the client.
+- [x] Zero-XP weapon classes start with a pronounced spread penalty; spread falls progressively toward the mastered value.
+- [x] Zero-XP weapon classes start with stronger pitch/yaw camera recoil; TaCZ's active recoil cache is scaled rather than changing only its displayed default.
+- [x] Aiming with a TaCZ firearm adds low-frequency camera tremor; movement increases it and crouching reduces it.
+- [x] Eagle Eye reduces the spread penalty and aiming sway, using server-derived values synced to the client.
 - [x] Quick Reload accelerates TaCZ's active reload clock rather than changing only a client animation.
-- [x] Firearm proficiency adds a modest reload-duration bonus at levels 2, 5 and 10, layered with Quick Reload when both are active.
-- [x] Add a server-config toggle and strength scales for the new firearm trait effects.
-- [x] Keep all TaCZ calls reflective so clean NeoForge can load without TaCZ or another firearm mod.
-- [ ] Manual test: Eagle Eye affects spread only when selected and restores default spread when absent or disabled.
-- [ ] Manual test: Quick Reload completes faster, works on empty and tactical reloads, and doesn't duplicate ammo or bypass reload cancellation.
-- [ ] Manual test: level 2 / 5 / 10 reload bonuses use the currently active firearm class; swapping guns does not apply the previous gun's class.
-- [ ] Manual test: custom TaCZ gunpack IDs retain explicit datapack mappings and inference behavior.
-- [ ] Manual test: clean NeoForge starts without TaCZ; TaCZ server and client both work with effects enabled and disabled.
-- [ ] Verify no regression to melee XP/damage, noise events, character creation, or the SDM UI Lib screen.
+- [x] Firearm proficiency adds reload-duration bonuses at levels 2, 5 and 10, layered with Quick Reload when both are active.
+- [x] Server config exposes novice/mastered spread, recoil, aiming sway and trait strength controls.
+- [x] All TaCZ access remains reflective so clean NeoForge can load without TaCZ.
+- [ ] Manual test zero-XP, mid-level and level-10 spread/recoil/sway in game; tune the novice values by feel.
+- [ ] Manual test Eagle Eye against the novice penalty and verify it does not make a novice instantly perfect.
+- [ ] Manual test Quick Reload on empty/tactical reload and reload cancellation, without duplicate or lost ammo.
+- [ ] Manual test level 2 / 5 / 10 reload bonuses using the active weapon class and while switching between guns.
+- [ ] Manual test custom TaCZ gunpacks and a clean NeoForge client/server without TaCZ.
+- [ ] Verify no regression to melee XP/damage, zombie noise response, character creation, or the SDM UI screen.
 
-**Acceptance:** CI passes; normal reload remains unchanged when trait effects and firearm proficiency are disabled; server timing is authoritative; missing/changed TaCZ reflection methods fall back to vanilla TaCZ timing without crashing.
+**Acceptance:** CI passes; zero-XP handling feels distinctly less stable than experienced handling; reload timing remains server-authoritative; missing/changed TaCZ reflection methods fall back safely.
 
 ## Release gate
 
