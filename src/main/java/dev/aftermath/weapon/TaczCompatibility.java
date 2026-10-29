@@ -41,8 +41,8 @@ public final class TaczCompatibility {
      * Applies client/server firearm trait effects through TaCZ's public runtime objects.
      * Reflection is intentional: Aftermath must remain loadable without TaCZ installed.
      *
-     * eagleEyeSpreadMultiplier and quickReloadDurationMultiplier are server-derived values in
-     * the range 0.1..1.0. A value of 1.0 means the corresponding trait is inactive.
+     * Spread and recoil are server-derived mastery values (spread may exceed 1.0 for novices).
+     * A multiplier of 1.0 leaves the original weapon handling unchanged.
      */
     public static synchronized void applyFirearmTraitEffects(Entity shooter,
                                                               double firearmSpreadMultiplier,
@@ -197,9 +197,23 @@ public final class TaczCompatibility {
 
     private static Object makeRecoilPair(Object pair, float pitch, float yaw)
             throws ReflectiveOperationException {
-        // TaCZ's ParameterizedCachePair.of(L, R) has generic parameters erased to Object.
-        Method factory = pair.getClass().getMethod("of", Object.class, Object.class);
-        return factory.invoke(null, pitch, yaw);
+        // TaCZ's ParameterizedCachePair stores ParameterizedCache objects whose eval() uses
+        // modifier percentages, not the display-only defaultValue. Create percentage modifiers
+        // so the actual pitch/yaw evaluation is amplified during camera recoil.
+        Class<?> modifierClass = Class.forName("com.tacz.guns.resource.pojo.data.attachment.Modifier");
+        Object pitchModifier = modifierClass.getConstructor().newInstance();
+        Object yawModifier = modifierClass.getConstructor().newInstance();
+        modifierClass.getMethod("setPercent", double.class).invoke(pitchModifier, pitch - 1.0D);
+        modifierClass.getMethod("setPercent", double.class).invoke(yawModifier, yaw - 1.0D);
+
+        Object left = invokeNoArgs(pair, "left");
+        Object right = invokeNoArgs(pair, "right");
+        Object leftDefault = invokeNoArgs(left, "getDefaultValue");
+        Object rightDefault = invokeNoArgs(right, "getDefaultValue");
+        Method factory = pair.getClass().getMethod("of", java.util.List.class,
+                java.util.List.class, Object.class, Object.class);
+        return factory.invoke(null, java.util.List.of(pitchModifier), java.util.List.of(yawModifier),
+                leftDefault, rightDefault);
     }
 
     private static boolean setRecoilCache(Object cache, Object recoilPair) {
