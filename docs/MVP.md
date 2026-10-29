@@ -25,13 +25,16 @@
 
 ## M2 — Weapon proficiency
 
-- Classes: melee, pistol, shotgun, rifle, heavy.
-- Item tags determine class.
-- XP only for verified server-side kills attributable to a tagged weapon.
-- Thresholds, levels, server-to-client sync and feedback.
-- Anti-farm: victim identity/time window, exclude non-hostile targets, configurable cap.
+- [x] Persistent server-owned weapon XP attachment, copied on death.
+- [x] Melee class resolved from the datapack item tag.
+- [x] XP only for direct player melee kills against hostile entities.
+- [x] Levels 1–10, server-sent actionbar feedback and /aftermath weapons status.
+- [x] Melee damage bonus at levels 2 (+2%), 5 (+5%) and 10 (+10%).
+- [x] Duplicate victim reward guard and configurable per-victim XP cap.
+- [ ] Optional firearm adapters; unsupported projectile APIs deliberately receive no XP.
+- [ ] CI build, clean client/server launch and manual acceptance tests.
 
-**Acceptance:** one death gives no duplicate XP; unsupported gun APIs grant no accidental XP; vanilla melee works without other mods.
+**Acceptance:** one death does not award duplicate XP; animals and players grant no XP; melee kills work without other mods; relog/death preserves XP; tagged projectiles do not receive guessed attribution.
 
 ## M3 — Learning
 

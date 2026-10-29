@@ -37,5 +37,9 @@
   "trait.aftermath.weak": "Слабый",
   "trait.aftermath.weak.description": "Урон атаки −10%.",
   "trait.aftermath.quick_learner": "Способный ученик",
-  "trait.aftermath.quick_learner.description": "Позже эта черта ускорит освоение навыков."
+  "trait.aftermath.quick_learner.description": "Позже эта черта ускорит освоение навыков.",
+  "weapon_class.aftermath.melee": "Ближний бой",
+  "message.aftermath.weapon_xp": "%1$s: +%2$s опыта. Всего %3$s XP, уровень %4$s.",
+  "message.aftermath.weapon_level_up": "Навык «%1$s» повышен до %2$s уровня! Опыт: %3$s.",
+  "message.aftermath.weapon_status": "%1$s — уровень %2$s, опыт %3$s. Следующий порог: %4$s XP."
 }

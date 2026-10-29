@@ -21,6 +21,14 @@ public final class AftermathAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<WeaponProgress>> WEAPON_PROGRESS = TYPES.register(
+            "weapon_progress",
+            () -> AttachmentType.builder(WeaponProgress::empty)
+                    .serialize(WeaponProgress.CODEC)
+                    .copyOnDeath()
+                    .build()
+    );
+
     public static void register(IEventBus modEventBus) {
         TYPES.register(modEventBus);
     }
