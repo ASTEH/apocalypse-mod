@@ -4,6 +4,8 @@
   "command.aftermath.status": "Состояние Aftermath",
   "screen.aftermath.character.title": "Создание выжившего",
   "screen.aftermath.character.subtitle": "Выбери профессию и черты характера.",
+  "screen.aftermath.character.kicker": "AFTERMATH // ДОСЬЕ ВЫЖИВШЕГО",
+  "screen.aftermath.character.page": "СТР. %1$s / %2$s",
   "screen.aftermath.character.profession": "Профессия",
   "screen.aftermath.character.traits": "Черты характера",
   "screen.aftermath.character.points": "Осталось очков: %1$s / %2$s",
