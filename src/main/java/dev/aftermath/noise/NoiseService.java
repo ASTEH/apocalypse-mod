@@ -12,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -154,7 +155,9 @@ public final class NoiseService {
                 || !AftermathServerConfig.ENABLE_NOISE_EVENTS.get()) return;
         String text = event.getRawText();
         if (text == null || text.isBlank() || text.stripLeading().startsWith("/")) return;
-        emitNoise(level, event.getPlayer().position(), CHAT, event.getPlayer().getUUID());
+        if (consumeSoundScan(level)) {
+            emitNoise(level, event.getPlayer().position(), CHAT, event.getPlayer().getUUID());
+        }
     }
 
     /** Fallback for openable/usable blocks even when a mod doesn't emit a standard block sound. */
@@ -174,6 +177,26 @@ public final class NoiseService {
         }
     }
 
+    /** Block breaks are noisy even when a block/mod doesn't emit a server-visible sound event. */
+    public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        if (event.isCanceled() || !(event.getLevel() instanceof ServerLevel level)
+                || !(event.getPlayer() instanceof ServerPlayer player)
+                || !AftermathServerConfig.ENABLE_NOISE_EVENTS.get()
+                || !consumeSoundScan(level)) return;
+        Vec3 origin = Vec3.atCenterOf(event.getPos());
+        emitNoise(level, origin, BLOCK_ACTION, positionSourceId(level, origin, BLOCK_ACTION));
+    }
+
+    /** Placements are quieter than breaking, but still audible to nearby infected. */
+    public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
+        if (event.isCanceled() || !(event.getLevel() instanceof ServerLevel level)
+                || !(event.getEntity() instanceof ServerPlayer)
+                || !AftermathServerConfig.ENABLE_NOISE_EVENTS.get()
+                || !consumeSoundScan(level)) return;
+        Vec3 origin = Vec3.atCenterOf(event.getPos());
+        emitNoise(level, origin, MEDIUM_SOUND, positionSourceId(level, origin, MEDIUM_SOUND));
+    }
+
     /** Walking is quieter; sprinting is louder and emits more often. Sneaking is silent by default. */
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)
@@ -191,6 +214,7 @@ public final class NoiseService {
         long now = level.getGameTime();
         Long previous = LAST_MOVEMENT_NOISE.get(player.getUUID());
         if (previous != null && now >= previous && now - previous < interval) return;
+        if (!consumeSoundScan(level)) return;
         LAST_MOVEMENT_NOISE.put(player.getUUID(), now);
 
         ResourceLocation eventId;
