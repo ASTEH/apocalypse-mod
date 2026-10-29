@@ -19,7 +19,6 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public final class AftermathCommands {
     private AftermathCommands() {}
@@ -108,10 +107,11 @@ public final class AftermathCommands {
                 .map(profession -> Component.translatable(profession.nameKey()))
                 .orElseGet(() -> Component.literal(profile.professionId()));
 
-        MutableComponent traits = Component.empty();
+        MutableComponent traits;
         if (profile.traitIds().isEmpty()) {
             traits = Component.translatable("message.aftermath.character.no_traits");
         } else {
+            traits = Component.empty();
             boolean first = true;
             for (String traitId : profile.traitIds()) {
                 if (!first) {
@@ -126,8 +126,9 @@ public final class AftermathCommands {
             }
         }
 
+        MutableComponent finalTraits = traits;
         context.getSource().sendSuccess(() -> Component.translatable(
-                "message.aftermath.character.profile_summary", professionName, traits), false);
+                "message.aftermath.character.profile_summary", professionName, finalTraits), false);
         return Command.SINGLE_SUCCESS;
     }
 
