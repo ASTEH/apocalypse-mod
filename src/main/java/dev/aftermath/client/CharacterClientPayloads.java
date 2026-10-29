@@ -15,7 +15,8 @@ public final class CharacterClientPayloads {
     }
 
     public static void handleTraitState(TraitStatePayload payload) {
-        TraitClientState.setSelectedTraits(payload.selectedTraitIdsCsv());
+        TraitClientState.setSelectedTraits(payload.selectedTraitIdsCsv(), payload.eagleEyeSpreadMultiplier(),
+                payload.quickReloadDurationMultiplier());
     }
 
     public static void handleResult(CharacterSelectionResultPayload payload) {
