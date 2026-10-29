@@ -21,11 +21,15 @@
       "count": 8
     },
     {
-      "item": "minecraft:bread",
+      "mod": "farmersdelight",
+      "item": "farmersdelight:apple_pie",
+      "fallback": "minecraft:bread",
       "count": 4
     },
     {
-      "item": "minecraft:stone_axe",
+      "mod": "farmersdelight",
+      "item": "farmersdelight:iron_knife",
+      "fallback": "minecraft:stone_axe",
       "count": 1
     }
   ]

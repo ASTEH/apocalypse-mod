@@ -14,7 +14,9 @@
   },
   "startItems": [
     {
-      "item": "minecraft:crossbow",
+      "mod": "tacz",
+      "item": "tacz:modern_kinetic_gun",
+      "fallback": "minecraft:crossbow",
       "count": 1
     },
     {

@@ -14,8 +14,14 @@
   },
   "startItems": [
     {
-      "item": "minecraft:iron_sword",
+      "mod": "tacz",
+      "item": "tacz:modern_kinetic_gun",
+      "fallback": "minecraft:bow",
       "count": 1
+    },
+    {
+      "item": "minecraft:arrow",
+      "count": 16
     },
     {
       "item": "minecraft:shield",

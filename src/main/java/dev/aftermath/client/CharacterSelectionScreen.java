@@ -1035,9 +1035,16 @@ public final class CharacterSelectionScreen extends Screen {
         List<StartingItem> items = new ArrayList<>();
         if (json.has(key) && json.get(key).isJsonArray()) {
             for (JsonElement element : json.getAsJsonArray(key)) {
+                if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+                    items.add(new StartingItem(element.getAsString(), "", "", 1));
+                    continue;
+                }
+                if (!element.isJsonObject()) continue;
                 JsonObject item = element.getAsJsonObject();
                 items.add(new StartingItem(
                         string(item, "item", string(item, "id", "minecraft:air")),
+                        string(item, "mod", ""),
+                        string(item, "fallback", ""),
                         integer(item, "count", 1)));
             }
         }
@@ -1071,5 +1078,5 @@ public final class CharacterSelectionScreen extends Screen {
         }
     }
 
-    private record StartingItem(String itemId, int count) {}
+    private record StartingItem(String itemReference, String modId, String fallbackReference, int count) {}
 }
