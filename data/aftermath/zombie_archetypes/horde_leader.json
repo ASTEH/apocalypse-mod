@@ -3,7 +3,5 @@
   "leader": true,
   "follower_radius": 20,
   "max_followers": 12,
-  "health_multiplier": 1.5,
-  "speed_multiplier": 1.1,
-  "aura_radius": 8
+  "speed_multiplier": 1.1
 }

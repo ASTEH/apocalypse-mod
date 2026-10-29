@@ -66,5 +66,9 @@
   "message.aftermath.learning.cancelled_damage": "Обучение прервано: ты получил урон.",
   "message.aftermath.learning.completed": "Изучен материал «%1$s»: +%2$s опыта. Всего навыка: %3$s XP.",
   "message.aftermath.learning.already_claimed": "Награда за этот материал уже получена.",
-  "message.aftermath.learning.status": "Опыт навыков — первая помощь: %1$s XP; обращение с оружием: %2$s XP; механика: %3$s XP."
+  "message.aftermath.learning.status": "Опыт навыков — первая помощь: %1$s XP; обращение с оружием: %2$s XP; механика: %3$s XP.",
+  "message.aftermath.noise.disabled": "Система шума отключена на сервере.",
+  "message.aftermath.noise.unknown_event": "Определение шума не загружено. Проверь datapack и перезапусти мир.",
+  "message.aftermath.noise.cooldown": "Шумовой сигнал пока на перезарядке. Повтори через секунду.",
+  "message.aftermath.noise.emitted": "Шумовой сигнал отправлен. Существующих существ затронуто: %1$s; последователей в группе: %2$s."
 }
