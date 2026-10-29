@@ -28,7 +28,7 @@ import java.util.UUID;
 public final class WeaponProgressionService {
     private static final TagKey<Item> MELEE_WEAPONS = TagKey.create(
             Registries.ITEM, ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "weapon_classes/melee"));
-    private static final int[] LEVEL_THRESHOLDS = {0, 0, 50, 125, 250, 425, 650, 925, 1250, 1625, 2050};
+    private static final int[] LEVEL_THRESHOLDS = {0, 0, 150, 350, 650, 1050, 1550, 2200, 3000, 4000, 5200};
     private static final List<String> WEAPON_CLASSES = List.of("melee", "pistol", "shotgun", "rifle", "heavy");
     private static final long VICTIM_REPEAT_WINDOW_TICKS = 20L * 60L;
     private static final Map<UUID, RewardStamp> RECENTLY_REWARDED_VICTIMS = new HashMap<>();
