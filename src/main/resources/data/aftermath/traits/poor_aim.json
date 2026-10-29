@@ -1,0 +1,7 @@
+{
+  "name": "trait.aftermath.poor_aim",
+  "description": "trait.aftermath.poor_aim.description",
+  "category": "negative",
+  "point_credit": 2,
+  "conflicts": ["aftermath:steady_hands"]
+}
