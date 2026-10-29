@@ -191,11 +191,11 @@ public final class CharacterSelectionScreen extends Screen {
             addRenderableWidget(Button.builder(Component.literal("<"), ignored -> {
                 traitPage = Math.max(0, traitPage - 1);
                 requestWidgetRefresh();
-            }).bounds(width / 2 - 88, traitsHeaderY() - 4, 20, 18).build()).active = !waitingForServer && traitPage > 0;
+            }).bounds(width / 2 - 88, traitsHeaderY() - 6, 20, 18).build()).active = !waitingForServer && traitPage > 0;
             addRenderableWidget(Button.builder(Component.literal(">"), ignored -> {
                 traitPage = Math.min(pageCount - 1, traitPage + 1);
                 requestWidgetRefresh();
-            }).bounds(width / 2 + 68, traitsHeaderY() - 4, 20, 18).build()).active = !waitingForServer && traitPage < pageCount - 1;
+            }).bounds(width / 2 + 68, traitsHeaderY() - 6, 20, 18).build()).active = !waitingForServer && traitPage < pageCount - 1;
         }
         int rowHeight = 21;
         int traitWidth = Math.max(120, Math.min(340, width - 32));
