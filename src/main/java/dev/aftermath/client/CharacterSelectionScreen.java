@@ -355,12 +355,6 @@ public final class CharacterSelectionScreen extends Screen {
         }
     }
 
-    public void setResult(String messageKey) {
-        waitingForServer = false;
-        resultMessageKey = messageKey == null ? "" : messageKey;
-        requestWidgetRefresh();
-    }
-
     private void drawInterfacePanels(GuiGraphics graphics) {
         graphics.fill(0, 0, width, height, 0xB5000000);
         graphics.fill(6, 6, Math.max(6, width - 6), 7, 0xFF9A5435);
