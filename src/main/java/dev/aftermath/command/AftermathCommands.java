@@ -33,7 +33,9 @@ public final class AftermathCommands {
                                             + ", noise=" + AftermathServerConfig.ENABLE_NOISE_EVENTS.get()
                                             + ", hordeAI=" + HordeDirector.isHordeBehaviorEnabled()
                                             + ", dayProgression=" + AftermathServerConfig.ENABLE_DAY_PROGRESSION.get()
-                                            + ", bleeding=" + AftermathServerConfig.ENABLE_BLEEDING.get()),
+                                            + ", bleeding=" + AftermathServerConfig.ENABLE_BLEEDING.get()
+                                            + ", bloodScent=" + AftermathServerConfig.ENABLE_BLOOD_SCENT.get()
+                                            + ", lightAwareness=" + AftermathServerConfig.ENABLE_LIGHT_SOURCE_AWARENESS.get()),
                                     false);
                             return 1;
                         }))
