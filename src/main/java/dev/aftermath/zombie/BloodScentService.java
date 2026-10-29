@@ -79,8 +79,13 @@ public final class BloodScentService {
 
         int maxSpots = AftermathServerConfig.MAX_BLOOD_SCENT_SPOTS.get();
         while (spots.size() >= maxSpots) spots.remove(0);
-        spots.add(new BloodSpot(UUID.randomUUID(), player.getUUID(), player.position(), now, expiry, now));
+        BloodSpot spot = new BloodSpot(UUID.randomUUID(), player.getUUID(), player.position(), now, expiry, now);
+        spots.add(spot);
         LAST_DROP_BY_PLAYER.put(player.getUUID(), now);
+
+        // Alert nearby zombies as soon as a wound leaves a scent; later pulses let mobs
+        // arriving after the player has moved discover the trail too.
+        NoiseService.emitNoise(level, spot.position, NoiseService.bloodScentEventId(), spot.id);
     }
 
     /** Staggered attraction pulses allow newly nearby zombies to discover older blood spots. */
