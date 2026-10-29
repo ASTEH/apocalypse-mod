@@ -24,8 +24,10 @@
 - `LearningDefinitions`: loads and validates lesson and TV JSON definitions.
 - `LearningService`: server-timed reading and scheduled TV sessions; persistent skill XP and per-material completion counts.
 - `FirstAidService`: rolls configurable bleeding chance for damaging hostile hits, applies timed blood-loss ticks, and handles bandage treatment; Medic characters stop all bleeding with one bandage.
+- `BloodScentService`: leaves time-limited blood trail spots after player damage and while bleeding; spots periodically alert nearby eligible mobs through the shared attraction director, with per-dimension spot and pulse caps.
+- `LightSourceAwarenessService`: indexes block-emitted light when placed, removes destroyed/disabled sources, discovers existing lights around active players in a throttled scan, and alerts eligible mobs only when a ray check gives them line of sight.
 - `NoiseDefinitions`: validates data-driven noise events and horde archetypes on datapack reload.
-- `NoiseService`: translates server sound events, non-command chat, block interactions, and player movement into data-driven noise profiles; per-source cooldowns and target caps keep scans bounded. It assigns only already-loaded eligible mobs to a temporary noise destination.
+- `NoiseService`: translates server sound events, non-command chat, block interactions, movement, blood scent, and light sightings into data-driven attraction profiles; per-source cooldowns, filtered line-of-sight queries, and target caps keep scans bounded. It assigns only already-loaded eligible mobs to a temporary destination.
 - `ZombieEntityClassifier`: accepts datapack-tagged horde members plus common hostile zombie/infected/walker variants from modpacks.
 - `HordeDirector`: adds a movement goal without replacing other AI goals, groups nearby mobs, and enforces a per-dimension path request budget.
 - `DayProgressionDefinitions`: validates and reloads stages that scale noise radius and group size.
@@ -42,6 +44,7 @@
 4. Never keep chunks loaded solely for migrating zombies.
 5. Block breaking is disabled by default, uses explicit block allow-lists, and excludes block entities/protected blocks.
 6. Never clear or replace another mod's goal selector.
+7. Scent trails and light indexes are bounded; light discovery and attraction pulses have explicit budgets and must not force-load chunks.
 
 ## Reload
 
