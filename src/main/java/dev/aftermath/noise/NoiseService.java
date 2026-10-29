@@ -75,7 +75,8 @@ public final class NoiseService {
         TagKey<EntityType<?>> tag = TagKey.create(Registries.ENTITY_TYPE, def.targetTag());
         // This is a loaded-entity spatial query and never requests a chunk to be loaded.
         ArrayList<Mob> mobs = new ArrayList<>(level.getEntitiesOfClass(Mob.class, bounds,
-                mob -> mob.getType().is(tag) && mob.isAlive() && !mob.isRemoved() && !mob.isNoAi()));
+                mob -> ZombieEntityClassifier.isEligibleForNoise(mob, tag) && mob.isAlive()
+                        && !mob.isRemoved() && !mob.isNoAi()));
         double r2 = (double) radius * radius;
         mobs.removeIf(mob -> mob.position().distanceToSqr(origin) > r2);
         mobs.sort(Comparator.comparingDouble(mob -> mob.position().distanceToSqr(origin)));
