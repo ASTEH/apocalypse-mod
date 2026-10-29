@@ -19,6 +19,8 @@ import dev.aftermath.noise.NoiseService;
 import dev.aftermath.command.AftermathCommands;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.AftermathNetworking;
+import dev.aftermath.zombie.ZombieKillService;
+import dev.aftermath.zombie.ZombiePopulationService;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -45,6 +47,8 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerRespawn);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDeath);
+        NeoForge.EVENT_BUS.addListener(ZombieKillService::onLivingDeath);
+        NeoForge.EVENT_BUS.addListener(ZombiePopulationService::onFinalizeSpawn);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onLivingHeal);
@@ -74,7 +78,7 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(HordeDirector::onEntityLeaveLevel);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onServerStopping);
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            AftermathNetworking.registerClientHooks();
+            AftermathNetworking.registerClientHooks(modEventBus);
         }
 
         LOGGER.info("Aftermath Survival Framework {} initialised for Minecraft 1.21.1.",
