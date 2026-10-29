@@ -9,7 +9,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -83,10 +82,10 @@ public final class CharacterSelectionScreen extends Screen {
 
     @Override
     protected void init() {
-        rebuildWidgets();
+        refreshCharacterWidgets();
     }
 
-    private void rebuildWidgets() {
+    private void refreshCharacterWidgets() {
         clearWidgets();
         if (professions.isEmpty()) return;
 
@@ -104,7 +103,7 @@ public final class CharacterSelectionScreen extends Screen {
                 selectedProfessionId = profession.id;
                 selectedTraits.removeIf(id -> !profession().allowedTraits.contains(id));
                 resultMessageKey = "";
-                rebuildWidgets();
+                refreshCharacterWidgets();
             }).bounds(professionX + i * (professionWidth + professionGap), 59, professionWidth, 20).build());
             button.active = !waitingForServer;
         }
@@ -140,7 +139,7 @@ public final class CharacterSelectionScreen extends Screen {
                         selectedTraits.add(trait.id);
                     }
                 }
-                rebuildWidgets();
+                refreshCharacterWidgets();
             }).bounds(traitX, y, traitWidth, 20).build());
             button.active = !waitingForServer;
             y += rowHeight;
@@ -164,7 +163,7 @@ public final class CharacterSelectionScreen extends Screen {
         if (waitingForServer || profession() == null || remainingPoints() < 0) return;
         waitingForServer = true;
         resultMessageKey = "screen.aftermath.character.saving";
-        rebuildWidgets();
+        refreshCharacterWidgets();
         String traitsCsv = selectedTraits.stream().sorted().reduce((a, b) -> a + "," + b).orElse("");
         PacketDistributor.sendToServer(new SelectCharacterPayload(selectedProfessionId, traitsCsv));
     }
@@ -192,7 +191,7 @@ public final class CharacterSelectionScreen extends Screen {
     public void setResult(String messageKey) {
         waitingForServer = false;
         resultMessageKey = messageKey == null ? "" : messageKey;
-        rebuildWidgets();
+        refreshCharacterWidgets();
     }
 
     @Override
