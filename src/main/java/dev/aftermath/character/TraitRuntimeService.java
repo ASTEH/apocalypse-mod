@@ -43,10 +43,10 @@ public final class TraitRuntimeService {
         CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
         String csv = profile.created() ? String.join(",", profile.traitIds()) : "";
         return new TraitStatePayload(csv,
-                firearmSpreadMultiplier(player),
-                firearmRecoilMultiplier(player),
-                aimingSwayDegrees(player),
-                effectiveReloadMultiplier(player));
+                (float) firearmSpreadMultiplier(player),
+                (float) firearmRecoilMultiplier(player),
+                (float) aimingSwayDegrees(player),
+                (float) effectiveReloadMultiplier(player));
     }
 
     public static double effectiveFirearmTraitMultiplier(ServerPlayer player, String hook,
