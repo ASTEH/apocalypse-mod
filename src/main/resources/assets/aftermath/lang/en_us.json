@@ -70,5 +70,13 @@
   "message.aftermath.noise.disabled": "Noise events are disabled on this server.",
   "message.aftermath.noise.unknown_event": "The noise definition was not loaded. Check datapacks and restart the world.",
   "message.aftermath.noise.cooldown": "That noise event is on cooldown. Try again in a second.",
-  "message.aftermath.noise.emitted": "Noise emitted. Existing eligible entities affected: %1$s; horde followers: %2$s."
+  "message.aftermath.noise.emitted": "Noise emitted. Existing eligible entities affected: %1$s; horde followers: %2$s.",
+  "message.aftermath.horde.enabled": "enabled",
+  "message.aftermath.horde.disabled": "disabled",
+  "message.aftermath.horde.mode_temporary": "temporary override (until server stops)",
+  "message.aftermath.horde.mode_config": "server config value",
+  "message.aftermath.horde.status": "Zombie group behavior: %1$s; setting source: %2$s.",
+  "message.aftermath.horde.enabled_temporary": "Zombie group behavior enabled until the server stops. Now run /aftermath noise test.",
+  "message.aftermath.horde.disabled_temporary": "Zombie group behavior temporarily disabled until the server stops.",
+  "message.aftermath.horde.reset": "Temporary override cleared. Current state: %1$s."
 }

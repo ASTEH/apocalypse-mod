@@ -4,6 +4,7 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.character.WeaponProgressionService;
 import dev.aftermath.learning.LearningService;
+import dev.aftermath.noise.HordeDirector;
 import dev.aftermath.noise.NoiseService;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -45,6 +46,39 @@ public final class AftermathCommands {
                                     () -> LearningService.buildStatusMessage(player), false);
                             return 1;
                         }))
+                        .then(Commands.literal("horde")
+                                .requires(source -> source.hasPermission(2))
+                                .then(Commands.literal("status").executes(context -> {
+                                    Component enabled = Component.translatable(HordeDirector.isHordeBehaviorEnabled()
+                                            ? "message.aftermath.horde.enabled" : "message.aftermath.horde.disabled");
+                                    Component mode = Component.translatable(HordeDirector.hasRuntimeBehaviorOverride()
+                                            ? "message.aftermath.horde.mode_temporary" : "message.aftermath.horde.mode_config");
+                                    context.getSource().sendSuccess(() -> Component.translatable(
+                                            "message.aftermath.horde.status", enabled, mode), false);
+                                    return 1;
+                                }))
+                                .then(Commands.literal("enable").executes(context -> {
+                                    HordeDirector.setRuntimeBehaviorOverride(true);
+                                    context.getSource().sendSuccess(() -> Component.translatable(
+                                            "message.aftermath.horde.enabled_temporary"), true);
+                                    return 1;
+                                }))
+                                .then(Commands.literal("disable").executes(context -> {
+                                    HordeDirector.setRuntimeBehaviorOverride(false);
+                                    context.getSource().sendSuccess(() -> Component.translatable(
+                                            "message.aftermath.horde.disabled_temporary"), true);
+                                    return 1;
+                                }))
+                                .then(Commands.literal("reset").executes(context -> {
+                                    HordeDirector.resetRuntimeBehaviorOverride();
+                                    context.getSource().sendSuccess(() -> Component.translatable(
+                                            "message.aftermath.horde.reset",
+                                            HordeDirector.isHordeBehaviorEnabled()
+                                                    ? Component.translatable("message.aftermath.horde.enabled")
+                                                    : Component.translatable("message.aftermath.horde.disabled")), false);
+                                    return 1;
+                                }))
+                        )
                         .then(Commands.literal("noise")
                                 .then(Commands.literal("test").executes(context -> {
                                     var player = context.getSource().getPlayerOrException();
