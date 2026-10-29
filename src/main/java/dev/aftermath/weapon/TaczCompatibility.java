@@ -51,6 +51,7 @@ public final class TaczCompatibility {
         if (shooter == null) return;
 
         double spreadMultiplier = boundedScale(firearmSpreadMultiplier, 0.1D, 4.0D);
+        double recoilMultiplier = boundedScale(firearmRecoilMultiplier, 0.1D, 4.0D);
         Object currentCache = invokeNoArgs(shooter, "getCacheProperty");
         Object previousCache = LAST_ACCURACY_CACHE.get(shooter);
         if (previousCache != null && previousCache != currentCache) {
@@ -61,18 +62,26 @@ public final class TaczCompatibility {
 
         if (currentCache != null && Math.abs(spreadMultiplier - 1.0D) > 0.001D) {
             applyInaccuracyMultiplier(currentCache, spreadMultiplier);
+        } else if (currentCache != null) {
+            restoreAccuracy(currentCache);
+        }
+
+        if (currentCache != null && Math.abs(recoilMultiplier - 1.0D) > 0.001D) {
+            applyRecoilMultiplier(currentCache, recoilMultiplier);
+        } else if (currentCache != null) {
+            restoreRecoil(currentCache);
+        }
+
+        // Track a cache for either effect, not just spread: recoil also has to be restored when
+        // the active firearm or the local player changes.
+        if (currentCache != null && (Math.abs(spreadMultiplier - 1.0D) > 0.001D
+                || Math.abs(recoilMultiplier - 1.0D) > 0.001D)) {
             LAST_ACCURACY_CACHE.put(shooter, currentCache);
         } else {
-            if (currentCache != null) restoreAccuracy(currentCache);
             LAST_ACCURACY_CACHE.remove(shooter);
         }
 
-        if (currentCache != null) {
-            applyRecoilMultiplier(currentCache, boundedScale(firearmRecoilMultiplier, 0.1D, 4.0D));
-        }
-
         double reloadMultiplier = boundedDurationMultiplier(quickReloadDurationMultiplier);
-
         if (reloadMultiplier < 0.999D) {
             accelerateReload(shooter, reloadMultiplier);
         } else {
