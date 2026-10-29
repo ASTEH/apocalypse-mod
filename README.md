@@ -81,3 +81,8 @@ The bootstrap wrapper downloads the official Gradle Wrapper JAR on first launch 
 - Unknown NeoForge 1.21.1 APIs must be checked against the MDK sources and official 1.21.1 docs; no guessed signatures.
 
 See [the build guide](docs/BUILDING.md), [architecture plan](docs/ARCHITECTURE.md), [compatibility matrix](docs/COMPATIBILITY.md), and [MVP checklist](docs/MVP.md).
+
+
+### Zombie-awareness integration
+
+Aftermath has its own server-side sound-response system; Zombie Awareness is not required for the sound mechanics. Running both can duplicate sound processing. Keep Zombie Awareness only if its additional blood-scent, light-source awareness, or wandering-horde behavior is desired.
