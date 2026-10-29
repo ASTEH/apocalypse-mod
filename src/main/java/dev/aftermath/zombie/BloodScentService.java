@@ -5,6 +5,8 @@ import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.medical.BleedingStatus;
 import dev.aftermath.noise.NoiseService;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.particles.DustParticleOptions;
+import org.joml.Vector3f;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -82,10 +84,18 @@ public final class BloodScentService {
         BloodSpot spot = new BloodSpot(UUID.randomUUID(), player.getUUID(), player.position(), now, expiry, now);
         spots.add(spot);
         LAST_DROP_BY_PLAYER.put(player.getUUID(), now);
+        showBloodMark(level, spot.position);
 
         // Alert nearby zombies as soon as a wound leaves a scent; later pulses let mobs
         // arriving after the player has moved discover the trail too.
         NoiseService.emitNoise(level, spot.position, NoiseService.bloodScentEventId(), spot.id);
+    }
+
+    /** Small red particles make scent spots observable without storing extra blocks or block entities. */
+    private static void showBloodMark(ServerLevel level, Vec3 position) {
+        DustParticleOptions blood = new DustParticleOptions(new Vector3f(0.72F, 0.025F, 0.02F), 0.75F);
+        level.sendParticles(blood, position.x, position.y + 0.06D, position.z,
+                7, 0.16D, 0.015D, 0.16D, 0.0D);
     }
 
     /** Staggered attraction pulses allow newly nearby zombies to discover older blood spots. */
