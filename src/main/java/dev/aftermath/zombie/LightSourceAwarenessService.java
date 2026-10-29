@@ -190,10 +190,15 @@ public final class LightSourceAwarenessService {
     private static boolean canSeeLight(ServerLevel level, Mob mob, BlockPos source) {
         if (mob.isRemoved() || !mob.isAlive() || mob.isNoAi()) return false;
         Vec3 from = mob.getEyePosition();
-        Vec3 to = Vec3.atCenterOf(source);
+        Vec3 center = Vec3.atCenterOf(source);
+        // Aim at the source's near face, not its center. For a wall-mounted torch, aiming through
+        // its center may make the ray hit the solid support block directly behind the flame,
+        // falsely treating a visible torch as occluded.
+        Vec3 towardMob = from.subtract(center);
+        if (towardMob.lengthSqr() < 1.0E-6D) return true;
+        Vec3 to = center.add(towardMob.normalize().scale(0.49D));
         BlockHitResult hit = level.clip(new ClipContext(from, to,
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mob));
-        // Torches and other light blocks often have no collider; a MISS means the light path is clear.
         return hit.getType() == HitResult.Type.MISS || hit.getBlockPos().equals(source);
     }
 
