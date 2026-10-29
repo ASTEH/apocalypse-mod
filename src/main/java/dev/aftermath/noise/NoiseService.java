@@ -47,6 +47,7 @@ public final class NoiseService {
     private static final ResourceLocation CLUMSY_FOOTSTEPS = eventId("clumsy_footsteps");
     private static final ResourceLocation CLUMSY_SPRINT = eventId("clumsy_sprint");
     private static final Map<UUID, Long> LAST_MOVEMENT_NOISE = new HashMap<>();
+    private static final Map<ResourceLocation, SoundScanBudget> SOUND_SCAN_BUDGETS = new HashMap<>();
     /** Call after the adapter has verified a sound-producing action. Null source is allowed for world-originated events. */
     public static NoiseResult emitNoise(ServerLevel level, Vec3 origin, ResourceLocation eventId, UUID sourceId) {
         if (!AftermathServerConfig.ENABLE_NOISE_EVENTS.get()) return new NoiseResult(Status.DISABLED, 0, 0);
@@ -115,10 +116,11 @@ public final class NoiseService {
         if (soundId == null) return;
         String soundPath = soundId.getPath().toLowerCase(Locale.ROOT);
         if (source instanceof ServerPlayer && isFootstepSound(soundPath)) return;
+        if (source instanceof Mob mob && ZombieEntityClassifier.isZombieLike(mob)) return;
         if (isTaCZGunshot(soundId, soundPath)) return;
 
         ResourceLocation noiseType = classifySound(soundId, event.getSource(), event.getNewVolume());
-        if (noiseType != null) {
+        if (noiseType != null && consumeSoundScan(level)) {
             emitNoise(level, source.position(), noiseType, source.getUUID());
         }
     }
@@ -142,10 +144,8 @@ public final class NoiseService {
         ResourceLocation noiseType = classifySound(soundId, event.getSource(), event.getNewVolume());
         if (noiseType == null) return;
         Vec3 position = event.getPosition();
-        String anchor = level.dimension().location() + ":" + Math.floor(position.x) + ":"
-                + Math.floor(position.y) + ":" + Math.floor(position.z) + ":" + noiseType;
-        UUID positionSource = UUID.nameUUIDFromBytes(anchor.getBytes(StandardCharsets.UTF_8));
-        emitNoise(level, position, noiseType, positionSource);
+        if (!consumeSoundScan(level)) return;
+        emitNoise(level, position, noiseType, positionSourceId(level, position, noiseType));
     }
 
     /** Plain chat is treated as talking; slash commands never emit a chat-noise event. */
@@ -169,7 +169,8 @@ public final class NoiseService {
         if (containsAny(path, "door", "trapdoor", "fence_gate", "chest", "barrel",
                 "shulker_box", "button", "lever", "dispenser", "dropper", "furnace",
                 "smoker", "blast_furnace", "lectern", "beehive")) {
-            emitNoise(level, Vec3.atCenterOf(event.getPos()), BLOCK_ACTION, player.getUUID());
+            emitNoise(level, Vec3.atCenterOf(event.getPos()), BLOCK_ACTION,
+                    positionSourceId(level, Vec3.atCenterOf(event.getPos()), BLOCK_ACTION));
         }
     }
 
@@ -201,6 +202,29 @@ public final class NoiseService {
 
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         LAST_MOVEMENT_NOISE.remove(event.getEntity().getUUID());
+    }
+
+    private static UUID positionSourceId(ServerLevel level, Vec3 position, ResourceLocation eventType) {
+        String anchor = level.dimension().location() + ":" + Math.floor(position.x) + ":"
+                + Math.floor(position.y) + ":" + Math.floor(position.z) + ":" + eventType;
+        return UUID.nameUUIDFromBytes(anchor.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /** Bound generic sound-driven spatial queries to a configurable budget per dimension/tick. */
+    private static boolean consumeSoundScan(ServerLevel level) {
+        ResourceLocation dimension = level.dimension().location();
+        long tick = level.getGameTime();
+        int configuredBudget = AftermathServerConfig.MAX_SOUND_NOISE_SCANS_PER_TICK.get();
+        SoundScanBudget current = SOUND_SCAN_BUDGETS.get(dimension);
+        if (current == null || current.tick() != tick) {
+            current = new SoundScanBudget(tick, configuredBudget);
+        }
+        if (current.remaining() <= 0) {
+            SOUND_SCAN_BUDGETS.put(dimension, current);
+            return false;
+        }
+        SOUND_SCAN_BUDGETS.put(dimension, new SoundScanBudget(tick, current.remaining() - 1));
+        return true;
     }
 
     private static ResourceLocation classifySound(ResourceLocation soundId, SoundSource source, float volume) {
@@ -248,15 +272,19 @@ public final class NoiseService {
         ResourceLocation dim = level.dimension().location();
         LAST_EMITTED.entrySet().removeIf(e -> e.getKey().dimension().equals(dim)
                 && (now < e.getValue() || now - e.getValue() >= CLEANUP_AGE));
+        SOUND_SCAN_BUDGETS.entrySet().removeIf(e -> e.getKey().equals(dim)
+                && now > e.getValue().tick() + 1L);
         HordeDirector.cleanupLevel(level);
     }
     public static void onServerStopping(ServerStoppingEvent event) {
         LAST_EMITTED.clear();
         LAST_MOVEMENT_NOISE.clear();
+        SOUND_SCAN_BUDGETS.clear();
     }
     public static ResourceLocation gunshotEventId() { return GUNSHOT; }
     public enum Status { EMITTED, DISABLED, UNKNOWN_EVENT, COOLDOWN }
     public record NoiseResult(Status status, int affectedEntities, int groupedFollowers) {}
     private record CooldownKey(ResourceLocation dimension, ResourceLocation eventId, UUID sourceId) {}
+    private record SoundScanBudget(long tick, int remaining) {}
     private NoiseService() {}
 }
