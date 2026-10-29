@@ -1,0 +1,36 @@
+{
+  "id": "aftermath:farmer",
+  "name": "profession.aftermath.farmer",
+  "description": "profession.aftermath.farmer.description",
+  "icon": "minecraft:iron_hoe",
+  "startPoints": 8,
+  "allowed_traits": [],
+  "grantedTraits": [
+    "aftermath:light_eater"
+  ],
+  "skillBonuses": {
+    "farming": 1
+  },
+  "startItems": [
+    {
+      "item": "minecraft:stone_hoe",
+      "count": 1
+    },
+    {
+      "item": "minecraft:wheat_seeds",
+      "count": 16
+    },
+    {
+      "item": "minecraft:carrot",
+      "count": 8
+    },
+    {
+      "item": "minecraft:bread",
+      "count": 4
+    },
+    {
+      "item": "minecraft:composter",
+      "count": 2
+    }
+  ]
+}

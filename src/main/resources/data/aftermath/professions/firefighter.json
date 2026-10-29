@@ -1,0 +1,32 @@
+{
+  "id": "aftermath:firefighter",
+  "name": "profession.aftermath.firefighter",
+  "description": "profession.aftermath.firefighter.description",
+  "icon": "minecraft:fire_charge",
+  "startPoints": 8,
+  "allowed_traits": [],
+  "grantedTraits": [
+    "aftermath:fit"
+  ],
+  "skillBonuses": {
+    "first_aid": 1
+  },
+  "startItems": [
+    {
+      "item": "minecraft:iron_axe",
+      "count": 1
+    },
+    {
+      "item": "minecraft:leather_helmet",
+      "count": 1
+    },
+    {
+      "item": "minecraft:bread",
+      "count": 4
+    },
+    {
+      "item": "minecraft:water_bucket",
+      "count": 1
+    }
+  ]
+}

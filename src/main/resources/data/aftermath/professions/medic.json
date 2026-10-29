@@ -1,9 +1,15 @@
 {
+  "id": "aftermath:medic",
   "name": "profession.aftermath.medic",
   "description": "profession.aftermath.medic.description",
-  "starting_points": 8,
+  "icon": "minecraft:golden_apple",
+  "startPoints": 8,
   "allowed_traits": [],
-  "starting_items": [
+  "grantedTraits": [],
+  "skillBonuses": {
+    "first_aid": 2
+  },
+  "startItems": [
     {
       "item": "minecraft:bread",
       "count": 4

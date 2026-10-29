@@ -1,0 +1,36 @@
+{
+  "id": "aftermath:homeless",
+  "name": "profession.aftermath.homeless",
+  "description": "profession.aftermath.homeless.description",
+  "icon": "minecraft:leather",
+  "startPoints": 10,
+  "allowed_traits": [],
+  "grantedTraits": [
+    "aftermath:clumsy"
+  ],
+  "skillBonuses": {
+    "scavenging": 1
+  },
+  "startItems": [
+    {
+      "item": "minecraft:wooden_axe",
+      "count": 1
+    },
+    {
+      "item": "minecraft:wooden_pickaxe",
+      "count": 1
+    },
+    {
+      "item": "minecraft:bread",
+      "count": 3
+    },
+    {
+      "item": "minecraft:leather",
+      "count": 2
+    },
+    {
+      "item": "minecraft:stick",
+      "count": 12
+    }
+  ]
+}

@@ -52,6 +52,14 @@ public final class CharacterSelectionService {
 
         Set<ResourceLocation> selectedIds = new LinkedHashSet<>();
         List<CharacterDefinitions.TraitDefinition> selectedTraits = new ArrayList<>();
+        for (ResourceLocation grantedId : profession.grantedTraits()) {
+            CharacterDefinitions.TraitDefinition granted = definitions.traits().get(grantedId);
+            if (granted == null || !selectedIds.add(grantedId)) {
+                respond(player, false, "screen.aftermath.character.error.invalid_trait");
+                return;
+            }
+            selectedTraits.add(granted);
+        }
         for (String rawId : rawIds) {
             ResourceLocation traitId = ResourceLocation.tryParse(rawId);
             if (traitId == null || !selectedIds.add(traitId)) {
@@ -85,6 +93,7 @@ public final class CharacterSelectionService {
 
         int remainingPoints = profession.startingPoints();
         for (CharacterDefinitions.TraitDefinition trait : selectedTraits) {
+            if (profession.grantedTraits().contains(trait.id())) continue;
             remainingPoints += trait.positive() ? -trait.pointCost() : trait.pointCredit();
         }
         if (remainingPoints < 0) {
@@ -94,7 +103,7 @@ public final class CharacterSelectionService {
 
         List<String> savedTraits = selectedTraits.stream().map(trait -> trait.id().toString()).toList();
         player.setData(AftermathAttachments.CHARACTER_PROFILE,
-                new CharacterProfile(profession.id().toString(), savedTraits, true));
+                new CharacterProfile(profession.id().toString(), savedTraits, true, profession.skillBonuses()));
         PacketDistributor.sendToPlayer(player, new TraitStatePayload(String.join(",", savedTraits)));
 
         CharacterEffectApplier.apply(player, selectedTraits);

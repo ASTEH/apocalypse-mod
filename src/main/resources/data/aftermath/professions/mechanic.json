@@ -1,9 +1,15 @@
 {
+  "id": "aftermath:mechanic",
   "name": "profession.aftermath.mechanic",
   "description": "profession.aftermath.mechanic.description",
-  "starting_points": 8,
+  "icon": "minecraft:iron_pickaxe",
+  "startPoints": 8,
   "allowed_traits": [],
-  "starting_items": [
+  "grantedTraits": [],
+  "skillBonuses": {
+    "mechanics": 1
+  },
+  "startItems": [
     {
       "item": "minecraft:stone_pickaxe",
       "count": 1

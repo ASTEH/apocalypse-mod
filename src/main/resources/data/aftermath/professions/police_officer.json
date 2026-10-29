@@ -1,0 +1,33 @@
+{
+  "id": "aftermath:police_officer",
+  "name": "profession.aftermath.police_officer",
+  "description": "profession.aftermath.police_officer.description",
+  "icon": "minecraft:iron_sword",
+  "startPoints": 8,
+  "allowed_traits": [],
+  "grantedTraits": [
+    "aftermath:keen_hearing"
+  ],
+  "skillBonuses": {
+    "firearms": 1,
+    "melee": 1
+  },
+  "startItems": [
+    {
+      "item": "minecraft:iron_sword",
+      "count": 1
+    },
+    {
+      "item": "minecraft:shield",
+      "count": 1
+    },
+    {
+      "item": "minecraft:bread",
+      "count": 4
+    },
+    {
+      "item": "minecraft:torch",
+      "count": 8
+    }
+  ]
+}

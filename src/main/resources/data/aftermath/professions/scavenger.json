@@ -1,9 +1,15 @@
 {
+  "id": "aftermath:scavenger",
   "name": "profession.aftermath.scavenger",
   "description": "profession.aftermath.scavenger.description",
-  "starting_points": 8,
+  "icon": "minecraft:chest",
+  "startPoints": 8,
   "allowed_traits": [],
-  "starting_items": [
+  "grantedTraits": [],
+  "skillBonuses": {
+    "scavenging": 1
+  },
+  "startItems": [
     {
       "item": "minecraft:stone_axe",
       "count": 1
