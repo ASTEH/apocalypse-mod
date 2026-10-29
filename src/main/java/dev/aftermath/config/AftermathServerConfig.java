@@ -53,6 +53,9 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.DoubleValue UNTRAINED_RECOIL_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue MASTERED_RECOIL_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue UNTRAINED_AIM_SWAY_DEGREES;
+    public static final ModConfigSpec.DoubleValue STANDARD_SPREAD_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue STANDARD_RECOIL_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue STANDARD_AIM_SWAY_DEGREES;
     public static final ModConfigSpec.DoubleValue MASTERED_AIM_SWAY_DEGREES;
 
     static {
@@ -120,16 +123,22 @@ public final class AftermathServerConfig {
                 .defineInRange("quickReloadStrengthScale", 1.0D, 0.1D, 2.0D);
         UNTRAINED_SPREAD_MULTIPLIER = builder.comment("Firearm spread multiplier for a character with no experience in that weapon class.")
                 .defineInRange("untrainedSpreadMultiplier", 2.20D, 1.0D, 4.0D);
-        MASTERED_SPREAD_MULTIPLIER = builder.comment("Firearm spread multiplier at weapon proficiency level 10.")
-                .defineInRange("masteredSpreadMultiplier", 1.0D, 0.5D, 2.0D);
+        STANDARD_SPREAD_MULTIPLIER = builder.comment("Native firearm spread multiplier reached at weapon level 4.")
+                .defineInRange("standardSpreadMultiplier", 1.0D, 0.5D, 2.0D);
+        MASTERED_SPREAD_MULTIPLIER = builder.comment("Firearm spread multiplier at weapon proficiency level 10; slight improvement beyond native handling.")
+                .defineInRange("masteredSpreadMultiplier", 0.90D, 0.5D, 2.0D);
         UNTRAINED_RECOIL_MULTIPLIER = builder.comment("Camera recoil multiplier for a character with no experience in that weapon class.")
                 .defineInRange("untrainedRecoilMultiplier", 2.35D, 1.0D, 4.0D);
-        MASTERED_RECOIL_MULTIPLIER = builder.comment("Camera recoil multiplier at weapon proficiency level 10.")
-                .defineInRange("masteredRecoilMultiplier", 1.0D, 0.5D, 2.0D);
+        STANDARD_RECOIL_MULTIPLIER = builder.comment("Native camera recoil multiplier reached at weapon level 4.")
+                .defineInRange("standardRecoilMultiplier", 1.0D, 0.5D, 2.0D);
+        MASTERED_RECOIL_MULTIPLIER = builder.comment("Camera recoil multiplier at weapon proficiency level 10; slight improvement beyond native handling.")
+                .defineInRange("masteredRecoilMultiplier", 0.90D, 0.5D, 2.0D);
         UNTRAINED_AIM_SWAY_DEGREES = builder.comment("Maximum low-frequency aiming sway in degrees for a character with no weapon experience.")
                 .defineInRange("untrainedAimSwayDegrees", 1.15D, 0.0D, 3.0D);
+        STANDARD_AIM_SWAY_DEGREES = builder.comment("Residual aiming sway in degrees at native firearm handling (weapon level 4).")
+                .defineInRange("standardAimSwayDegrees", 0.08D, 0.0D, 1.0D);
         MASTERED_AIM_SWAY_DEGREES = builder.comment("Aiming sway in degrees at weapon proficiency level 10.")
-                .defineInRange("masteredAimSwayDegrees", 0.08D, 0.0D, 1.0D);
+                .defineInRange("masteredAimSwayDegrees", 0.04D, 0.0D, 1.0D);
         builder.pop();
 
         builder.push("weapon_progression");
