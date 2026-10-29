@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:eagle_eye",
+  "name": "trait.aftermath.eagle_eye",
+  "description": "trait.aftermath.eagle_eye.description",
+  "type": "POSITIVE",
+  "pointCost": 3,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "eagle_eye",
+      "value": 0.8
+    }
+  ],
+  "incompatibleWith": []
+}

@@ -1,6 +1,6 @@
 # Compatibility matrix
 
-The core requires only Minecraft/NeoForge. TaCZ compatibility is isolated and uses reflection, so TaCZ is never a hard dependency. The M7 injury system uses vanilla/NeoForge damage and item events only; it does not require a health, fracture, infection, or wound mod.
+The core requires only Minecraft/NeoForge. TaCZ compatibility is isolated and uses reflection, so TaCZ is never a hard dependency. Trait audio/fog effects use client-only NeoForge events and are loaded through a client-only reflective bootstrap; no client class is referenced by dedicated-server gameplay code. The M7 injury system uses vanilla/NeoForge damage and item events only; it does not require a health, fracture, infection, or wound mod.
 
 | Mod/group in the target pack | Planned integration | Fallback |
 |---|---|---|
@@ -15,6 +15,7 @@ The core requires only Minecraft/NeoForge. TaCZ compatibility is isolated and us
 | LostCities / Big Lost City / Abandoned City Buildings / TNAS | Optional tags for event weighting, if stable | No worldgen replacement or hard dependency. |
 | SecurityCraft / OutpostZero / Curios / DayZ Inventory / DayZ Hotbar | Future API/tag integration only after verification | Core works without them. |
 | ModernFix / Ferrite Core / EntityCulling / ImmediatelyFast / Sodium | No required integration; profile server AI separately from client rendering | Core works without optimizers. |
+| Sound Physics Remastered / AmbientSounds | Deafness filters only recognized step/weapon/zombie sound IDs; hearing traits wrap the SoundInstance while delegating sound ID, source, coordinates and resolution. Short-sightedness changes standard viewport fog distances without a custom shader. | Unknown sound IDs are untouched; optional audio/visual mods remain optional. Iris-specific shaders are not modified. |
 
 ## Mod-list review
 

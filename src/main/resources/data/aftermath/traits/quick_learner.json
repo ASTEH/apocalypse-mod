@@ -1,13 +1,14 @@
 {
+  "id": "aftermath:quick_learner",
   "name": "trait.aftermath.quick_learner",
   "description": "trait.aftermath.quick_learner.description",
-  "category": "positive",
-  "point_cost": 4,
+  "type": "POSITIVE",
+  "pointCost": 4,
   "effects": [
     {
       "type": "learning_xp_multiplier",
-      "value": 1.15
+      "value": 1.25
     }
   ],
-  "conflicts": []
+  "incompatibleWith": []
 }

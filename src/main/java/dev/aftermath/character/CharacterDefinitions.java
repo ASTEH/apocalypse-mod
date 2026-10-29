@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +27,8 @@ import java.util.Set;
  */
 public final class CharacterDefinitions extends SimplePreparableReloadListener<CharacterDefinitions.Snapshot> {
     public static final CharacterDefinitions INSTANCE = new CharacterDefinitions();
-    private static final Set<String> ATTRIBUTE_TARGETS = Set.of("movement_speed", "max_health", "attack_damage");
+    private static final Set<String> ATTRIBUTE_TARGETS = Set.of("movement_speed", "max_health", "attack_damage", "attack_speed", "armor");
+    private static final Set<String> CUSTOM_HOOKS = Set.of("iron_stomach", "keen_hearing", "light_eater", "deaf", "hard_of_hearing", "short_sighted", "slow_healer", "clumsy_noise", "cowardly", "asthmatic", "eagle_eye", "quick_reload", "speed_demon", "sleepyhead", "illiterate");
     private static volatile Snapshot current = Snapshot.empty();
 
     private CharacterDefinitions() {}
@@ -42,7 +44,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
 
         Map<ResourceLocation, ProfessionDefinition> validProfessions = new LinkedHashMap<>();
         for (ProfessionDefinition profession : professions.values()) {
-            if (profession.allowedTraits().stream().allMatch(traits::containsKey)) {
+            if (profession.allowedTraits().isEmpty() || profession.allowedTraits().stream().allMatch(traits::containsKey)) {
                 validProfessions.put(profession.id(), profession);
             } else {
                 AftermathMod.LOGGER.error("Ignoring profession {} because one or more allowed traits are missing.", profession.id());
@@ -97,21 +99,35 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
             if (id == null) return;
             try (Reader reader = entry.getValue().openAsReader()) {
                 JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+                if (json.has("id") && !id.toString().equals(requiredString(json, "id"))) {
+                    throw new IllegalArgumentException("id field must match trait resource location " + id);
+                }
                 String name = requiredString(json, "name");
                 String description = requiredString(json, "description");
-                String category = requiredString(json, "category");
-                if (!category.equals("positive") && !category.equals("negative")) {
-                    throw new IllegalArgumentException("category must be positive or negative");
+                String category = (json.has("type") ? requiredString(json, "type") : requiredString(json, "category")).toLowerCase(Locale.ROOT);
+                if (!Set.of("positive", "negative", "neutral").contains(category)) {
+                    throw new IllegalArgumentException("type/category must be POSITIVE, NEGATIVE or NEUTRAL");
                 }
-                int cost = category.equals("positive") ? boundedInt(json, "point_cost", 1, 100) : 0;
-                int credit = category.equals("negative") ? boundedInt(json, "point_credit", 1, 100) : 0;
-                if (category.equals("positive") && json.has("point_credit")
-                        || category.equals("negative") && json.has("point_cost")) {
-                    throw new IllegalArgumentException("trait cannot define both point_cost and point_credit");
+                int cost = 0;
+                int credit = 0;
+                if (json.has("pointCost")) {
+                    int signedCost = boundedInt(json, "pointCost", -100, 100);
+                    if ((category.equals("positive") && signedCost <= 0) || (category.equals("negative") && signedCost >= 0) || (category.equals("neutral") && signedCost != 0)) {
+                        throw new IllegalArgumentException("pointCost must be positive for POSITIVE, negative for NEGATIVE, and 0 for NEUTRAL");
+                    }
+                    if (category.equals("positive")) cost = signedCost;
+                    else if (category.equals("negative")) credit = -signedCost;
+                } else {
+                    cost = category.equals("positive") ? boundedInt(json, "point_cost", 1, 100) : 0;
+                    credit = category.equals("negative") ? boundedInt(json, "point_credit", 1, 100) : 0;
+                    if ((category.equals("positive") && json.has("point_credit")) || (category.equals("negative") && json.has("point_cost"))) {
+                        throw new IllegalArgumentException("legacy trait cannot define both point_cost and point_credit");
+                    }
                 }
                 List<TraitEffect> effects = effects(json);
-                List<ResourceLocation> conflicts = idList(json, "conflicts");
-                result.put(id, new TraitDefinition(id, name, description, category, cost, credit, effects, conflicts));
+                List<ResourceLocation> conflicts = json.has("incompatibleWith") ? idList(json, "incompatibleWith") : idList(json, "conflicts");
+                ResourceLocation requiresProfession = optionalId(json, "requiresProfession", "requires_profession");
+                result.put(id, new TraitDefinition(id, name, description, category, cost, credit, effects, conflicts, requiresProfession));
             } catch (Exception exception) {
                 AftermathMod.LOGGER.error("Could not load character trait {}: {}", entry.getKey(), exception.getMessage());
             }
@@ -157,6 +173,14 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
         return List.copyOf(ids);
     }
 
+    private static ResourceLocation optionalId(JsonObject json, String primaryKey, String legacyKey) {
+        String key = json.has(primaryKey) ? primaryKey : legacyKey;
+        if (!json.has(key)) return null;
+        ResourceLocation id = ResourceLocation.tryParse(requiredString(json, key));
+        if (id == null) throw new IllegalArgumentException("invalid resource id in " + key);
+        return id;
+    }
+
     private static List<StartingItem> startingItems(JsonObject json) {
         List<StartingItem> result = new ArrayList<>();
         if (!json.has("starting_items") || !json.get("starting_items").isJsonArray()) return result;
@@ -175,21 +199,41 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
         if (!json.has("effects") || !json.get("effects").isJsonArray()) return result;
         for (JsonElement element : json.getAsJsonArray("effects")) {
             JsonObject effect = element.getAsJsonObject();
-            String type = requiredString(effect, "type");
-            String target = effect.has("target") ? effect.get("target").getAsString() : "";
+            String type = requiredString(effect, "type").toLowerCase(Locale.ROOT);
+            if (type.equals("attribute_modifier")) type = "attribute_multiplier";
+            if (type.equals("vanilla_mob_effect")) type = "mob_effect";
+            String target = effect.has("target") ? requiredString(effect, "target") : "";
             double value = effect.has("value") ? effect.get("value").getAsDouble() : Double.NaN;
             if (!Double.isFinite(value)) throw new IllegalArgumentException("effect value must be finite");
-            if (type.equals("attribute_multiplier")) {
-                if (!ATTRIBUTE_TARGETS.contains(target)) {
-                    throw new IllegalArgumentException("unsupported attribute target " + target);
+            int durationTicks = effect.has("duration_ticks")
+                    ? boundedInt(effect, "duration_ticks", 20, 72_000) : 220;
+
+            switch (type) {
+                case "attribute_multiplier" -> {
+                    if (!ATTRIBUTE_TARGETS.contains(target)) throw new IllegalArgumentException("unsupported attribute target " + target);
+                    if (value < 0.5 || value > 1.5) throw new IllegalArgumentException("attribute multiplier must be between 0.5 and 1.5");
                 }
-                if (value < 0.5 || value > 1.5) {
-                    throw new IllegalArgumentException("attribute multiplier must be between 0.5 and 1.5");
+                case "learning_xp_multiplier", "weapon_xp_multiplier", "reading_speed_multiplier" -> {
+                    if (value < 0.25 || value > 3.0) throw new IllegalArgumentException(type + " value must be between 0.25 and 3.0");
                 }
-            } else if (!type.equals("learning_xp_multiplier") && !type.equals("weapon_xp_multiplier")) {
-                throw new IllegalArgumentException("unsupported effect type " + type);
+                case "damage_multiplier" -> {
+                    if (!target.equals("hostile") || value < 0.25 || value > 1.0) {
+                        throw new IllegalArgumentException("damage_multiplier requires target hostile and value in [0.25, 1.0]");
+                    }
+                }
+                case "mob_effect" -> {
+                    if (ResourceLocation.tryParse(target) == null || value < 0 || value > 5 || value != Math.rint(value)) {
+                        throw new IllegalArgumentException("mob_effect requires an effect resource ID and integer amplifier 0..5");
+                    }
+                }
+                case "custom_hook" -> {
+                    if (!CUSTOM_HOOKS.contains(target) || value < 0 || value > 3.0) {
+                        throw new IllegalArgumentException("unsupported custom hook or value: " + target);
+                    }
+                }
+                default -> throw new IllegalArgumentException("unsupported effect type " + type);
             }
-            result.add(new TraitEffect(type, target, value));
+            result.add(new TraitEffect(type, target, value, durationTicks));
         }
         return List.copyOf(result);
     }
@@ -220,8 +264,10 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                     json.addProperty("name", value.nameKey());
                     json.addProperty("description", value.descriptionKey());
                     json.addProperty("category", value.category());
+                    json.addProperty("type", value.category().toUpperCase(Locale.ROOT));
                     json.addProperty("point_cost", value.pointCost());
                     json.addProperty("point_credit", value.pointCredit());
+                    if (value.requiresProfession() != null) json.addProperty("requires_profession", value.requiresProfession().toString());
                     JsonArray conflicts = new JsonArray();
                     value.conflicts().forEach(id -> conflicts.add(id.toString()));
                     json.add("conflicts", conflicts);
@@ -250,10 +296,11 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
 
     public record TraitDefinition(ResourceLocation id, String nameKey, String descriptionKey,
                                   String category, int pointCost, int pointCredit,
-                                  List<TraitEffect> effects, List<ResourceLocation> conflicts) {
+                                  List<TraitEffect> effects, List<ResourceLocation> conflicts,
+                                  ResourceLocation requiresProfession) {
         public boolean positive() { return category.equals("positive"); }
     }
 
-    public record TraitEffect(String type, String target, double value) {}
+    public record TraitEffect(String type, String target, double value, int durationTicks) {}
     public record StartingItem(ResourceLocation itemId, int count) {}
 }

@@ -25,6 +25,7 @@ public final class CharacterSelectionScreen extends Screen {
     private String selectedProfessionId = "";
     private String resultMessageKey = "";
     private boolean waitingForServer;
+    private int traitPage;
 
     public CharacterSelectionScreen(String definitionsJson) {
         super(Component.translatable("screen.aftermath.character.title"));
@@ -64,6 +65,8 @@ public final class CharacterSelectionScreen extends Screen {
                     Set<String> conflicts = new LinkedHashSet<>();
                     JsonArray conflictArray = json.getAsJsonArray("conflicts");
                     if (conflictArray != null) conflictArray.forEach(id -> conflicts.add(id.getAsString()));
+                    String requiresProfession = json.has("requires_profession")
+                            ? json.get("requires_profession").getAsString() : "";
                     traits.add(new TraitOption(
                             json.get("id").getAsString(),
                             json.get("name").getAsString(),
@@ -71,7 +74,8 @@ public final class CharacterSelectionScreen extends Screen {
                             json.get("category").getAsString(),
                             json.get("point_cost").getAsInt(),
                             json.get("point_credit").getAsInt(),
-                            Set.copyOf(conflicts)));
+                            Set.copyOf(conflicts),
+                            requiresProfession));
                 }
             }
         } catch (RuntimeException exception) {
@@ -101,7 +105,13 @@ public final class CharacterSelectionScreen extends Screen {
             }
             Button button = addRenderableWidget(Button.builder(label, ignored -> {
                 selectedProfessionId = profession.id;
-                selectedTraits.removeIf(id -> !profession().allowedTraits.contains(id));
+                traitPage = 0;
+                selectedTraits.removeIf(id -> {
+                    TraitOption option = traitById(id);
+                    return (!profession().allowedTraits.isEmpty() && !profession().allowedTraits.contains(id))
+                            || option == null
+                            || (!option.requiresProfession.isBlank() && !option.requiresProfession.equals(profession.id));
+                });
                 resultMessageKey = "";
                 refreshCharacterWidgets();
             }).bounds(professionX + i * (professionWidth + professionGap), 59, professionWidth, 20).build());
@@ -111,13 +121,28 @@ public final class CharacterSelectionScreen extends Screen {
         ProfessionOption selectedProfession = profession();
         if (selectedProfession == null) return;
         List<TraitOption> visibleTraits = traits.stream()
-                .filter(trait -> selectedProfession.allowedTraits.contains(trait.id))
+                .filter(trait -> selectedProfession.allowedTraits.isEmpty() || selectedProfession.allowedTraits.contains(trait.id))
+                .filter(trait -> trait.requiresProfession.isBlank() || trait.requiresProfession.equals(selectedProfession.id))
                 .toList();
+        int pageSize = traitsPerPage();
+        int pageCount = Math.max(1, (visibleTraits.size() + pageSize - 1) / pageSize);
+        traitPage = Math.max(0, Math.min(traitPage, pageCount - 1));
+        if (pageCount > 1) {
+            addRenderableWidget(Button.builder(Component.literal("<"), ignored -> {
+                traitPage = Math.max(0, traitPage - 1);
+                refreshCharacterWidgets();
+            }).bounds(width / 2 - 88, 94, 20, 18).build()).active = !waitingForServer;
+            addRenderableWidget(Button.builder(Component.literal(">"), ignored -> {
+                traitPage = Math.min(pageCount - 1, traitPage + 1);
+                refreshCharacterWidgets();
+            }).bounds(width / 2 + 68, 94, 20, 18).build()).active = !waitingForServer;
+        }
         int rowHeight = 21;
         int traitWidth = Math.max(160, Math.min(340, width - 36));
         int traitX = (width - traitWidth) / 2;
         int y = 112;
-        for (TraitOption trait : visibleTraits) {
+        int pageStart = traitPage * pageSize;
+        for (TraitOption trait : visibleTraits.subList(pageStart, Math.min(visibleTraits.size(), pageStart + pageSize))) {
             boolean selected = selectedTraits.contains(trait.id);
             int points = trait.category.equals("positive") ? -trait.pointCost : trait.pointCredit;
             String pointsLabel = (points > 0 ? "+" : "") + points;
@@ -146,11 +171,10 @@ public final class CharacterSelectionScreen extends Screen {
         }
 
         int remaining = remainingPoints();
-        int pointsY = y + 3;
         addRenderableWidget(Button.builder(
                 Component.translatable("screen.aftermath.character.confirm"),
                 ignored -> submit())
-                .bounds((width - 180) / 2, pointsY + 43, 180, 20)
+                .bounds((width - 180) / 2, height - 27, 180, 20)
                 .build()).active = !waitingForServer && remaining >= 0 && selectedProfession != null;
         getChildButtons().forEach(button -> button.active = button.active && !waitingForServer);
     }
@@ -166,6 +190,10 @@ public final class CharacterSelectionScreen extends Screen {
         refreshCharacterWidgets();
         String traitsCsv = selectedTraits.stream().sorted().reduce((a, b) -> a + "," + b).orElse("");
         PacketDistributor.sendToServer(new SelectCharacterPayload(selectedProfessionId, traitsCsv));
+    }
+
+    private int traitsPerPage() {
+        return Math.max(1, Math.min(5, (height - 198) / 21));
     }
 
     private int remainingPoints() {
@@ -212,17 +240,15 @@ public final class CharacterSelectionScreen extends Screen {
             graphics.drawCenteredString(font, Component.translatable("screen.aftermath.character.traits"),
                     width / 2, 98, 0xFFFFFF);
         }
-        int pointsY = 112 + (selected == null ? 0 : (int) traits.stream()
-                .filter(trait -> selected.allowedTraits.contains(trait.id)).count() * 21) + 4;
         int points = remainingPoints();
         int colour = points < 0 ? 0xFF5555 : 0x55FF55;
         graphics.drawCenteredString(font, Component.translatable(
                 "screen.aftermath.character.points", points, selected == null ? 0 : selected.startingPoints),
-                width / 2, pointsY, colour);
+                width / 2, height - 49, colour);
         if (!resultMessageKey.isBlank()) {
             int messageColour = resultMessageKey.contains(".error.") ? 0xFF7777 : 0xFFFF55;
             graphics.drawCenteredString(font, Component.translatable(resultMessageKey),
-                    width / 2, pointsY + 20, messageColour);
+                    width / 2, height - 38, messageColour);
         }
     }
 
@@ -234,5 +260,6 @@ public final class CharacterSelectionScreen extends Screen {
     private record ProfessionOption(String id, String name, String description,
                                     int startingPoints, Set<String> allowedTraits) {}
     private record TraitOption(String id, String name, String description, String category,
-                               int pointCost, int pointCredit, Set<String> conflicts) {}
+                               int pointCost, int pointCredit, Set<String> conflicts,
+                               String requiresProfession) {}
 }

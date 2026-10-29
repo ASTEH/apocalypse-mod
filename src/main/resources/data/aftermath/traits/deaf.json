@@ -1,0 +1,18 @@
+{
+  "id": "aftermath:deaf",
+  "name": "trait.aftermath.deaf",
+  "description": "trait.aftermath.deaf.description",
+  "type": "NEGATIVE",
+  "pointCost": -5,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "deaf",
+      "value": 1
+    }
+  ],
+  "incompatibleWith": [
+    "aftermath:keen_hearing",
+    "aftermath:hard_of_hearing"
+  ]
+}

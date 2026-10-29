@@ -1,7 +1,6 @@
 package dev.aftermath.character;
 
 import dev.aftermath.AftermathMod;
-import dev.aftermath.medical.BleedingStatus;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -35,14 +34,6 @@ public final class AftermathAttachments {
             () -> AttachmentType.builder(dev.aftermath.learning.LearningProgress::empty)
                     .serialize(dev.aftermath.learning.LearningProgress.CODEC)
                     .copyOnDeath()
-                    .build()
-    );
-
-    /** Injuries persist through relogs, but deliberately do not copy to a new life on death. */
-    public static final Supplier<AttachmentType<BleedingStatus>> BLEEDING_STATUS = TYPES.register(
-            "bleeding_status",
-            () -> AttachmentType.builder(BleedingStatus::empty)
-                    .serialize(BleedingStatus.CODEC)
                     .build()
     );
 

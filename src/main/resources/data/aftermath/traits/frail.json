@@ -1,8 +1,9 @@
 {
+  "id": "aftermath:frail",
   "name": "trait.aftermath.frail",
   "description": "trait.aftermath.frail.description",
-  "category": "negative",
-  "point_credit": 2,
+  "type": "NEGATIVE",
+  "pointCost": -3,
   "effects": [
     {
       "type": "attribute_multiplier",
@@ -10,8 +11,7 @@
       "value": 0.85
     }
   ],
-  "conflicts": [
-    "aftermath:fit",
+  "incompatibleWith": [
     "aftermath:tough"
   ]
 }

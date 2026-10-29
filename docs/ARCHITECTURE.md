@@ -10,7 +10,6 @@
 ## Persistence
 
 - Character profile, weapon XP, and learning XP/completion history use persistent player attachments with explicit codecs and copy-on-death semantics.
-- Bleeding severity and its countdown use a persistent attachment without copy-on-death, so wounds survive relogs but a new life does not inherit them.
 - Global day progression and persistent world events: `SavedData`.
 - Temporary noise signals and horde membership: level-scoped, expiring memory; never force-load chunks to keep events active.
 - In-progress reading/TV sessions are transient; interruption grants no XP.
@@ -23,7 +22,6 @@
 - `TaczCompatibility`: reflection-only optional adapter for TaCZ server bullets; resolves actual projectile owner and gun ID, and emits shot noise without loading TaCZ types when absent.
 - `LearningDefinitions`: loads and validates lesson and TV JSON definitions.
 - `LearningService`: server-timed reading and scheduled TV sessions; persistent skill XP and per-material completion counts.
-- `FirstAidService`: rolls configurable bleeding chance for damaging hostile hits, applies timed blood-loss ticks, and handles bandage treatment; Medic characters stop all bleeding with one bandage.
 - `NoiseDefinitions`: validates data-driven noise events and horde archetypes on datapack reload.
 - `NoiseService`: applies cooldowns and assigns only already-loaded, tagged mobs to a temporary noise destination.
 - `HordeDirector`: adds a movement goal without replacing other AI goals, groups nearby mobs, and enforces a per-dimension path request budget.

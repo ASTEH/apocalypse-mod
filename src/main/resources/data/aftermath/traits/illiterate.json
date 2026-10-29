@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:illiterate",
+  "name": "trait.aftermath.illiterate",
+  "description": "trait.aftermath.illiterate.description",
+  "type": "NEGATIVE",
+  "pointCost": -6,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "illiterate",
+      "value": 1
+    }
+  ],
+  "incompatibleWith": []
+}

@@ -2,6 +2,7 @@ package dev.aftermath.client;
 
 import dev.aftermath.network.CharacterScreenPayload;
 import dev.aftermath.network.CharacterSelectionResultPayload;
+import dev.aftermath.network.TraitStatePayload;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -11,6 +12,10 @@ import net.minecraft.client.Minecraft;
 public final class CharacterClientPayloads {
     public static void open(CharacterScreenPayload payload) {
         Minecraft.getInstance().setScreen(new CharacterSelectionScreen(payload.definitionsJson()));
+    }
+
+    public static void handleTraitState(TraitStatePayload payload) {
+        TraitClientState.setSelectedTraits(payload.selectedTraitIdsCsv());
     }
 
     public static void handleResult(CharacterSelectionResultPayload payload) {

@@ -1,16 +1,22 @@
 {
+  "id": "aftermath:clumsy",
   "name": "trait.aftermath.clumsy",
   "description": "trait.aftermath.clumsy.description",
-  "category": "negative",
-  "point_credit": 3,
+  "type": "NEGATIVE",
+  "pointCost": -2,
   "effects": [
     {
       "type": "attribute_multiplier",
       "target": "movement_speed",
       "value": 0.92
+    },
+    {
+      "type": "custom_hook",
+      "target": "clumsy_noise",
+      "value": 1
     }
   ],
-  "conflicts": [
+  "incompatibleWith": [
     "aftermath:fit"
   ]
 }

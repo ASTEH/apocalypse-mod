@@ -27,35 +27,31 @@ These are Aftermath-owned JSON contracts, not built-in NeoForge schemas. Profess
 
 ## Trait
 
-```json
-{
-  "name": "trait.aftermath.fit",
-  "description": "trait.aftermath.fit.description",
-  "category": "positive",
-  "point_cost": 3,
-  "effects": [{"type": "attribute_multiplier", "target": "movement_speed", "value": 1.08}],
-  "conflicts": ["aftermath:frail"]
-}
-```
-
-Negative traits use `category: "negative"` and a positive `point_credit`. A trait cannot define both `point_cost` and `point_credit`. Server recomputes costs and validates conflicts.
-
-## Weapon class
+New-format definitions live at `data/<namespace>/traits/<id>.json`; the filename determines the resource ID and the optional `id` property must match it. Legacy `category`, `point_cost`, `point_credit`, and `conflicts` fields remain supported for existing datapacks.
 
 ```json
 {
-  "item_tag": "aftermath:weapon_classes/shotgun",
-  "max_level": 10,
-  "base_xp_per_kill": 10,
-  "levels": [
-    {"level": 2, "damage_multiplier": 1.02},
-    {"level": 5, "damage_multiplier": 1.05},
-    {"level": 10, "damage_multiplier": 1.10}
-  ]
+  "id": "aftermath:keen_hearing",
+  "name": "trait.aftermath.keen_hearing",
+  "description": "trait.aftermath.keen_hearing.description",
+  "type": "POSITIVE",
+  "pointCost": 3,
+  "effects": [
+    { "type": "custom_hook", "target": "keen_hearing", "value": 1.0 }
+  ],
+  "incompatibleWith": ["aftermath:deaf", "aftermath:hard_of_hearing"]
 }
 ```
 
-Tags classify held item classes; they do not prove which weapon caused a projectile. Aftermath resolves projectile owner and class before awarding XP.
+- `type`: `POSITIVE`, `NEGATIVE`, or `NEUTRAL`.
+- `pointCost`: positive number for a positive trait, negative number for a negative trait (credit added to the budget), and 0 for neutral.
+- `effects`: `attribute_multiplier` / `attribute_modifier`, `mob_effect` / `vanilla_mob_effect`, `learning_xp_multiplier`, `weapon_xp_multiplier`, `reading_speed_multiplier`, `damage_multiplier`, or an allow-listed `custom_hook`.
+- `incompatibleWith`: IDs that cannot be selected together. Server validation checks both sides of every conflict.
+- `requiresProfession` (optional): a profession ID; the existing selection UI hides this trait for other professions and the server independently rejects it.
+- A profession with an empty `allowed_traits` array accepts every trait unless `requiresProfession` says otherwise. A non-empty array remains an explicit allow-list. Thus, adding a new general-purpose trait normally requires only its JSON file and translations.
+- Attribute modifiers currently support movement speed, max health, attack damage, attack speed and armor. Mob effects specify a registry ID, amplifier in `value`, and optional `duration_ticks`; active effects are refreshed server-side.
+- Custom hooks are allow-listed Java behavior, not executable JSON. Unsupported hook IDs make only the individual trait definition fail validation.
+- The server recomputes the point balance; a client cannot submit a negative balance or bypass trait constraints.
 
 ## TaCZ gun ID mappings
 

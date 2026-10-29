@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:short_sighted",
+  "name": "trait.aftermath.short_sighted",
+  "description": "trait.aftermath.short_sighted.description",
+  "type": "NEGATIVE",
+  "pointCost": -2,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "short_sighted",
+      "value": 1
+    }
+  ],
+  "incompatibleWith": []
+}

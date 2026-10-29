@@ -1,0 +1,16 @@
+{
+  "id": "aftermath:cat_eyes",
+  "name": "trait.aftermath.cat_eyes",
+  "description": "trait.aftermath.cat_eyes.description",
+  "type": "POSITIVE",
+  "pointCost": 3,
+  "effects": [
+    {
+      "type": "mob_effect",
+      "target": "minecraft:night_vision",
+      "value": 0,
+      "duration_ticks": 260
+    }
+  ],
+  "incompatibleWith": []
+}

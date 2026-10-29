@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:light_eater",
+  "name": "trait.aftermath.light_eater",
+  "description": "trait.aftermath.light_eater.description",
+  "type": "POSITIVE",
+  "pointCost": 2,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "light_eater",
+      "value": 0.65
+    }
+  ],
+  "incompatibleWith": []
+}

@@ -2,7 +2,6 @@ package dev.aftermath.content;
 
 import dev.aftermath.AftermathMod;
 import dev.aftermath.learning.TrainingManualItem;
-import dev.aftermath.medical.BandageItem;
 import dev.aftermath.learning.TrainingTelevisionBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -26,10 +25,6 @@ public final class AftermathContent {
 
     public static final DeferredItem<BlockItem> TRAINING_TELEVISION_ITEM =
             ITEMS.registerSimpleBlockItem(TRAINING_TELEVISION, new Item.Properties());
-
-    public static final DeferredItem<BandageItem> BANDAGE = ITEMS.register(
-            "bandage",
-            () -> new BandageItem(new Item.Properties().stacksTo(16)));
 
     public static final DeferredItem<TrainingManualItem> MANUAL_FIRST_AID = ITEMS.register(
             "training_manual_first_aid",

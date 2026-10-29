@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:asthmatic",
+  "name": "trait.aftermath.asthmatic",
+  "description": "trait.aftermath.asthmatic.description",
+  "type": "NEGATIVE",
+  "pointCost": -4,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "asthmatic",
+      "value": 1
+    }
+  ],
+  "incompatibleWith": []
+}

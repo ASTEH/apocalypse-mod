@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:slow_healer",
+  "name": "trait.aftermath.slow_healer",
+  "description": "trait.aftermath.slow_healer.description",
+  "type": "NEGATIVE",
+  "pointCost": -3,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "slow_healer",
+      "value": 0.5
+    }
+  ],
+  "incompatibleWith": []
+}

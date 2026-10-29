@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:sleepyhead",
+  "name": "trait.aftermath.sleepyhead",
+  "description": "trait.aftermath.sleepyhead.description",
+  "type": "NEGATIVE",
+  "pointCost": -2,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "sleepyhead",
+      "value": 1
+    }
+  ],
+  "incompatibleWith": []
+}

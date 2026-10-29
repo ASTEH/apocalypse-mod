@@ -4,6 +4,7 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.CharacterSelectionResultPayload;
 import dev.aftermath.network.SelectCharacterPayload;
+import dev.aftermath.network.TraitStatePayload;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -57,13 +58,17 @@ public final class CharacterSelectionService {
                 respond(player, false, "screen.aftermath.character.error.invalid_trait");
                 return;
             }
-            if (!profession.allowedTraits().contains(traitId)) {
+            if (!profession.allowedTraits().isEmpty() && !profession.allowedTraits().contains(traitId)) {
                 respond(player, false, "screen.aftermath.character.error.trait_not_allowed");
                 return;
             }
             CharacterDefinitions.TraitDefinition trait = definitions.traits().get(traitId);
             if (trait == null) {
                 respond(player, false, "screen.aftermath.character.error.invalid_trait");
+                return;
+            }
+            if (trait.requiresProfession() != null && !trait.requiresProfession().equals(profession.id())) {
+                respond(player, false, "screen.aftermath.character.error.profession_required");
                 return;
             }
             selectedTraits.add(trait);
@@ -90,6 +95,7 @@ public final class CharacterSelectionService {
         List<String> savedTraits = selectedTraits.stream().map(trait -> trait.id().toString()).toList();
         player.setData(AftermathAttachments.CHARACTER_PROFILE,
                 new CharacterProfile(profession.id().toString(), savedTraits, true));
+        PacketDistributor.sendToPlayer(player, new TraitStatePayload(String.join(",", savedTraits)));
 
         CharacterEffectApplier.apply(player, selectedTraits);
         grantStartingItems(player, profession);

@@ -1,0 +1,20 @@
+{
+  "id": "aftermath:speed_demon",
+  "name": "trait.aftermath.speed_demon",
+  "description": "trait.aftermath.speed_demon.description",
+  "type": "POSITIVE",
+  "pointCost": 2,
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "movement_speed",
+      "value": 1.05
+    },
+    {
+      "type": "custom_hook",
+      "target": "speed_demon",
+      "value": 1
+    }
+  ],
+  "incompatibleWith": []
+}

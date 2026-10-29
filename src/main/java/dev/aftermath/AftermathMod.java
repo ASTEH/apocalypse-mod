@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import dev.aftermath.character.AftermathAttachments;
 import dev.aftermath.character.AftermathServerEvents;
 import dev.aftermath.character.CharacterDefinitions;
+import dev.aftermath.character.TraitRuntimeService;
 import dev.aftermath.character.WeaponProgressionService;
 import dev.aftermath.content.AftermathContent;
 import dev.aftermath.day.DayProgressionDefinitions;
@@ -21,6 +22,8 @@ import dev.aftermath.network.AftermathNetworking;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
@@ -43,6 +46,10 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerRespawn);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDeath);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDamage);
+        NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onLivingDamage);
+        NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onLivingHeal);
+        NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(FirstAidService::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(FirstAidService::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(LearningDefinitions::register);
@@ -57,6 +64,9 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(TaczCompatibility::onEntityJoinLevel);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onEntityLeaveLevel);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onServerStopping);
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            AftermathNetworking.registerClientHooks();
+        }
 
         LOGGER.info("Aftermath Survival Framework {} initialised for Minecraft 1.21.1.",
                 modContainer.getModInfo().getVersion());

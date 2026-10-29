@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:quick_reload",
+  "name": "trait.aftermath.quick_reload",
+  "description": "trait.aftermath.quick_reload.description",
+  "type": "POSITIVE",
+  "pointCost": 3,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "quick_reload",
+      "value": 0.8
+    }
+  ],
+  "incompatibleWith": []
+}
