@@ -42,7 +42,7 @@ public final class HordeDirector {
     }
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (!(event.getLevel() instanceof ServerLevel) || !(event.getEntity() instanceof Mob mob)
-                || !ZombieEntityClassifier.isZombieLike(mob)) return;
+                || !ZombieEntityClassifier.isZombieLikeType(mob)) return;
         if (INSTALLED.putIfAbsent(mob, Boolean.TRUE) == null) mob.goalSelector.addGoal(5, new BehaviorGoal(mob));
     }
     public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) { ORDERS.remove(event.getEntity().getUUID()); }
