@@ -143,7 +143,7 @@ public final class AftermathServerConfig {
 
         builder.push("weapon_progression");
         WEAPON_XP_PER_KILL = builder.comment("Base weapon XP for an eligible kill.")
-                .defineInRange("weaponXpPerKill", 5, 0, 10000);
+                .defineInRange("weaponXpPerKill", 10, 0, 10000);
         MAX_XP_PER_VICTIM_PER_MINUTE = builder.comment("Anti-farm limit: maximum XP from repeated kills of the same victim identity in a rolling minute.")
                 .defineInRange("maxXpPerVictimPerMinute", 10, 0, 10000);
         builder.pop();
