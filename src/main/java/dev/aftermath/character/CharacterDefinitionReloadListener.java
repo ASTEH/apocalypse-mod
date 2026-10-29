@@ -183,7 +183,7 @@ public final class CharacterDefinitionReloadListener extends SimplePreparableRel
         return Set.copyOf(result);
     }
 
-    private record ParsedDefinitions(
+    public record ParsedDefinitions(
             Map<ResourceLocation, CharacterProfession> professions,
             Map<ResourceLocation, CharacterTrait> traits,
             boolean invalid
