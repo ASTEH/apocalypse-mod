@@ -116,35 +116,68 @@ public final class HordeDirector {
     private record PathBudget(long tick, int remaining) {}
 
     private static final class BehaviorGoal extends Goal {
-        private static final double ARRIVAL_SQR = 9.0D;
+        private static final double ARRIVAL_SQR = 2.25D;
         private final Mob mob;
         private long nextPathUpdate;
         private BehaviorGoal(Mob mob) { this.mob = mob; setFlags(EnumSet.of(Goal.Flag.MOVE)); }
         @Override public boolean canUse() { return activeOrder(mob) != null; }
         @Override public boolean canContinueToUse() { return canUse(); }
-        @Override public void start() { nextPathUpdate = 0L; }
+        @Override public void start() {
+            if (mob.level() instanceof ServerLevel level) {
+                int interval = Math.max(5, AftermathServerConfig.AI_RECALC_INTERVAL_TICKS.get());
+                // Spread first path requests across the interval. Otherwise every zombie assigned
+                // by one scent pulse asks for a path on the same tick and the per-tick budget can
+                // starve the same mobs repeatedly.
+                nextPathUpdate = level.getGameTime()
+                        + Math.floorMod(mob.getUUID().hashCode(), interval);
+            } else {
+                nextPathUpdate = 0L;
+            }
+        }
         @Override public void tick() {
             if (!(mob.level() instanceof ServerLevel level)) return;
             HordeOrder order = activeOrder(mob);
             if (order == null) return;
             long now = level.getGameTime();
             if (now < nextPathUpdate) return;
-            nextPathUpdate = now + Math.max(5, AftermathServerConfig.AI_RECALC_INTERVAL_TICKS.get());
+            long interval = Math.max(5, AftermathServerConfig.AI_RECALC_INTERVAL_TICKS.get());
             if (order.role() == Role.FOLLOWER && isHordeBehaviorEnabled()
                     && order.leaderId() != null) {
                 Entity e = level.getEntity(order.leaderId());
                 if (e instanceof Mob leader && leader.isAlive() && !leader.isRemoved()) {
                     if (mob.distanceToSqr(leader) > ARRIVAL_SQR) {
-                        if (consumePathRequest(level)) mob.getNavigation().moveTo(leader, Math.max(0.1D, order.speedMultiplier()));
-                    } else if (!mob.getNavigation().isDone()) mob.getNavigation().stop();
+                        if (consumePathRequest(level)) {
+                            mob.getNavigation().moveTo(leader, Math.max(0.1D, order.speedMultiplier()));
+                            nextPathUpdate = now + interval;
+                        } else {
+                            nextPathUpdate = retrySoon(now);
+                        }
+                    } else {
+                        nextPathUpdate = now + interval;
+                        if (!mob.getNavigation().isDone()) mob.getNavigation().stop();
+                    }
                     return;
                 }
             }
             Vec3 target = order.targetPosition();
             if (mob.position().distanceToSqr(target) > ARRIVAL_SQR) {
-                if (consumePathRequest(level)) mob.getNavigation().moveTo(target.x, target.y, target.z,
-                        Math.max(0.1D, order.speedMultiplier()));
-            } else if (!mob.getNavigation().isDone()) mob.getNavigation().stop();
+                if (consumePathRequest(level)) {
+                    mob.getNavigation().moveTo(target.x, target.y, target.z,
+                            Math.max(0.1D, order.speedMultiplier()));
+                    nextPathUpdate = now + interval;
+                } else {
+                    // A denied budget request is retried quickly rather than after the full AI
+                    // interval, preventing a group from getting permanently stuck on the same
+                    // unlucky update cadence.
+                    nextPathUpdate = retrySoon(now);
+                }
+            } else {
+                nextPathUpdate = now + interval;
+                if (!mob.getNavigation().isDone()) mob.getNavigation().stop();
+            }
+        }
+        private long retrySoon(long now) {
+            return now + 1L + Math.floorMod(mob.getUUID().hashCode() ^ (int) now, 5);
         }
         @Override public void stop() { if (!mob.getNavigation().isDone()) mob.getNavigation().stop(); }
     }
