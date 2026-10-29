@@ -34,6 +34,12 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.DoubleValue BLEEDING_DAMAGE_PER_SEVERITY;
     public static final ModConfigSpec.DoubleValue EAGLE_EYE_STRENGTH_SCALE;
     public static final ModConfigSpec.DoubleValue QUICK_RELOAD_STRENGTH_SCALE;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_SPREAD_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue MASTERED_SPREAD_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_RECOIL_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue MASTERED_RECOIL_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_AIM_SWAY_DEGREES;
+    public static final ModConfigSpec.DoubleValue MASTERED_AIM_SWAY_DEGREES;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -66,6 +72,18 @@ public final class AftermathServerConfig {
                 .defineInRange("eagleEyeStrengthScale", 1.0D, 0.1D, 2.0D);
         QUICK_RELOAD_STRENGTH_SCALE = builder.comment("Scale applied to the Quick Reload trait value from datapacks. 1.0 uses the datapack value; lower values make reloads faster.")
                 .defineInRange("quickReloadStrengthScale", 1.0D, 0.1D, 2.0D);
+        UNTRAINED_SPREAD_MULTIPLIER = builder.comment("Firearm spread multiplier for a character with no experience in that weapon class.")
+                .defineInRange("untrainedSpreadMultiplier", 1.90D, 1.0D, 4.0D);
+        MASTERED_SPREAD_MULTIPLIER = builder.comment("Firearm spread multiplier at weapon proficiency level 10.")
+                .defineInRange("masteredSpreadMultiplier", 1.0D, 0.5D, 2.0D);
+        UNTRAINED_RECOIL_MULTIPLIER = builder.comment("Camera recoil multiplier for a character with no experience in that weapon class.")
+                .defineInRange("untrainedRecoilMultiplier", 2.10D, 1.0D, 4.0D);
+        MASTERED_RECOIL_MULTIPLIER = builder.comment("Camera recoil multiplier at weapon proficiency level 10.")
+                .defineInRange("masteredRecoilMultiplier", 1.0D, 0.5D, 2.0D);
+        UNTRAINED_AIM_SWAY_DEGREES = builder.comment("Maximum low-frequency aiming sway in degrees for a character with no weapon experience.")
+                .defineInRange("untrainedAimSwayDegrees", 0.85D, 0.0D, 3.0D);
+        MASTERED_AIM_SWAY_DEGREES = builder.comment("Aiming sway in degrees at weapon proficiency level 10.")
+                .defineInRange("masteredAimSwayDegrees", 0.08D, 0.0D, 1.0D);
         builder.pop();
 
         builder.push("weapon_progression");
