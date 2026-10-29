@@ -12,14 +12,16 @@
 
 ## M1 — Character creation
 
-- Professions: medic, mechanic, scavenger.
-- At least 3 positive and 3 negative traits.
-- Server-side point budget and conflict validation.
-- Persistent profile; first-join only.
-- Reopen through command/config with permission checks.
-- RU/EN screen and descriptions.
+- [x] Professions: medic, mechanic, scavenger, each with a distinct starting kit.
+- [x] Three positive and three negative attribute traits.
+- [x] Server-side point budget, profession allow-list, duplicate and conflict validation.
+- [x] Persistent profile attachment, copied on death.
+- [x] First-join screen with server-supplied JSON options.
+- [x] RU/EN labels, profession descriptions and trait descriptions.
+- [ ] CI compilation plus clean client and dedicated-server launch.
+- [ ] Manual acceptance tests in a fresh world.
 
-**Acceptance:** forged client packet cannot grant traits; insufficient budget is rejected; profile persists; disabled feature skips the screen.
+**Acceptance:** forged client packet cannot grant traits; insufficient budget and conflicting traits are rejected; selected effects and starting kit apply once; the profile persists after relog and death; disabled feature skips the screen.
 
 ## M2 — Weapon proficiency
 

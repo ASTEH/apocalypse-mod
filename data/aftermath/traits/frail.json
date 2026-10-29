@@ -11,6 +11,7 @@
     }
   ],
   "conflicts": [
-    "aftermath:fit"
+    "aftermath:fit",
+    "aftermath:tough"
   ]
 }

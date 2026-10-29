@@ -11,6 +11,7 @@
     }
   ],
   "conflicts": [
-    "aftermath:frail"
+    "aftermath:frail",
+    "aftermath:clumsy"
   ]
 }

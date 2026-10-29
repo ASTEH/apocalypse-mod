@@ -17,8 +17,11 @@ These are Aftermath-owned JSON contracts, not built-in NeoForge schemas. M0 incl
   "name": "profession.aftermath.medic",
   "description": "profession.aftermath.medic.description",
   "starting_points": 8,
-  "allowed_traits": ["aftermath:fit", "aftermath:frail", "aftermath:quick_learner"],
-  "starting_items": []
+  "allowed_traits": ["aftermath:fit", "aftermath:strong", "aftermath:tough", "aftermath:frail", "aftermath:clumsy", "aftermath:weak"],
+  "starting_items": [
+    {"item": "minecraft:bread", "count": 4},
+    {"item": "minecraft:honey_bottle", "count": 2}
+  ]
 }
 ```
 
