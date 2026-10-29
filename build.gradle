@@ -14,13 +14,6 @@ sourceSets.main.resources {
     exclude("src/generated/**/.cache")
 }
 
-repositories {
-    maven {
-        name = 'Modrinth'
-        url = 'https://api.modrinth.com/maven'
-    }
-}
-
 base {
     archivesName = mod_id
 }
@@ -76,10 +69,7 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
-dependencies {
-    // SDM UI Lib is installed as a separate client-side mod; this dependency makes its widgets available to the UI code.
-    implementation 'maven.modrinth:MdmRC4B5:WhvuOtbe'
-}
+dependencies {}
 
 def generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     def replaceProperties = [

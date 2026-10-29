@@ -178,5 +178,20 @@
   "screen.aftermath.character.ui.empty_professions": "Нет профессий",
   "screen.aftermath.character.ui.empty_traits": "Нет доступных черт",
   "screen.aftermath.character.ui.footer_hint": "Выбери профессию и черты, затем подтверди выбор.",
-  "screen.aftermath.character.error.invalid_data": "Не удалось загрузить данные персонажа. Перезайди в мир."
+  "screen.aftermath.character.error.invalid_data": "Не удалось загрузить данные персонажа. Перезайди в мир.",
+  "screen.aftermath.character.random": "СЛУЧАЙНО",
+  "screen.aftermath.character.reset": "СБРОС",
+  "screen.aftermath.character.start": "НАЧАТЬ",
+  "screen.aftermath.character.ui.preview": "ДОСЬЕ ВЫЖИВШЕГО",
+  "screen.aftermath.character.ui.survivor": "Выживший",
+  "screen.aftermath.character.ui.balance": "ОЧКИ: %1$s",
+  "screen.aftermath.character.ui.points_shortage": "Не хватает очков: %1$s",
+  "screen.aftermath.character.ui.incompatible": "НЕСОВМЕСТИМО С: %1$s",
+  "screen.aftermath.character.ui.no_traits_in_category": "В этой категории нет черт",
+  "screen.aftermath.character.ui.tab.positive": "ПОЛОЖИТЕЛЬНЫЕ",
+  "screen.aftermath.character.ui.tab.positive.short": "ПЛЮС",
+  "screen.aftermath.character.ui.tab.negative": "ОТРИЦАТЕЛЬНЫЕ",
+  "screen.aftermath.character.ui.tab.negative.short": "МИНУС",
+  "screen.aftermath.character.ui.tab.neutral": "ДРУГИЕ",
+  "screen.aftermath.character.ui.tab.neutral.short": "ДРУГИЕ"
 }

@@ -178,5 +178,20 @@
   "screen.aftermath.character.ui.empty_professions": "No professions available",
   "screen.aftermath.character.ui.empty_traits": "No available traits",
   "screen.aftermath.character.ui.footer_hint": "Choose a profession and traits, then confirm your survivor.",
-  "screen.aftermath.character.error.invalid_data": "Could not load character data. Rejoin the world."
+  "screen.aftermath.character.error.invalid_data": "Could not load character data. Rejoin the world.",
+  "screen.aftermath.character.random": "RANDOM",
+  "screen.aftermath.character.reset": "RESET",
+  "screen.aftermath.character.start": "START",
+  "screen.aftermath.character.ui.preview": "SURVIVOR FILE",
+  "screen.aftermath.character.ui.survivor": "Survivor",
+  "screen.aftermath.character.ui.balance": "POINTS: %1$s",
+  "screen.aftermath.character.ui.points_shortage": "Not enough points: %1$s",
+  "screen.aftermath.character.ui.incompatible": "INCOMPATIBLE WITH %1$s",
+  "screen.aftermath.character.ui.no_traits_in_category": "No traits in this category",
+  "screen.aftermath.character.ui.tab.positive": "POSITIVE",
+  "screen.aftermath.character.ui.tab.positive.short": "POS",
+  "screen.aftermath.character.ui.tab.negative": "NEGATIVE",
+  "screen.aftermath.character.ui.tab.negative.short": "NEG",
+  "screen.aftermath.character.ui.tab.neutral": "OTHER",
+  "screen.aftermath.character.ui.tab.neutral.short": "OTHER"
 }
