@@ -2,6 +2,6 @@
   "name": "trait.aftermath.steady_hands",
   "description": "trait.aftermath.steady_hands.description",
   "category": "positive",
-  "point_cost": 2,
+  "point_cost": 3,
   "conflicts": ["aftermath:poor_aim"]
 }
