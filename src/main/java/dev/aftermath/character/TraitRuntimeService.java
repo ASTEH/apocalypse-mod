@@ -20,7 +20,6 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -110,7 +109,7 @@ public final class TraitRuntimeService {
         for (CharacterDefinitions.TraitEffect effect : effects(player, "mob_effect")) {
             ResourceLocation id = ResourceLocation.tryParse(effect.target());
             if (id == null) continue;
-            Optional<Holder<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.getHolder(id);
+            var holder = BuiltInRegistries.MOB_EFFECT.getHolder(id);
             if (holder.isEmpty()) continue;
             MobEffectInstance active = player.getEffect(holder.get());
             int amplifier = (int) effect.value();
