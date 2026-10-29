@@ -20,7 +20,15 @@ public final class ZombieEntityClassifier {
 
     /** Living zombie-like mobs that may react to sounds or receive Aftermath horde orders. */
     public static boolean isZombieLike(Mob mob) {
-        return mob != null && !mob.isRemoved() && mob.isAlive() && matchesZombieLike(mob);
+        return mob != null && !mob.isRemoved() && mob.isAlive() && isZombieLikeType(mob);
+    }
+
+    /**
+     * EntityJoinLevel can fire before a mob's first fully alive tick. Goal installation must
+     * classify the entity type without depending on current health.
+     */
+    public static boolean isZombieLikeType(Mob mob) {
+        return mob != null && !mob.isRemoved() && matchesZombieLike(mob);
     }
 
     /**
@@ -28,7 +36,7 @@ public final class ZombieEntityClassifier {
      * require the victim to still be alive.
      */
     public static boolean isZombieLikeKillTarget(Mob mob) {
-        return mob != null && matchesZombieLike(mob);
+        return isZombieLikeType(mob);
     }
 
     private static boolean matchesZombieLike(Mob mob) {
