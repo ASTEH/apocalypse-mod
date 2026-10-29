@@ -13,6 +13,7 @@ import dev.aftermath.config.AftermathServerConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
@@ -107,7 +108,7 @@ public final class AftermathCommands {
                 .map(profession -> Component.translatable(profession.nameKey()))
                 .orElseGet(() -> Component.literal(profile.professionId()));
 
-        Component traits = Component.empty();
+        MutableComponent traits = Component.empty();
         if (profile.traitIds().isEmpty()) {
             traits = Component.translatable("message.aftermath.character.no_traits");
         } else {
