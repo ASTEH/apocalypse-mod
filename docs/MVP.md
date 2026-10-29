@@ -119,6 +119,24 @@ This is distinct from the historical M1–M7 milestones above. It extends the ex
 
 **Acceptance:** all active trait definitions load without errors; the UI and server agree on points and compatibility; relog restores selected client-side sound/visual behavior; standalone NeoForge works with optional mods absent.
 
+## User roadmap — Stage 4: firearm traits and weapon mastery
+
+This stage adds the missing runtime behavior for the existing `Eagle Eye` and `Quick Reload` traits while keeping TaCZ optional.
+
+- [x] Eagle Eye reduces TaCZ's active inaccuracy cache on client and server; the effective multiplier is computed server-side from the trait JSON and server config, then sent to the client.
+- [x] Quick Reload accelerates TaCZ's active reload clock rather than changing only a client animation.
+- [x] Firearm proficiency adds a modest reload-duration bonus at levels 2, 5 and 10, layered with Quick Reload when both are active.
+- [x] Add a server-config toggle and strength scales for the new firearm trait effects.
+- [x] Keep all TaCZ calls reflective so clean NeoForge can load without TaCZ or another firearm mod.
+- [ ] Manual test: Eagle Eye affects spread only when selected and restores default spread when absent or disabled.
+- [ ] Manual test: Quick Reload completes faster, works on empty and tactical reloads, and doesn't duplicate ammo or bypass reload cancellation.
+- [ ] Manual test: level 2 / 5 / 10 reload bonuses use the currently active firearm class; swapping guns does not apply the previous gun's class.
+- [ ] Manual test: custom TaCZ gunpack IDs retain explicit datapack mappings and inference behavior.
+- [ ] Manual test: clean NeoForge starts without TaCZ; TaCZ server and client both work with effects enabled and disabled.
+- [ ] Verify no regression to melee XP/damage, noise events, character creation, or the SDM UI Lib screen.
+
+**Acceptance:** CI passes; normal reload remains unchanged when trait effects and firearm proficiency are disabled; server timing is authoritative; missing/changed TaCZ reflection methods fall back to vanilla TaCZ timing without crashing.
+
 ## Release gate
 
 A stage is not done until CI passes, client and dedicated server launch, clean NeoForge-only startup works and manual acceptance tests pass.
