@@ -99,7 +99,9 @@ public final class AftermathCommands {
                                     }
                                     context.getSource().sendSuccess(() -> Component.literal(
                                             "Light signal from " + result.source().toShortString()
-                                                    + ", loaded zombies with line of sight attracted=" + result.affectedEntities()),
+                                                    + ", loaded zombie-like mobs within 64 blocks=" + result.nearbyZombies()
+                                                    + ", clear line of sight=" + result.visibleZombies()
+                                                    + ", attracted=" + result.affectedEntities()),
                                             false);
                                     return 1;
                                 })))
