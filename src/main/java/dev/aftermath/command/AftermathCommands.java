@@ -9,7 +9,7 @@ import dev.aftermath.day.WorldProgressData;
 import dev.aftermath.noise.HordeDirector;
 import dev.aftermath.noise.NoiseService;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
