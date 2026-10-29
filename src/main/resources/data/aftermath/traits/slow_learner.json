@@ -1,0 +1,7 @@
+{
+  "name": "trait.aftermath.slow_learner",
+  "description": "trait.aftermath.slow_learner.description",
+  "category": "negative",
+  "point_credit": 3,
+  "conflicts": ["aftermath:quick_learner"]
+}

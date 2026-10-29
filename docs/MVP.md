@@ -3,23 +3,31 @@
 ## M0 — Bootstrap
 
 - [x] Java 21 / NeoForge 1.21.1 ModDevGradle project skeleton
-- [x] MOD ID `aftermath`; no required gameplay dependencies
-- [x] Server config and `/aftermath status` command
-- [x] CI workflow intended to run `./gradlew build`
-- [ ] Confirm CI build and launch in client + dedicated server
+- [x] MOD ID aftermath; no required gameplay dependencies
+- [x] Server config and /aftermath status command
+- [x] GitHub Actions Gradle build passed for the bootstrap
+- [x] Maintainer confirmed client startup and world load after removing an unrelated failing test mod from the pack
+- [ ] Verify clean NeoForge-only client startup and dedicated-server startup
+- [ ] Verify /aftermath status on integrated and dedicated servers
 
 **Acceptance:** build passes; clean Minecraft 1.21.1 NeoForge starts with only Aftermath; status command works on integrated and dedicated servers; no client-only class loads on server.
 
 ## M1 — Character creation
 
-- Professions: medic, mechanic, scavenger.
-- At least 3 positive and 3 negative traits.
-- Server-side point budget and conflict validation.
-- Persistent profile; first-join only.
-- Reopen through command/config with permission checks.
-- RU/EN screen and descriptions.
+### Current server-side increment
 
-**Acceptance:** forged client packet cannot grant traits; insufficient budget is rejected; profile persists; disabled feature skips the screen.
+- [x] JSON definitions for medic, mechanic, scavenger and three positive / three negative traits
+- [x] Server-side point-budget validation, duplicate-trait checks, allowed-trait checks and conflict validation
+- [x] Persistent player profile stored in a serialized attachment and copied on death
+- [x] First-join hint plus /aftermath character list, show, and choose commands
+- [ ] CI build and runtime verification of the UI/networking increment
+- [x] Client character-selection screen with RU/EN labels and descriptions (runtime test pending)
+- [ ] Apply trait effects through explicit, server-owned systems
+- [ ] Permission/config checks and UX for reopening the selection screen
+
+**Command test procedure:** see docs/CHARACTER_PROFILE_TESTING.md.
+
+**Acceptance:** forged client packet cannot grant traits; insufficient budget is rejected; profile persists; disabled feature skips the screen. The screen/packet checks remain pending until the client UI is implemented.
 
 ## M2 — Weapon proficiency
 
@@ -29,11 +37,11 @@
 - Thresholds, levels, server-to-client sync and feedback.
 - Anti-farm: victim identity/time window, exclude non-hostile targets, configurable cap.
 
-**Acceptance:** one death gives no duplicate XP; unsupported gun APIs grant no accidental XP; vanilla melee works without other mods.
+**Acceptance:** one death gives no duplicate XP; unsupported shots grant no accidental weapon XP; vanilla melee works without other mods.
 
 ## M3 — Learning
 
-- Three lesson definitions and one registered TV block.
+- Three lesson definitions and one registered TV block/program.
 - Reading/viewing are server-timed sessions.
 - Progress persists and syncs.
 - Movement/damage can cancel.
