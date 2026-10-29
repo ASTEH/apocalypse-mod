@@ -47,7 +47,7 @@ public final class HordeDirector {
     }
     public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) { ORDERS.remove(event.getEntity().getUUID()); }
 
-    public static int assignNoise(ServerLevel level, Vec3 target, List<Mob> mobs, int duration,
+    public static AssignmentResult assignNoise(ServerLevel level, Vec3 target, List<Mob> mobs, int duration,
                                   ResourceLocation signalId, UUID sourceId,
                                   boolean grouping, int stageGroupLimit,
                                   NoiseDefinitions.HordeArchetypeDefinition archetype) {
