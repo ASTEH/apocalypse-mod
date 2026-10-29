@@ -1,13 +1,13 @@
 package dev.aftermath.client;
 
-import dev.aftermath.AftermathMod;
 import dev.aftermath.network.CharacterScreenPayload;
 import dev.aftermath.network.CharacterSelectionResultPayload;
 import net.minecraft.client.Minecraft;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.common.EventBusSubscriber;
 
-@EventBusSubscriber(modid = AftermathMod.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+/**
+ * Client-only handlers invoked directly by AftermathNetworking for clientbound payloads.
+ * This class is deliberately not an EventBusSubscriber: it has no @SubscribeEvent methods.
+ */
 public final class CharacterClientPayloads {
     public static void open(CharacterScreenPayload payload) {
         Minecraft.getInstance().setScreen(new CharacterSelectionScreen(payload.definitionsJson()));
