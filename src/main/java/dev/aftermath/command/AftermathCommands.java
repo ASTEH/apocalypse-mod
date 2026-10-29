@@ -4,6 +4,7 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.character.WeaponProgressionService;
 import dev.aftermath.learning.LearningService;
+import dev.aftermath.noise.NoiseService;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -44,6 +45,27 @@ public final class AftermathCommands {
                                     () -> LearningService.buildStatusMessage(player), false);
                             return 1;
                         }))
+                        .then(Commands.literal("noise")
+                                .then(Commands.literal("test").executes(context -> {
+                                    var player = context.getSource().getPlayerOrException();
+                                    NoiseService.NoiseResult result = NoiseService.emitNoise(
+                                            player.serverLevel(), player.position(),
+                                            NoiseService.gunshotEventId(), player.getUUID());
+                                    Component feedback = switch (result.status()) {
+                                        case EMITTED -> Component.translatable(
+                                                "message.aftermath.noise.emitted",
+                                                result.affectedEntities(), result.groupedFollowers());
+                                        case DISABLED -> Component.translatable("message.aftermath.noise.disabled");
+                                        case UNKNOWN_EVENT -> Component.translatable("message.aftermath.noise.unknown_event");
+                                        case COOLDOWN -> Component.translatable("message.aftermath.noise.cooldown");
+                                    };
+                                    if (result.status() == NoiseService.Status.EMITTED) {
+                                        context.getSource().sendSuccess(() -> feedback, false);
+                                        return 1;
+                                    }
+                                    context.getSource().sendFailure(feedback);
+                                    return 0;
+                                })))
         );
 
         AftermathMod.LOGGER.debug("Registered /aftermath commands.");

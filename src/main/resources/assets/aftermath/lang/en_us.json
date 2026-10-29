@@ -66,5 +66,9 @@
   "message.aftermath.learning.cancelled_damage": "Learning session cancelled: you took damage.",
   "message.aftermath.learning.completed": "Completed %1$s: +%2$s XP. Skill total: %3$s XP.",
   "message.aftermath.learning.already_claimed": "The reward for this material has already been claimed.",
-  "message.aftermath.learning.status": "Skill XP — first aid: %1$s; firearms safety: %2$s; mechanics: %3$s."
+  "message.aftermath.learning.status": "Skill XP — first aid: %1$s; firearms safety: %2$s; mechanics: %3$s.",
+  "message.aftermath.noise.disabled": "Noise events are disabled on this server.",
+  "message.aftermath.noise.unknown_event": "The noise definition was not loaded. Check datapacks and restart the world.",
+  "message.aftermath.noise.cooldown": "That noise event is on cooldown. Try again in a second.",
+  "message.aftermath.noise.emitted": "Noise emitted. Existing eligible entities affected: %1$s; horde followers: %2$s."
 }

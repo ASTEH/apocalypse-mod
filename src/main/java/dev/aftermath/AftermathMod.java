@@ -8,6 +8,9 @@ import dev.aftermath.character.WeaponProgressionService;
 import dev.aftermath.content.AftermathContent;
 import dev.aftermath.learning.LearningDefinitions;
 import dev.aftermath.learning.LearningService;
+import dev.aftermath.noise.HordeDirector;
+import dev.aftermath.noise.NoiseDefinitions;
+import dev.aftermath.noise.NoiseService;
 import dev.aftermath.command.AftermathCommands;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.AftermathNetworking;
@@ -39,6 +42,12 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(LearningService::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(LearningService::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(LearningService::onPlayerLogout);
+        NeoForge.EVENT_BUS.addListener(NoiseDefinitions::register);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onLevelTick);
+        NeoForge.EVENT_BUS.addListener(NoiseService::onServerStopping);
+        NeoForge.EVENT_BUS.addListener(HordeDirector::onEntityJoinLevel);
+        NeoForge.EVENT_BUS.addListener(HordeDirector::onEntityLeaveLevel);
+        NeoForge.EVENT_BUS.addListener(HordeDirector::onServerStopping);
 
         LOGGER.info("Aftermath Survival Framework {} initialised for Minecraft 1.21.1.",
                 modContainer.getModInfo().getVersion());

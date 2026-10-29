@@ -39,18 +39,20 @@
 - [x] Persistent skill XP and completion counts in a player attachment.
 - [x] Movement, damage, changing the active manual, or removing the TV cancels a session without XP.
 - [x] The Quick Learner trait multiplies learning XP; status is available via `/aftermath learning`.
-- [ ] CI build and clean client/dedicated-server startup.
-- [ ] Manual acceptance tests in game.
+- [x] CI build and clean client/dedicated-server startup.
+- [x] Manual acceptance tests in game.
 
 **Acceptance:** each lesson/program grants its reward only within the configured completion limit; progress persists through relog and death; two players can study the same TV independently; cancelled sessions grant no XP.
 
 ## M4 — Noise and horde group
 
-- One data-driven gunshot noise event.
-- Existing tagged zombies in bounded range can investigate.
-- No entity spawn call from the noise handler.
-- One leader with bounded followers.
-- Per-entity path cooldown and global pathfinding budget.
+- [x] Data-driven gunshot noise definition and public server-side noise API.
+- [x] `/aftermath noise test` for testing without a firearm-mod adapter.
+- [x] Only already-loaded, tag-eligible mobs inside the radius are considered; no spawn calls or chunk forcing.
+- [x] Temporary leader/follower groups, capped by server config and archetype JSON.
+- [x] Movement goal added alongside existing goals; per-entity path cooldown and global path request budget.
+- [ ] CI build and clean client/dedicated-server startup.
+- [ ] Manual acceptance tests in game.
 
 **Acceptance:** noise attracts existing zombies; no mobs appear because of noise; no chunk is loaded solely for migration; foreign AI goals remain.
 

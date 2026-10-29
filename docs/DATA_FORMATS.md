@@ -1,6 +1,6 @@
 # Data formats — draft v1
 
-These are Aftermath-owned JSON contracts, not built-in NeoForge schemas. The loader and validators must be implemented before definitions drive gameplay.
+These are Aftermath-owned JSON contracts, not built-in NeoForge schemas. Profession, trait, lesson, TV, noise-event, and horde-archetype files are loaded by server-side reload listeners and validated before use.
 
 ## Rules
 
@@ -97,9 +97,10 @@ The training television's Field Medicine broadcast starts at world time 6000 (no
   "type": "noise",
   "noise_radius": 64,
   "lure_duration_ticks": 1200,
-  "cooldown_ticks": 200,
+  "cooldown_ticks": 20,
   "target_tag": "aftermath:horde_members",
-  "affects_loaded_entities_only": true
+  "affects_loaded_entities_only": true,
+  "max_affected_entities": 32
 }
 ```
 
@@ -113,9 +114,7 @@ Noise affects existing entities only; it never spawns entities in response to pl
   "leader": true,
   "follower_radius": 20,
   "max_followers": 12,
-  "health_multiplier": 1.5,
-  "speed_multiplier": 1.1,
-  "aura_radius": 8
+  "speed_multiplier": 1.1
 }
 ```
 

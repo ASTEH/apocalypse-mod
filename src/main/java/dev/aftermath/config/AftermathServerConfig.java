@@ -22,6 +22,8 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.IntValue DEFAULT_NOISE_RADIUS;
     public static final ModConfigSpec.IntValue MAX_HORDE_SIZE;
     public static final ModConfigSpec.IntValue AI_RECALC_INTERVAL_TICKS;
+    public static final ModConfigSpec.IntValue MAX_NOISE_TARGETS;
+    public static final ModConfigSpec.IntValue MAX_PATH_REQUESTS_PER_TICK;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -57,6 +59,10 @@ public final class AftermathServerConfig {
                 .defineInRange("maxHordeSize", 24, 1, 128);
         AI_RECALC_INTERVAL_TICKS = builder.comment("Minimum interval between Aftermath path/target recalculations for an entity.")
                 .defineInRange("aiRecalcIntervalTicks", 40, 5, 1200);
+        MAX_NOISE_TARGETS = builder.comment("Maximum already-loaded eligible mobs assigned to one noise event.")
+                .defineInRange("maxNoiseTargetsPerEvent", 32, 1, 128);
+        MAX_PATH_REQUESTS_PER_TICK = builder.comment("Global Aftermath path requests allowed per tick in each dimension.")
+                .defineInRange("maxPathRequestsPerTick", 16, 1, 256);
         builder.pop();
 
         SPEC = builder.build();

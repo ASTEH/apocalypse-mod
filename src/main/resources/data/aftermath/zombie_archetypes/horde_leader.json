@@ -1,0 +1,7 @@
+{
+  "entity_tag": "aftermath:horde_members",
+  "leader": true,
+  "follower_radius": 20,
+  "max_followers": 12,
+  "speed_multiplier": 1.1
+}
