@@ -86,3 +86,9 @@ See [the build guide](docs/BUILDING.md), [architecture plan](docs/ARCHITECTURE.m
 ### Zombie-awareness integration
 
 Aftermath has its own server-side sound-response system; Zombie Awareness is not required for the sound mechanics. Running both can duplicate sound processing. Keep Zombie Awareness only if its additional blood-scent, light-source awareness, or wandering-horde behavior is desired.
+
+### Daytime zombie population and kill counter
+
+In the server config, `enableDaytimeZombieSuppression=true` suppresses automated zombie-like spawns in the Overworld during daylight. `daytimeZombieSpawnChancePercent=0` blocks them entirely; set it to 3–5 for a small daytime chance. This does not delete zombies already present or block manual spawn eggs/commands and spawners.
+
+The HUD shows the player's persistent lifetime zombie-like kill count. `/aftermath kills` prints the value in chat, while `/aftermath dayzombies` reports the current daytime spawn settings.
