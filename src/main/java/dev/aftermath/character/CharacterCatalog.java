@@ -59,7 +59,7 @@ public final class CharacterCatalog {
             if (traitId == null) {
                 return SelectionResult.failure("unknown_trait", traitInput, null, 0, 0);
             }
-            if (!selectedIds.add(traitId)) {
+            if (selectedIds.contains(traitId)) {
                 return SelectionResult.failure("duplicate_trait", traitId.toString(), null, 0, 0);
             }
 
@@ -71,11 +71,15 @@ public final class CharacterCatalog {
                 return SelectionResult.failure("trait_not_allowed", traitId.toString(), profession.id().toString(), 0, 0);
             }
 
-            for (ResourceLocation conflict : trait.conflicts()) {
-                if (selectedIds.contains(conflict)) {
-                    return SelectionResult.failure("trait_conflict", trait.id().toString(), conflict.toString(), 0, 0);
+            for (CharacterTrait alreadySelected : selectedTraits) {
+                if (trait.conflicts().contains(alreadySelected.id())
+                        || alreadySelected.conflicts().contains(trait.id())) {
+                    return SelectionResult.failure(
+                            "trait_conflict", alreadySelected.id().toString(), trait.id().toString(), 0, 0);
                 }
             }
+
+            selectedIds.add(traitId);
             selectedTraits.add(trait);
             totalCost += trait.pointCost();
             totalCredit += trait.pointCredit();
