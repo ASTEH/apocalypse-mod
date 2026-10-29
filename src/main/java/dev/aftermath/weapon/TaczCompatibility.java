@@ -89,6 +89,23 @@ public final class TaczCompatibility {
         }
     }
 
+    /**
+     * Diagnostic for /aftermath weaponhandling. It reports whether the active TaCZ cache objects
+     * exist and whether Aftermath currently has an override installed on them.
+     */
+    public static synchronized String handlingCacheStatus(Entity shooter) {
+        Object cache = invokeNoArgs(shooter, "getCacheProperty");
+        if (cache == null) return "cache=missing (TaCZ not installed, no active gun cache, or API mismatch)";
+        Object inaccuracy = invokeOneArg(cache, "getCache", String.class, INACCURACY_CACHE_ID);
+        Object recoil = invokeOneArg(cache, "getCache", String.class, "recoil");
+        boolean spreadScaled = ACCURACY_STATES.containsKey(cache);
+        boolean recoilScaled = RECOIL_STATES.containsKey(cache);
+        return "cache=present, inaccuracyMap=" + (inaccuracy instanceof Map<?, ?>)
+                + ", recoilPair=" + (recoil != null)
+                + ", spreadOverride=" + spreadScaled
+                + ", recoilOverride=" + recoilScaled;
+    }
+
     private static double boundedScale(double value, double min, double max) {
         if (!Double.isFinite(value)) return 1.0D;
         return Math.max(min, Math.min(max, value));
