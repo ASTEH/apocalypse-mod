@@ -8,59 +8,68 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.aftermath.AftermathMod;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Reads definitions from data/<namespace>/aftermath/{professions,traits}/.
+ * Reads only data/<namespace>/professions and data/<namespace>/traits.
  * A bad reload does not replace the last known-good catalog.
  */
-public final class CharacterDefinitionReloadListener extends SimpleJsonResourceReloadListener {
+public final class CharacterDefinitionReloadListener extends SimplePreparableReloadListener<CharacterDefinitionReloadListener.ParsedDefinitions> {
     private static final Gson GSON = new GsonBuilder().create();
-
-    public CharacterDefinitionReloadListener() {
-        super(GSON, "aftermath");
-    }
 
     public static void register(AddReloadListenerEvent event) {
         event.addListener(new CharacterDefinitionReloadListener());
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> entries, ResourceManager resourceManager,
-                         ProfilerFiller profiler) {
+    protected ParsedDefinitions prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
         Map<ResourceLocation, CharacterProfession> professions = new LinkedHashMap<>();
         Map<ResourceLocation, CharacterTrait> traits = new LinkedHashMap<>();
         boolean invalid = false;
 
-        for (Map.Entry<ResourceLocation, JsonElement> entry : entries.entrySet()) {
-            String path = entry.getKey().getPath();
-            try {
-                if (path.startsWith("professions/")) {
-                    CharacterProfession profession = parseProfession(entry.getKey(), entry.getValue());
-                    professions.put(profession.id(), profession);
-                } else if (path.startsWith("traits/")) {
-                    CharacterTrait trait = parseTrait(entry.getKey(), entry.getValue());
-                    traits.put(trait.id(), trait);
-                }
-            } catch (RuntimeException exception) {
+        for (Map.Entry<ResourceLocation, Resource> entry : resourceManager.listResources(
+                "professions", id -> id.getPath().endsWith(".json")).entrySet()) {
+            try (Reader reader = entry.getValue().openAsReader()) {
+                JsonElement json = GSON.fromJson(reader, JsonElement.class);
+                ResourceLocation id = definitionId(entry.getKey(), "professions/");
+                CharacterProfession profession = parseProfession(id, json);
+                professions.put(profession.id(), profession);
+            } catch (IOException | RuntimeException exception) {
                 invalid = true;
-                AftermathMod.LOGGER.error("Invalid Aftermath character definition '{}': {}",
+                AftermathMod.LOGGER.error("Invalid Aftermath profession definition '{}': {}",
+                        entry.getKey(), exception.getMessage());
+            }
+        }
+
+        for (Map.Entry<ResourceLocation, Resource> entry : resourceManager.listResources(
+                "traits", id -> id.getPath().endsWith(".json")).entrySet()) {
+            try (Reader reader = entry.getValue().openAsReader()) {
+                JsonElement json = GSON.fromJson(reader, JsonElement.class);
+                ResourceLocation id = definitionId(entry.getKey(), "traits/");
+                CharacterTrait trait = parseTrait(id, json);
+                traits.put(trait.id(), trait);
+            } catch (IOException | RuntimeException exception) {
+                invalid = true;
+                AftermathMod.LOGGER.error("Invalid Aftermath trait definition '{}': {}",
                         entry.getKey(), exception.getMessage());
             }
         }
 
         if (professions.isEmpty() || traits.isEmpty()) {
             invalid = true;
-            AftermathMod.LOGGER.error("Aftermath character reload found no professions or no traits; keeping previous definitions.");
+            AftermathMod.LOGGER.error("Aftermath character reload found no professions or no traits.");
         }
 
         for (CharacterProfession profession : professions.values()) {
@@ -81,32 +90,36 @@ public final class CharacterDefinitionReloadListener extends SimpleJsonResourceR
             }
         }
 
-        if (invalid) {
+        return new ParsedDefinitions(Map.copyOf(professions), Map.copyOf(traits), invalid);
+    }
+
+    @Override
+    protected void apply(ParsedDefinitions prepared, ResourceManager resourceManager, ProfilerFiller profiler) {
+        if (prepared.invalid()) {
             AftermathMod.LOGGER.warn("Rejected Aftermath character definitions reload; the last valid snapshot remains active.");
             return;
         }
 
-        CharacterCatalog.replace(professions, traits);
+        CharacterCatalog.replace(prepared.professions(), prepared.traits());
         AftermathMod.LOGGER.info("Loaded {} professions and {} character traits.",
-                professions.size(), traits.size());
+                prepared.professions().size(), prepared.traits().size());
     }
 
-    private static CharacterProfession parseProfession(ResourceLocation fileId, JsonElement element) {
+    private static CharacterProfession parseProfession(ResourceLocation id, JsonElement element) {
         JsonObject json = GsonHelper.convertToJsonObject(element, "profession");
-        ResourceLocation id = definitionId(fileId, "professions/");
         String name = requiredString(json, "name");
         String description = requiredString(json, "description");
         int points = GsonHelper.getAsInt(json, "starting_points");
         if (points < 0 || points > 100) {
             throw new JsonParseException("'starting_points' must be between 0 and 100.");
         }
-        Set<ResourceLocation> allowedTraits = readIds(GsonHelper.getAsJsonArray(json, "allowed_traits"), "allowed_traits");
+        Set<ResourceLocation> allowedTraits = readIds(
+                GsonHelper.getAsJsonArray(json, "allowed_traits"), "allowed_traits");
         return new CharacterProfession(id, name, description, points, allowedTraits);
     }
 
-    private static CharacterTrait parseTrait(ResourceLocation fileId, JsonElement element) {
+    private static CharacterTrait parseTrait(ResourceLocation id, JsonElement element) {
         JsonObject json = GsonHelper.convertToJsonObject(element, "trait");
-        ResourceLocation id = definitionId(fileId, "traits/");
         String name = requiredString(json, "name");
         String description = requiredString(json, "description");
         String categoryText = requiredString(json, "category");
@@ -134,10 +147,11 @@ public final class CharacterDefinitionReloadListener extends SimpleJsonResourceR
 
     private static ResourceLocation definitionId(ResourceLocation fileId, String folderPrefix) {
         String path = fileId.getPath();
-        if (!path.startsWith(folderPrefix)) {
-            throw new JsonParseException("Unexpected definition folder: " + path);
+        String filePrefix = folderPrefix;
+        if (!path.startsWith(filePrefix) || !path.endsWith(".json")) {
+            throw new JsonParseException("Unexpected definition path: " + path);
         }
-        String shortPath = path.substring(folderPrefix.length());
+        String shortPath = path.substring(filePrefix.length(), path.length() - ".json".length());
         if (shortPath.isBlank()) {
             throw new JsonParseException("Definition file has an empty id.");
         }
@@ -168,4 +182,10 @@ public final class CharacterDefinitionReloadListener extends SimpleJsonResourceR
         }
         return Set.copyOf(result);
     }
+
+    private record ParsedDefinitions(
+            Map<ResourceLocation, CharacterProfession> professions,
+            Map<ResourceLocation, CharacterTrait> traits,
+            boolean invalid
+    ) {}
 }
