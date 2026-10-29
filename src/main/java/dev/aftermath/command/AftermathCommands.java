@@ -11,6 +11,7 @@ import dev.aftermath.noise.HordeDirector;
 import dev.aftermath.noise.NoiseService;
 import dev.aftermath.weapon.FirearmDefinitions;
 import dev.aftermath.weapon.TaczCompatibility;
+import dev.aftermath.zombie.ZombieKillService;
 import net.minecraft.commands.Commands;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.network.chat.Component;
@@ -40,6 +41,24 @@ public final class AftermathCommands {
                             context.getSource().sendSuccess(() -> Component.literal(
                                     "Aftermath is an early-development survival framework. Use /aftermath status to inspect server settings."),
                                     false);
+                            return 1;
+                        }))
+                        .then(Commands.literal("kills").executes(context -> {
+                            var player = context.getSource().getPlayerOrException();
+                            int kills = ZombieKillService.getCount(player);
+                            context.getSource().sendSuccess(() -> Component.translatable(
+                                    "message.aftermath.zombie_kills.status", kills), false);
+                            return 1;
+                        }))
+                        .then(Commands.literal("dayzombies").executes(context -> {
+                            boolean enabled = AftermathServerConfig.ENABLE_DAYTIME_ZOMBIE_SUPPRESSION.get();
+                            int chance = AftermathServerConfig.DAYTIME_ZOMBIE_SPAWN_CHANCE_PERCENT.get();
+                            context.getSource().sendSuccess(() -> Component.translatable(
+                                    "message.aftermath.day_zombies.status",
+                                    Component.translatable(enabled
+                                            ? "message.aftermath.day_zombies.enabled"
+                                            : "message.aftermath.day_zombies.disabled"),
+                                    chance), false);
                             return 1;
                         }))
                         .then(Commands.literal("weapons")
