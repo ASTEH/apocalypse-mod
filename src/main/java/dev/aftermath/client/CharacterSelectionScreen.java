@@ -714,36 +714,43 @@ public final class CharacterSelectionScreen extends Screen {
     }
 
     private void drawTooltip(GuiGraphics graphics, int mouseX, int mouseY, String title, String description, String extra) {
-        int maxWidth = Math.min(240, Math.max(110, width - 16));
-        List<FormattedCharSequence> lines = new ArrayList<>();
-        lines.addAll(font.split(Component.literal(description == null ? "" : description), maxWidth - 14));
-        if (extra != null && !extra.isBlank()) {
-            lines.addAll(font.split(Component.literal(extra.replace("\n", "  •  ")), maxWidth - 14));
-        }
-        int longest = Math.min(maxWidth, Math.max(font.width(title) + 14,
-                lines.stream().mapToInt(font::width).max().orElse(40) + 14));
-        int boxH = font.lineHeight + 10 + lines.size() * (font.lineHeight + 1);
-        int x = Math.min(mouseX + 12, width - longest - 4);
-        int y = Math.min(mouseY + 10, height - boxH - 4);
-        x = Math.max(4, x);
-        y = Math.max(4, y);
+        // Keep custom tooltips above every dossier panel, scrollbar and button.
+        graphics.pose().pushPose();
+        graphics.pose().translate(0.0D, 0.0D, 400.0D);
+        try {
+            int maxWidth = Math.min(240, Math.max(110, width - 16));
+            List<FormattedCharSequence> lines = new ArrayList<>();
+            lines.addAll(font.split(Component.literal(description == null ? "" : description), maxWidth - 14));
+            if (extra != null && !extra.isBlank()) {
+                lines.addAll(font.split(Component.literal(extra.replace("\\n", "  •  ")), maxWidth - 14));
+            }
+            int longest = Math.min(maxWidth, Math.max(font.width(title) + 14,
+                    lines.stream().mapToInt(font::width).max().orElse(40) + 14));
+            int boxH = font.lineHeight + 10 + lines.size() * (font.lineHeight + 1);
+            int x = Math.min(mouseX + 12, width - longest - 4);
+            int y = Math.min(mouseY + 10, height - boxH - 4);
+            x = Math.max(4, x);
+            y = Math.max(4, y);
 
-        graphics.fill(x, y, x + longest, y + boxH, 0xF20B0D09);
-        graphics.fill(x, y, x + longest, y + 1, RUST);
-        graphics.fill(x, y + boxH - 1, x + longest, y + boxH, BORDER);
-        graphics.fill(x, y, x + 1, y + boxH, BORDER);
-        graphics.fill(x + longest - 1, y, x + longest, y + boxH, BORDER);
-        drawString(graphics, fit(title, longest - 12), x + 6, y + 5, GOLD);
-        int lineY = y + font.lineHeight + 8;
-        int drawn = 0;
-        for (FormattedCharSequence line : lines) {
-            if (lineY + font.lineHeight >= y + boxH) break;
-            graphics.drawString(font, line, x + 6, lineY, drawn >= lines.size() - 1 && extra != null ? RED : MUTED);
-            lineY += font.lineHeight + 1;
-            drawn++;
+            graphics.fill(x, y, x + longest, y + boxH, 0xF20B0D09);
+            graphics.fill(x, y, x + longest, y + 1, RUST);
+            graphics.fill(x, y + boxH - 1, x + longest, y + boxH, BORDER);
+            graphics.fill(x, y, x + 1, y + boxH, BORDER);
+            graphics.fill(x + longest - 1, y, x + longest, y + boxH, BORDER);
+            drawString(graphics, fit(title, longest - 12), x + 6, y + 5, GOLD);
+            int lineY = y + font.lineHeight + 8;
+            int drawn = 0;
+            for (FormattedCharSequence line : lines) {
+                if (lineY + font.lineHeight >= y + boxH) break;
+                graphics.drawString(font, line, x + 6, lineY,
+                        drawn >= lines.size() - 1 && extra != null ? RED : MUTED);
+                lineY += font.lineHeight + 1;
+                drawn++;
+            }
+        } finally {
+            graphics.pose().popPose();
         }
     }
-
     private void drawWrapped(GuiGraphics graphics, String text, int x, int y, int maxWidth, int maxLines, int color) {
         if (text == null || text.isBlank() || maxWidth <= 0 || maxLines <= 0) return;
         List<FormattedCharSequence> lines = font.split(Component.literal(text), maxWidth);
