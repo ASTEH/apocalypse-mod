@@ -27,9 +27,3 @@ versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.${mod_id}]]
-modId="sdm_ui_library"
-type="required"
-versionRange="[1.9.2,)"
-ordering="AFTER"
-side="CLIENT"
