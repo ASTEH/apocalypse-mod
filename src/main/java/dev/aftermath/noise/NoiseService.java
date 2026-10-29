@@ -102,15 +102,17 @@ public final class NoiseService {
         NoiseDefinitions.HordeArchetypeDefinition archetype = NoiseDefinitions.snapshot().hordeArchetypes().values()
                 .stream().filter(a -> a.leader() && a.entityTag().equals(def.targetTag()))
                 .min(Comparator.comparing(a -> a.id().toString())).orElse(null);
-        int followers = HordeDirector.assignNoise(level, origin, mobs, def.lureDurationTicks(),
-                eventId, sourceId, HordeDirector.isHordeBehaviorEnabled(), stageGroupLimit, archetype);
-        AftermathMod.LOGGER.debug("Noise {} at {} in {} affected {} loaded mobs; followers={}; day={}, radius={}.",
-                eventId, origin, dim, mobs.size(), followers, day, radius);
+        HordeDirector.AssignmentResult assignment = HordeDirector.assignNoise(level, origin, mobs,
+                def.lureDurationTicks(), eventId, sourceId, HordeDirector.isHordeBehaviorEnabled(),
+                stageGroupLimit, archetype);
+        AftermathMod.LOGGER.debug("Noise {} at {} in {} candidates={}, assigned={}, followers={}, priority={}, day={}, radius={}.",
+                eventId, origin, dim, mobs.size(), assignment.acceptedTargets(),
+                assignment.groupedFollowers(), HordeDirector.signalPriorityForDiagnostics(eventId), day, radius);
         if (LAST_EMITTED.size() > 4096) LAST_EMITTED.entrySet().removeIf(e -> {
             long stamp = e.getValue();
             return now < stamp || (e.getKey().dimension().equals(dim) && now - stamp >= CLEANUP_AGE);
         });
-        return new NoiseResult(Status.EMITTED, mobs.size(), followers);
+        return new NoiseResult(Status.EMITTED, assignment.acceptedTargets(), assignment.groupedFollowers());
     }
     private static ResourceLocation eventId(String path) {
         return ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, path);
