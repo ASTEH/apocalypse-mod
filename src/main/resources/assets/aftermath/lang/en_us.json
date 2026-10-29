@@ -4,6 +4,8 @@
   "command.aftermath.status": "Aftermath server status",
   "screen.aftermath.character.title": "Create your survivor",
   "screen.aftermath.character.subtitle": "Choose a profession and traits.",
+  "screen.aftermath.character.kicker": "AFTERMATH // SURVIVOR REGISTRY",
+  "screen.aftermath.character.page": "PAGE %1$s / %2$s",
   "screen.aftermath.character.profession": "Profession",
   "screen.aftermath.character.traits": "Traits",
   "screen.aftermath.character.points": "Points remaining: %1$s / %2$s",
