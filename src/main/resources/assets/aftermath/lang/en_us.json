@@ -40,5 +40,19 @@
   "trait.aftermath.slow_learner": "Slow learner",
   "trait.aftermath.slow_learner.description": "A negative trait that grants additional character points.",
   "trait.aftermath.poor_aim": "Poor aim",
-  "trait.aftermath.poor_aim.description": "A negative trait that grants additional character points."
+  "trait.aftermath.poor_aim.description": "A negative trait that grants additional character points.",
+  "screen.aftermath.character.title": "Create your survivor",
+  "message.aftermath.character.ui.professions": "Profession",
+  "message.aftermath.character.ui.traits": "Traits",
+  "message.aftermath.character.ui.confirm": "Confirm character",
+  "message.aftermath.character.ui.confirm_wait": "Saving...",
+  "message.aftermath.character.ui.saving_status": "Sending selection to server...",
+  "message.aftermath.character.ui.points_remaining": "Points remaining: %s",
+  "message.aftermath.character.ui.select_profession": "Choose a valid profession and resolve trait conflicts.",
+  "message.aftermath.character.ui.too_many_definitions": "Some custom definitions are hidden; reduce the catalog to see them all.",
+  "message.aftermath.character.ui.open_failed": "Could not open character selection. Use /aftermath character list and choose.",
+  "message.aftermath.character.ui.invalid_response": "The server returned an invalid character selection response.",
+  "message.aftermath.character.error.feature_disabled": "Character creation is disabled by the server.",
+  "message.aftermath.character.error.invalid_request": "The character selection request is invalid.",
+  "message.aftermath.character.error.too_many_traits": "Too many traits were sent in one selection."
 }

@@ -136,6 +136,11 @@ public final class AftermathCommands {
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         CommandSourceStack source = context.getSource();
         ServerPlayer player = source.getPlayerOrException();
+        if (!AftermathServerConfig.ENABLE_CHARACTER_CREATION.get()) {
+            source.sendFailure(Component.translatable("message.aftermath.character.error.feature_disabled"));
+            return 0;
+        }
+
         CharacterProfile currentProfile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
 
         if (currentProfile.complete()

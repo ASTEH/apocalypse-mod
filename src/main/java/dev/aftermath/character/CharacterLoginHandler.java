@@ -1,6 +1,7 @@
 package dev.aftermath.character;
 
 import dev.aftermath.config.AftermathServerConfig;
+import dev.aftermath.network.CharacterNetwork;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -14,7 +15,8 @@ public final class CharacterLoginHandler {
             return;
         }
 
-        if (!player.getData(AftermathAttachments.CHARACTER_PROFILE).complete()) {
+        if (!player.getData(AftermathAttachments.CHARACTER_PROFILE).complete()
+                && !CharacterNetwork.sendCatalog(player, true)) {
             player.sendSystemMessage(Component.translatable("message.aftermath.character.missing"));
             player.sendSystemMessage(Component.translatable("message.aftermath.character.list_hint"));
         }

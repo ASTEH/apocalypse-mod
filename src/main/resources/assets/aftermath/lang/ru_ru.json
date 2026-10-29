@@ -40,5 +40,19 @@
   "trait.aftermath.slow_learner": "Тяжело обучается",
   "trait.aftermath.slow_learner.description": "Отрицательная черта, дающая дополнительные очки персонажа.",
   "trait.aftermath.poor_aim": "Плохая меткость",
-  "trait.aftermath.poor_aim.description": "Отрицательная черта, дающая дополнительные очки персонажа."
+  "trait.aftermath.poor_aim.description": "Отрицательная черта, дающая дополнительные очки персонажа.",
+  "screen.aftermath.character.title": "Создание выжившего",
+  "message.aftermath.character.ui.professions": "Профессия",
+  "message.aftermath.character.ui.traits": "Черты",
+  "message.aftermath.character.ui.confirm": "Подтвердить персонажа",
+  "message.aftermath.character.ui.confirm_wait": "Сохранение...",
+  "message.aftermath.character.ui.saving_status": "Отправляем выбор серверу...",
+  "message.aftermath.character.ui.points_remaining": "Осталось очков: %s",
+  "message.aftermath.character.ui.select_profession": "Выбери профессию и устрани конфликты черт.",
+  "message.aftermath.character.ui.too_many_definitions": "Часть дополнительных определений скрыта: сократи их число, чтобы увидеть все.",
+  "message.aftermath.character.ui.open_failed": "Не удалось открыть выбор персонажа. Используй /aftermath character list и выбери профессию.",
+  "message.aftermath.character.ui.invalid_response": "Сервер прислал неверный ответ о выборе персонажа.",
+  "message.aftermath.character.error.feature_disabled": "Создание персонажа отключено настройками сервера.",
+  "message.aftermath.character.error.invalid_request": "Запрос выбора персонажа имеет неверный формат.",
+  "message.aftermath.character.error.too_many_traits": "В одном выборе слишком много черт."
 }

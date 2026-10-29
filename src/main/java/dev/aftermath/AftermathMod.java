@@ -5,6 +5,7 @@ import dev.aftermath.character.AftermathAttachments;
 import dev.aftermath.character.CharacterDefinitionReloadListener;
 import dev.aftermath.character.CharacterLoginHandler;
 import dev.aftermath.command.AftermathCommands;
+import dev.aftermath.network.CharacterNetwork;
 import dev.aftermath.config.AftermathServerConfig;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -22,6 +23,7 @@ public final class AftermathMod {
     public AftermathMod(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.SERVER, AftermathServerConfig.SPEC);
         AftermathAttachments.register(modEventBus);
+        modEventBus.addListener(CharacterNetwork::registerPayloads);
 
         NeoForge.EVENT_BUS.addListener(AftermathCommands::registerCommands);
         NeoForge.EVENT_BUS.addListener(CharacterDefinitionReloadListener::register);

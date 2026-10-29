@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** early development. The bootstrap build passed in GitHub Actions, and the maintainer confirmed the mod can start Minecraft and load a world after removing an unrelated failing test mod from the pack. The M1 profile-selection increment is pending its own CI build and in-game tests.
+> **Status:** early development. The bootstrap build passed in GitHub Actions, and the maintainer confirmed the mod can start Minecraft and load a world after removing an unrelated failing test mod from the pack. The M1 increment now includes a first-join character screen with server-validated selection; the screen still needs in-game verification and trait effects are a later step.
 
 ## Requirements
 
@@ -27,7 +27,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 - [x] **M0 — Bootstrap foundation:** NeoForge entry point, server config, /aftermath status, and CI build.
 - [ ] **M0 release checks:** clean NeoForge-only startup and dedicated-server verification.
-- [ ] **M1 — Character profile:** profession + positive/negative traits, point budget, persisted profile, first-join screen, admin-configurable reopen. The current increment adds server-side profile storage, JSON definitions, validation, login hint, and command-based selection; the UI and trait effects remain to be implemented.
+- [ ] **M1 — Character profile:** profession + positive/negative traits, point budget, persisted profile, first-join screen, admin-configurable reopen. The current increment adds server-side profile storage, JSON definitions, validation, first-join RU/EN selection UI, and command-based selection; gameplay effects for traits remain to be implemented.
 - [ ] **M2 — Weapon proficiency:** tags for melee/pistol/shotgun/rifle/heavy, server-side kill XP, levels, anti-farm limits, synced profile.
 - [ ] **M3 — Learning:** 3 manuals, server-timed reading sessions, 1 registered TV block/program, saved player progress and client display.
 - [ ] **M4 — Zombie groups:** configurable members/leaders and one server-side noise event; no artificial spawns.

@@ -2,6 +2,14 @@
 
 These tests apply to the incremental M1 server-side profile implementation. The character-selection screen and gameplay effects for traits are not part of this increment yet.
 
+## First-join screen
+
+1. Join the world with a player who has no saved profile. The Russian or English character-selection screen should appear automatically.
+2. Pick Medic, Mechanic, or Scavenger. Hover a profession or trait to read its description.
+3. Select traits and watch the remaining point count. Incompatible traits or an exceeded budget must disable confirmation.
+4. Confirm. The screen should close only after the server accepts the selection; the server sends a localized success message.
+5. Test on an integrated world and a dedicated server.
+
 ## Install and inspect
 
 1. Build using Java 21 with .\gradlew.bat build.

@@ -20,8 +20,8 @@
 - [x] Server-side point-budget validation, duplicate-trait checks, allowed-trait checks and conflict validation
 - [x] Persistent player profile stored in a serialized attachment and copied on death
 - [x] First-join hint plus /aftermath character list, show, and choose commands
-- [ ] CI build and runtime verification of this increment
-- [ ] Client character-selection screen with RU/EN labels and descriptions
+- [ ] CI build and runtime verification of the UI/networking increment
+- [x] Client character-selection screen with RU/EN labels and descriptions (runtime test pending)
 - [ ] Apply trait effects through explicit, server-owned systems
 - [ ] Permission/config checks and UX for reopening the selection screen
 
