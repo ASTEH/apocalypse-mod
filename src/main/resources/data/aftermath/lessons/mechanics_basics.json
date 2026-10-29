@@ -1,0 +1,10 @@
+{
+  "title": "lesson.aftermath.mechanics_basics",
+  "skill": "aftermath:mechanics",
+  "item": "aftermath:training_manual_mechanics",
+  "duration_ticks": 2400,
+  "xp_reward": 20,
+  "max_completions": 1,
+  "cancel_on_movement": true,
+  "cancel_on_damage": true
+}

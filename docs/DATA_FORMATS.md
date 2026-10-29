@@ -1,6 +1,6 @@
 # Data formats — draft v1
 
-These are Aftermath-owned JSON contracts, not built-in NeoForge schemas. M0 includes examples for review; the loader and validators must be implemented before definitions drive gameplay.
+These are Aftermath-owned JSON contracts, not built-in NeoForge schemas. The loader and validators must be implemented before definitions drive gameplay.
 
 ## Rules
 
@@ -63,7 +63,7 @@ Tags classify items; they do not prove which weapon caused a projectile. Unsuppo
 {
   "title": "lesson.aftermath.first_aid",
   "skill": "aftermath:first_aid",
-  "item": "aftermath:training_manual",
+  "item": "aftermath:training_manual_first_aid",
   "duration_ticks": 1200,
   "xp_reward": 20,
   "max_completions": 1,
@@ -71,6 +71,8 @@ Tags classify items; they do not prove which weapon caused a projectile. Unsuppo
   "cancel_on_damage": true
 }
 ```
+
+The manuals are `aftermath:training_manual_first_aid`, `aftermath:training_manual_firearms_safety`, and `aftermath:training_manual_mechanics`. They have crafting recipes. The server cancels reading if the player moves, takes damage, or switches away from the matching manual. Session completion, skill XP, and completion counts are saved on the player.
 
 ## TV program
 
@@ -86,7 +88,7 @@ Tags classify items; they do not prove which weapon caused a projectile. Unsuppo
 }
 ```
 
-Use Minecraft server world time, not client wall-clock time.
+The training television's Field Medicine broadcast starts at world time 6000 (noon) and accepts viewers during the following 1200 ticks. It can be watched once per player. Use Minecraft server world time, not client wall-clock time.
 
 ## Noise event
 

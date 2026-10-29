@@ -1,0 +1,10 @@
+{
+  "title": "lesson.aftermath.firearms_safety",
+  "skill": "aftermath:firearms",
+  "item": "aftermath:training_manual_firearms_safety",
+  "duration_ticks": 1800,
+  "xp_reward": 20,
+  "max_completions": 1,
+  "cancel_on_movement": true,
+  "cancel_on_damage": true
+}

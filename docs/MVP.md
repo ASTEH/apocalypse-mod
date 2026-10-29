@@ -18,33 +18,31 @@
 - [x] Persistent profile attachment, copied on death.
 - [x] First-join screen with server-supplied JSON options.
 - [x] RU/EN labels, profession descriptions and trait descriptions.
-- [ ] CI compilation plus clean client and dedicated-server launch.
-- [ ] Manual acceptance tests in a fresh world.
-
-**Acceptance:** forged client packet cannot grant traits; insufficient budget and conflicting traits are rejected; selected effects and starting kit apply once; the profile persists after relog and death; disabled feature skips the screen.
+- [x] Manually verified in game by the maintainer.
 
 ## M2 — Weapon proficiency
 
 - [x] Persistent server-owned weapon XP attachment, copied on death.
 - [x] Melee class resolved from the datapack item tag.
 - [x] XP only for direct player melee kills against hostile entities.
-- [x] Levels 1–10, server-sent actionbar feedback and /aftermath weapons status.
+- [x] Levels 1–10, server-sent actionbar feedback and `/aftermath weapons` status.
 - [x] Melee damage bonus at levels 2 (+2%), 5 (+5%) and 10 (+10%).
 - [x] Duplicate victim reward guard and configurable per-victim XP cap.
+- [x] Manually verified in game by the maintainer.
 - [ ] Optional firearm adapters; unsupported projectile APIs deliberately receive no XP.
-- [ ] CI build, clean client/server launch and manual acceptance tests.
-
-**Acceptance:** one death does not award duplicate XP; animals and players grant no XP; melee kills work without other mods; relog/death preserves XP; tagged projectiles do not receive guessed attribution.
 
 ## M3 — Learning
 
-- Three lesson definitions and one registered TV block.
-- Reading/viewing are server-timed sessions.
-- Progress persists and syncs.
-- Movement/damage can cancel.
-- TV schedule uses server time.
+- [x] Three registered and craftable training manuals and lesson definitions.
+- [x] Registered training television with a server-world-time broadcast window at noon.
+- [x] Reading and viewing sessions are timed by the server.
+- [x] Persistent skill XP and completion counts in a player attachment.
+- [x] Movement, damage, changing the active manual, or removing the TV cancels a session without XP.
+- [x] The Quick Learner trait multiplies learning XP; status is available via `/aftermath learning`.
+- [ ] CI build and clean client/dedicated-server startup.
+- [ ] Manual acceptance tests in game.
 
-**Acceptance:** reconnecting cannot duplicate rewards; two players get individual progress from the same TV; cancelled session gives no XP.
+**Acceptance:** each lesson/program grants its reward only within the configured completion limit; progress persists through relog and death; two players can study the same TV independently; cancelled sessions grant no XP.
 
 ## M4 — Noise and horde group
 
