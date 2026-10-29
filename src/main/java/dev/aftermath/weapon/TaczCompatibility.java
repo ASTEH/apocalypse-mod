@@ -35,6 +35,7 @@ public final class TaczCompatibility {
     private static final Map<Object, AccuracyState> ACCURACY_STATES = new WeakHashMap<>();
     private static final Map<Object, Object> LAST_ACCURACY_CACHE = new WeakHashMap<>();
     private static final Map<Object, ReloadClock> RELOAD_CLOCKS = new WeakHashMap<>();
+    private static final Map<Object, RecoilState> RECOIL_STATES = new WeakHashMap<>();
 
     /**
      * Applies client/server firearm trait effects through TaCZ's public runtime objects.
@@ -44,25 +45,31 @@ public final class TaczCompatibility {
      * the range 0.1..1.0. A value of 1.0 means the corresponding trait is inactive.
      */
     public static synchronized void applyFirearmTraitEffects(Entity shooter,
-                                                              double eagleEyeSpreadMultiplier,
+                                                              double firearmSpreadMultiplier,
+                                                              double firearmRecoilMultiplier,
                                                               double quickReloadDurationMultiplier,
                                                               boolean weaponProgressionEnabled) {
         if (shooter == null) return;
 
-        double spreadMultiplier = boundedDurationMultiplier(eagleEyeSpreadMultiplier);
+        double spreadMultiplier = boundedScale(firearmSpreadMultiplier, 0.1D, 4.0D);
         Object currentCache = invokeNoArgs(shooter, "getCacheProperty");
         Object previousCache = LAST_ACCURACY_CACHE.get(shooter);
         if (previousCache != null && previousCache != currentCache) {
             restoreAccuracy(previousCache);
+            restoreRecoil(previousCache);
             LAST_ACCURACY_CACHE.remove(shooter);
         }
 
-        if (currentCache != null && spreadMultiplier < 0.999D) {
+        if (currentCache != null && Math.abs(spreadMultiplier - 1.0D) > 0.001D) {
             applyInaccuracyMultiplier(currentCache, spreadMultiplier);
             LAST_ACCURACY_CACHE.put(shooter, currentCache);
         } else {
             if (currentCache != null) restoreAccuracy(currentCache);
             LAST_ACCURACY_CACHE.remove(shooter);
+        }
+
+        if (currentCache != null) {
+            applyRecoilMultiplier(currentCache, boundedScale(firearmRecoilMultiplier, 0.1D, 4.0D));
         }
 
         double reloadMultiplier = boundedDurationMultiplier(quickReloadDurationMultiplier);
@@ -76,6 +83,11 @@ public final class TaczCompatibility {
         } else {
             RELOAD_CLOCKS.remove(shooter);
         }
+    }
+
+    private static double boundedScale(double value, double min, double max) {
+        if (!Double.isFinite(value)) return 1.0D;
+        return Math.max(min, Math.min(max, value));
     }
 
     private static double boundedDurationMultiplier(double value) {
@@ -139,6 +151,89 @@ public final class TaczCompatibility {
             }
         } catch (RuntimeException ignored) {
             // Safe fallback if a future implementation returns an immutable map.
+        }
+    }
+
+    /**
+     * TaCZ's camera recoil is driven by the active AttachmentCacheProperty's "recoil" pair.
+     * Scale its pitch/yaw base values instead of trying to push the player's view from the server.
+     * The original pair is retained and restored when mastery changes or the cache is rebuilt.
+     */
+    private static void applyRecoilMultiplier(Object cache, double multiplier) {
+        Object currentPair = invokeOneArg(cache, "getCache", String.class, "recoil");
+        if (currentPair == null) {
+            RECOIL_STATES.remove(cache);
+            return;
+        }
+
+        RecoilState previous = RECOIL_STATES.get(cache);
+        Object originalPair = previous != null && previous.appliedPair == currentPair
+                ? previous.originalPair : currentPair;
+
+        if (Math.abs(multiplier - 1.0D) <= 0.001D) {
+            if (previous != null && previous.appliedPair == currentPair) {
+                setRecoilCache(cache, previous.originalPair);
+            }
+            RECOIL_STATES.remove(cache);
+            return;
+        }
+
+        try {
+            Object left = invokeNoArgs(originalPair, "left");
+            Object right = invokeNoArgs(originalPair, "right");
+            double basePitch = invokeDouble(left, "eval", 1.0D);
+            double baseYaw = invokeDouble(right, "eval", 1.0D);
+            Object scaledPair = makeRecoilPair(originalPair,
+                    (float) Math.max(0.0D, basePitch * multiplier),
+                    (float) Math.max(0.0D, baseYaw * multiplier));
+            if (scaledPair == null || !setRecoilCache(cache, scaledPair)) return;
+            RECOIL_STATES.put(cache, new RecoilState(originalPair, scaledPair));
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            // Preserve the gun's native recoil if the optional TaCZ cache API has changed.
+        }
+    }
+
+    private static void restoreRecoil(Object cache) {
+        RecoilState state = RECOIL_STATES.remove(cache);
+        if (state == null) return;
+        Object currentPair = invokeOneArg(cache, "getCache", String.class, "recoil");
+        if (currentPair == state.appliedPair) setRecoilCache(cache, state.originalPair);
+    }
+
+    private static Object makeRecoilPair(Object pair, float pitch, float yaw)
+            throws ReflectiveOperationException {
+        // TaCZ's ParameterizedCachePair.of(L, R) has generic parameters erased to Object.
+        Method factory = pair.getClass().getMethod("of", Object.class, Object.class);
+        return factory.invoke(null, pitch, yaw);
+    }
+
+    private static boolean setRecoilCache(Object cache, Object recoilPair) {
+        try {
+            Class<?> gunPropertyClass = Class.forName("com.tacz.guns.api.GunProperty");
+            Object recoilProperty = Class.forName("com.tacz.guns.api.GunProperties")
+                    .getField("RECOIL").get(null);
+            Method setter = cache.getClass().getMethod("setCache", gunPropertyClass, Object.class);
+            setter.invoke(cache, recoilProperty, recoilPair);
+            return true;
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            return false;
+        }
+    }
+
+    private static double invokeDouble(Object target, String methodName, double value)
+            throws ReflectiveOperationException {
+        if (target == null) return 0.0D;
+        Object result = target.getClass().getMethod(methodName, double.class).invoke(target, value);
+        return result instanceof Number number ? number.doubleValue() : 0.0D;
+    }
+
+    private static final class RecoilState {
+        private final Object originalPair;
+        private final Object appliedPair;
+
+        private RecoilState(Object originalPair, Object appliedPair) {
+            this.originalPair = originalPair;
+            this.appliedPair = appliedPair;
         }
     }
 
