@@ -232,7 +232,7 @@ public final class LightSourceAwarenessService {
     public static LightTestResult testNearestSource(ServerPlayer player) {
         ServerLevel level = player.serverLevel();
         LinkedHashMap<Long, TrackedLight> lights = SOURCES.get(level.dimension().location());
-        if (lights == null || lights.isEmpty()) return new LightTestResult(false, null, 0);
+        if (lights == null || lights.isEmpty()) return new LightTestResult(false, null, 0, 0, 0);
 
         long now = level.getGameTime();
         double bestDistance = 64.0D * 64.0D;
@@ -246,7 +246,7 @@ public final class LightSourceAwarenessService {
                 bestPos = pos.immutable();
             }
         }
-        if (bestPos == null) return new LightTestResult(false, null, 0);
+        if (bestPos == null) return new LightTestResult(false, null, 0, 0, 0);
 
         BlockPos targetPos = bestPos;
         Vec3 origin = Vec3.atCenterOf(targetPos);
