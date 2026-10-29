@@ -288,6 +288,10 @@ public final class TaczCompatibility {
         return Math.abs(left - right) < 0.0001F;
     }
 
+    private static boolean nearlyEqual(double left, double right) {
+        return Math.abs(left - right) < 0.0001D;
+    }
+
     private static void accelerateReload(Entity shooter, double durationMultiplier) {
         Object dataHolder = invokeNoArgs(shooter, "getDataHolder");
         if (dataHolder == null) {
