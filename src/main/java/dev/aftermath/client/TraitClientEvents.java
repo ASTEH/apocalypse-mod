@@ -2,7 +2,7 @@ package dev.aftermath.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.client.resources.sounds.WeighedSoundEvents;
+import net.minecraft.client.sounds.WeighedSoundEvents;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.material.FogType;

@@ -4,6 +4,7 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.character.WeaponProgressionService;
 import dev.aftermath.learning.LearningService;
+import dev.aftermath.medical.FirstAidService;
 import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.day.WorldProgressData;
 import dev.aftermath.noise.HordeDirector;
@@ -30,7 +31,8 @@ public final class AftermathCommands {
                                             + ", learning=" + AftermathServerConfig.ENABLE_LEARNING.get()
                                             + ", noise=" + AftermathServerConfig.ENABLE_NOISE_EVENTS.get()
                                             + ", hordeAI=" + HordeDirector.isHordeBehaviorEnabled()
-                                            + ", dayProgression=" + AftermathServerConfig.ENABLE_DAY_PROGRESSION.get()),
+                                            + ", dayProgression=" + AftermathServerConfig.ENABLE_DAY_PROGRESSION.get()
+                                            + ", bleeding=" + AftermathServerConfig.ENABLE_BLEEDING.get()),
                                     false);
                             return 1;
                         }))
@@ -70,6 +72,12 @@ public final class AftermathCommands {
                             var player = context.getSource().getPlayerOrException();
                             context.getSource().sendSuccess(
                                     () -> LearningService.buildStatusMessage(player), false);
+                            return 1;
+                        }))
+                        .then(Commands.literal("wounds").executes(context -> {
+                            var player = context.getSource().getPlayerOrException();
+                            context.getSource().sendSuccess(
+                                    () -> FirstAidService.buildStatusMessage(player), false);
                             return 1;
                         }))
                         .then(Commands.literal("day")
