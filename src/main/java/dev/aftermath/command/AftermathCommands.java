@@ -3,6 +3,7 @@ package dev.aftermath.command;
 import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.character.WeaponProgressionService;
+import dev.aftermath.character.TraitRuntimeService;
 import dev.aftermath.learning.LearningService;
 import dev.aftermath.medical.FirstAidService;
 import dev.aftermath.day.DayProgressionDefinitions;
@@ -12,6 +13,8 @@ import dev.aftermath.noise.NoiseService;
 import dev.aftermath.weapon.FirearmDefinitions;
 import dev.aftermath.weapon.TaczCompatibility;
 import dev.aftermath.zombie.ZombieKillService;
+import dev.aftermath.zombie.BloodScentService;
+import dev.aftermath.zombie.LightSourceAwarenessService;
 import net.minecraft.commands.Commands;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.network.chat.Component;
@@ -61,6 +64,67 @@ public final class AftermathCommands {
                                             ? "message.aftermath.day_zombies.enabled"
                                             : "message.aftermath.day_zombies.disabled"),
                                     chance), false);
+                            return 1;
+                        }))
+                        .then(Commands.literal("senses")
+                                .then(Commands.literal("status").executes(context -> {
+                                    var player = context.getSource().getPlayerOrException();
+                                    var level = player.serverLevel();
+                                    context.getSource().sendSuccess(() -> Component.literal(
+                                            "Zombie senses | noise=" + AftermathServerConfig.ENABLE_NOISE_EVENTS.get()
+                                                    + ", blood=" + AftermathServerConfig.ENABLE_BLOOD_SCENT.get()
+                                                    + ", trackedBloodSpots=" + BloodScentService.trackedSpotCount(level)
+                                                    + ", light=" + AftermathServerConfig.ENABLE_LIGHT_SOURCE_AWARENESS.get()
+                                                    + ", trackedLights=" + LightSourceAwarenessService.trackedLightCount(level)),
+                                            false);
+                                    return 1;
+                                }))
+                                .then(Commands.literal("testblood").executes(context -> {
+                                    var player = context.getSource().getPlayerOrException();
+                                    var result = NoiseService.emitNoise(player.serverLevel(), player.position(),
+                                            NoiseService.bloodScentEventId(), java.util.UUID.randomUUID());
+                                    context.getSource().sendSuccess(() -> Component.literal(
+                                            "Blood-scent signal: " + result.status()
+                                                    + ", loaded zombies attracted=" + result.affectedEntities()),
+                                            false);
+                                    return result.status() == NoiseService.Status.EMITTED ? 1 : 0;
+                                }))
+                                .then(Commands.literal("testlight").executes(context -> {
+                                    var player = context.getSource().getPlayerOrException();
+                                    var result = LightSourceAwarenessService.testNearestSource(player);
+                                    if (!result.foundSource()) {
+                                        context.getSource().sendFailure(Component.literal(
+                                                "No tracked light source within 64 blocks. Place a torch, then retry."));
+                                        return 0;
+                                    }
+                                    context.getSource().sendSuccess(() -> Component.literal(
+                                            "Light signal from " + result.source().toShortString()
+                                                    + ", loaded zombies with line of sight attracted=" + result.affectedEntities()),
+                                            false);
+                                    return 1;
+                                })))
+                        .then(Commands.literal("weaponhandling").executes(context -> {
+                            var player = context.getSource().getPlayerOrException();
+                            var gunId = TaczCompatibility.gunIdFromHeldItem(player.getMainHandItem());
+                            if (gunId == null) {
+                                context.getSource().sendFailure(Component.translatable("message.aftermath.weapon_held.none"));
+                                return 0;
+                            }
+                            String weaponClass = FirearmDefinitions.classForGun(gunId);
+                            int xp = TraitRuntimeService.currentFirearmExperienceForHeldWeapon(player);
+                            int level = TraitRuntimeService.currentFirearmLevel(player);
+                            String spread = String.format(java.util.Locale.ROOT, "%.2f",
+                                    TraitRuntimeService.firearmSpreadMultiplier(player));
+                            String recoil = String.format(java.util.Locale.ROOT, "%.2f",
+                                    TraitRuntimeService.firearmRecoilMultiplier(player));
+                            String sway = String.format(java.util.Locale.ROOT, "%.3f",
+                                    TraitRuntimeService.aimingSwayDegrees(player));
+                            String reload = String.format(java.util.Locale.ROOT, "%.2f",
+                                    TraitRuntimeService.effectiveReloadMultiplier(player));
+                            context.getSource().sendSuccess(() -> Component.literal(
+                                    "Gun=" + gunId + ", class=" + weaponClass + ", XP=" + xp + ", level=" + level
+                                            + ", spread×" + spread + ", recoil×" + recoil
+                                            + ", sway=" + sway + "°, reload×" + reload), false);
                             return 1;
                         }))
                         .then(Commands.literal("weapons")
