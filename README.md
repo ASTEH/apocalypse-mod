@@ -45,8 +45,8 @@ Custom definitions use the `data/aftermath/` namespace (not hard-coded Java IDs)
 - `metagame_events/*.json`
 - `zombie_archetypes/*.json`
 - `day_progression/*.json`
-- `tags/items/weapon_classes/*.json`
-- `tags/entity_types/horde_members.json`
+- `tags/item/weapon_classes/*.json`
+- `tags/entity_type/horde_members.json`
 
 The exact schemas are documented in `docs/DATA_FORMATS.md` and versioned alongside code.
 
