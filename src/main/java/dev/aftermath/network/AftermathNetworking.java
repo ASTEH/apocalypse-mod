@@ -6,7 +6,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/** Registers the small, versioned protocol for character creation. */
+/** Registers the versioned character protocol; all gameplay mutations are deferred onto the main thread. */
 public final class AftermathNetworking {
     private static final String CLIENT_HANDLER = "dev.aftermath.client.CharacterClientPayloads";
 
