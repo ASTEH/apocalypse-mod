@@ -1,0 +1,7 @@
+{
+  "name": "trait.aftermath.frail",
+  "description": "trait.aftermath.frail.description",
+  "category": "negative",
+  "point_credit": 2,
+  "conflicts": ["aftermath:fit"]
+}
