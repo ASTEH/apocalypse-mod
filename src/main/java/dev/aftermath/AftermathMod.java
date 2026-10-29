@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import dev.aftermath.character.AftermathAttachments;
 import dev.aftermath.character.AftermathServerEvents;
 import dev.aftermath.character.CharacterDefinitions;
+import dev.aftermath.character.WeaponProgressionService;
 import dev.aftermath.command.AftermathCommands;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.AftermathNetworking;
@@ -28,6 +29,8 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(CharacterDefinitions::register);
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerRespawn);
+        NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDeath);
+        NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDamage);
 
         LOGGER.info("Aftermath Survival Framework {} initialised for Minecraft 1.21.1.",
                 modContainer.getModInfo().getVersion());

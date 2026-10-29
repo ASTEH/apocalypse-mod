@@ -37,5 +37,9 @@
   "trait.aftermath.weak": "Weak",
   "trait.aftermath.weak.description": "Attack damage -10%.",
   "trait.aftermath.quick_learner": "Quick learner",
-  "trait.aftermath.quick_learner.description": "Learns skills faster once the learning system is implemented."
+  "trait.aftermath.quick_learner.description": "Learns skills faster once the learning system is implemented.",
+  "weapon_class.aftermath.melee": "Melee",
+  "message.aftermath.weapon_xp": "%1$s: +%2$s XP. Total: %3$s XP, level %4$s.",
+  "message.aftermath.weapon_level_up": "%1$s proficiency increased to level %2$s! XP: %3$s.",
+  "message.aftermath.weapon_status": "%1$s — level %2$s, %3$s XP. Next threshold: %4$s XP."
 }

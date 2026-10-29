@@ -2,6 +2,7 @@ package dev.aftermath.command;
 
 import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
+import dev.aftermath.character.WeaponProgressionService;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -28,6 +29,12 @@ public final class AftermathCommands {
                             context.getSource().sendSuccess(() -> Component.literal(
                                     "Aftermath is an early-development survival framework. Use /aftermath status to inspect server settings."),
                                     false);
+                            return 1;
+                        }))
+                        .then(Commands.literal("weapons").executes(context -> {
+                            var player = context.getSource().getPlayerOrException();
+                            context.getSource().sendSuccess(
+                                    () -> WeaponProgressionService.buildStatusMessage(player), false);
                             return 1;
                         }))
         );
