@@ -48,36 +48,77 @@ public final class HordeDirector {
     public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) { ORDERS.remove(event.getEntity().getUUID()); }
 
     public static int assignNoise(ServerLevel level, Vec3 target, List<Mob> mobs, int duration,
+                                  ResourceLocation signalId, UUID sourceId,
                                   boolean grouping, int stageGroupLimit,
                                   NoiseDefinitions.HordeArchetypeDefinition archetype) {
-        if (mobs.isEmpty()) return 0;
+        if (mobs.isEmpty() || signalId == null) return 0;
+        int priority = signalPriority(signalId);
+        List<Mob> receptive = new java.util.ArrayList<>(mobs.size());
+        for (Mob mob : mobs) {
+            HordeOrder current = activeOrder(mob);
+            if (shouldAcceptSignal(current, signalId, sourceId, priority)) receptive.add(mob);
+        }
+        // A weaker stimulus must not steal a zombie from an active, higher-priority investigation.
+        if (receptive.isEmpty()) return 0;
+
         Mob leader = null;
         if (grouping && archetype != null && archetype.leader()) {
-            for (Mob mob : mobs) {
+            for (Mob mob : receptive) {
                 HordeOrder old = activeOrder(mob);
                 if (old != null && old.role() == Role.LEADER) { leader = mob; break; }
             }
-            if (leader == null) leader = mobs.get(0);
+            if (leader == null) leader = receptive.get(0);
         }
         long expires = level.getGameTime() + Math.max(1, duration);
         ResourceLocation dim = level.dimension().location();
-        for (Mob mob : mobs) ORDERS.put(mob.getUUID(),
-                new HordeOrder(dim, Role.INVESTIGATE, null, target, expires, 1.0D));
+        for (Mob mob : receptive) ORDERS.put(mob.getUUID(),
+                new HordeOrder(dim, Role.INVESTIGATE, null, target, expires, 1.0D,
+                        signalId, sourceId, priority));
         if (leader == null) return 0;
 
         int maxGroup = Math.min(AftermathServerConfig.MAX_HORDE_SIZE.get(),
                 Math.min(Math.max(1, stageGroupLimit), archetype.maxFollowers() + 1));
         ORDERS.put(leader.getUUID(), new HordeOrder(dim, Role.LEADER, leader.getUUID(),
-                target, expires, archetype.speedMultiplier()));
+                target, expires, archetype.speedMultiplier(), signalId, sourceId, priority));
         double radiusSqr = (double) archetype.followerRadius() * archetype.followerRadius();
         int followers = 0;
-        for (Mob mob : mobs) {
+        for (Mob mob : receptive) {
             if (mob == leader || followers >= maxGroup - 1 || mob.distanceToSqr(leader) > radiusSqr) continue;
             ORDERS.put(mob.getUUID(), new HordeOrder(dim, Role.FOLLOWER, leader.getUUID(),
-                    target, expires, archetype.speedMultiplier()));
+                    target, expires, archetype.speedMultiplier(), signalId, sourceId, priority));
             followers++;
         }
         return followers;
+    }
+
+    /**
+     * Priorities are intentionally categorical: blood is persistent and must not be displaced by
+     * incidental lights or footsteps. A genuine gunshot can still supersede non-blood objectives.
+     */
+    private static int signalPriority(ResourceLocation signalId) {
+        String path = signalId.getPath();
+        if (path.equals("blood_scent")) return 100;
+        if (path.equals("gunshot")) return 90;
+        if (path.equals("sound_loud") || path.equals("clumsy_sprint")) return 80;
+        if (path.equals("sprint_footsteps")) return 75;
+        if (path.equals("light_source")) return 60;
+        if (path.equals("chat")) return 50;
+        if (path.equals("block_action")) return 45;
+        return 40;
+    }
+
+    private static boolean shouldAcceptSignal(HordeOrder current, ResourceLocation signalId,
+                                              UUID sourceId, int priority) {
+        if (current == null) return true;
+        if (priority > current.priority()) return true;
+        if (priority < current.priority()) return false;
+
+        // Blood spots form a trail: an equal-priority blood scent may advance the pursuit to a
+        // newer nearby spot, while other sources cannot make the zombie oscillate between targets.
+        if (signalId.getPath().equals("blood_scent")
+                && current.signalId().getPath().equals("blood_scent")) return true;
+        return current.signalId().equals(signalId)
+                && java.util.Objects.equals(current.sourceId(), sourceId);
     }
 
     public static HordeOrder activeOrder(Mob mob) {
@@ -112,7 +153,8 @@ public final class HordeDirector {
     }
     public enum Role { INVESTIGATE, LEADER, FOLLOWER }
     public record HordeOrder(ResourceLocation dimension, Role role, UUID leaderId, Vec3 targetPosition,
-                             long expiresAt, double speedMultiplier) {}
+                             long expiresAt, double speedMultiplier, ResourceLocation signalId,
+                             UUID sourceId, int priority) {}
     private record PathBudget(long tick, int remaining) {}
 
     private static final class BehaviorGoal extends Goal {
