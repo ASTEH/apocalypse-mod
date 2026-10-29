@@ -124,7 +124,8 @@ public final class AftermathCommands {
                             context.getSource().sendSuccess(() -> Component.literal(
                                     "Gun=" + gunId + ", class=" + weaponClass + ", XP=" + xp + ", level=" + level
                                             + ", spread×" + spread + ", recoil×" + recoil
-                                            + ", sway=" + sway + "°, reload×" + reload), false);
+                                            + ", sway=" + sway + "°, reload×" + reload
+                                            + ", TaCZ[" + TaczCompatibility.handlingCacheStatus(player) + "]"), false);
                             return 1;
                         }))
                         .then(Commands.literal("weapons")
