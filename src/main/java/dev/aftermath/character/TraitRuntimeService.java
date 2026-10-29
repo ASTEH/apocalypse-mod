@@ -34,6 +34,42 @@ public final class TraitRuntimeService {
 
     private TraitRuntimeService() {}
 
+    /**
+     * Builds the authoritative client trait state. Effective firearm multipliers are sent by the
+     * server so client-side reticle cache changes cannot drift from datapack/config values.
+     */
+    public static TraitStatePayload createClientStatePayload(ServerPlayer player) {
+        CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
+        String csv = profile.created() ? String.join(",", profile.traitIds()) : "";
+        float eagleEye = (float) effectiveFirearmTraitMultiplier(player, "eagle_eye",
+                AftermathServerConfig.EAGLE_EYE_STRENGTH_SCALE.get());
+        float quickReload = (float) effectiveFirearmTraitMultiplier(player, "quick_reload",
+                AftermathServerConfig.QUICK_RELOAD_STRENGTH_SCALE.get());
+        return new TraitStatePayload(csv, eagleEye, quickReload);
+    }
+
+    public static double effectiveFirearmTraitMultiplier(ServerPlayer player, String hook,
+                                                          double strengthScale) {
+        if (!AftermathServerConfig.ENABLE_FIREARM_TRAIT_EFFECTS.get() || !hasHook(player, hook)) {
+            return 1.0D;
+        }
+        return Math.max(0.1D, Math.min(1.0D, hookValue(player, hook, 1.0D) * strengthScale));
+    }
+
+    /** Runs before the entity tick so TaCZ sees adjusted timing when it advances reload state. */
+    public static void onPlayerTickPre(PlayerTickEvent.Pre event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
+        double eagleEye = profile.created()
+                ? effectiveFirearmTraitMultiplier(player, "eagle_eye", AftermathServerConfig.EAGLE_EYE_STRENGTH_SCALE.get())
+                : 1.0D;
+        double quickReload = profile.created()
+                ? effectiveFirearmTraitMultiplier(player, "quick_reload", AftermathServerConfig.QUICK_RELOAD_STRENGTH_SCALE.get())
+                : 1.0D;
+        TaczCompatibility.applyFirearmTraitEffects(player, eagleEye, quickReload,
+                AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get());
+    }
+
     public static boolean hasHook(ServerPlayer player, String hook) {
         return effects(player, "custom_hook").stream().anyMatch(effect -> effect.target().equals(hook));
     }
