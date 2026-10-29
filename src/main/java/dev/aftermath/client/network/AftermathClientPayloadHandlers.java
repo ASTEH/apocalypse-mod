@@ -7,26 +7,15 @@ import dev.aftermath.network.payload.CharacterCatalogPayload;
 import dev.aftermath.network.payload.CharacterSelectionResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /** Client-only payload registration; this class is never loaded on a dedicated server. */
-@EventBusSubscriber(modid = AftermathMod.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class AftermathClientPayloadHandlers {
     private static final Gson GSON = new Gson();
 
     private AftermathClientPayloadHandlers() {}
 
-    @SubscribeEvent
-    public static void registerClientPayloadHandlers(RegisterClientPayloadHandlersEvent event) {
-        event.register(CharacterCatalogPayload.TYPE, AftermathClientPayloadHandlers::handleCatalog);
-        event.register(CharacterSelectionResultPayload.TYPE, AftermathClientPayloadHandlers::handleSelectionResult);
-    }
-
-    private static void handleCatalog(CharacterCatalogPayload payload, IPayloadContext context) {
+    public static void handleCatalog(CharacterCatalogPayload payload, IPayloadContext context) {
         if (!payload.openScreen()) {
             return;
         }
@@ -42,7 +31,7 @@ public final class AftermathClientPayloadHandlers {
         }
     }
 
-    private static void handleSelectionResult(CharacterSelectionResultPayload payload, IPayloadContext context) {
+    public static void handleSelectionResult(CharacterSelectionResultPayload payload, IPayloadContext context) {
         if (Minecraft.getInstance().screen instanceof CharacterSelectionScreen screen) {
             screen.handleServerResult(payload.resultJson());
             return;

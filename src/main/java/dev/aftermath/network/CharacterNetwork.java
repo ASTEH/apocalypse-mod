@@ -9,12 +9,15 @@ import dev.aftermath.character.CharacterProfile;
 import dev.aftermath.character.CharacterProfession;
 import dev.aftermath.character.CharacterTrait;
 import dev.aftermath.config.AftermathServerConfig;
+import dev.aftermath.client.network.AftermathClientPayloadHandlers;
 import dev.aftermath.network.payload.CharacterCatalogPayload;
 import dev.aftermath.network.payload.CharacterSelectionRequestPayload;
 import dev.aftermath.network.payload.CharacterSelectionResultPayload;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -33,8 +36,25 @@ public final class CharacterNetwork {
 
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar("1");
-        registrar.playToClient(CharacterCatalogPayload.TYPE, CharacterCatalogPayload.STREAM_CODEC);
-        registrar.playToClient(CharacterSelectionResultPayload.TYPE, CharacterSelectionResultPayload.STREAM_CODEC);
+        // NeoForge 1.21.1 registers clientbound handlers through PayloadRegistrar itself.
+        // Keep the dedicated-server branch free of client class loading.
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            registrar.playToClient(
+                    CharacterCatalogPayload.TYPE,
+                    CharacterCatalogPayload.STREAM_CODEC,
+                    AftermathClientPayloadHandlers::handleCatalog
+            );
+            registrar.playToClient(
+                    CharacterSelectionResultPayload.TYPE,
+                    CharacterSelectionResultPayload.STREAM_CODEC,
+                    AftermathClientPayloadHandlers::handleSelectionResult
+            );
+        } else {
+            registrar.playToClient(CharacterCatalogPayload.TYPE, CharacterCatalogPayload.STREAM_CODEC,
+                    (payload, context) -> {});
+            registrar.playToClient(CharacterSelectionResultPayload.TYPE, CharacterSelectionResultPayload.STREAM_CODEC,
+                    (payload, context) -> {});
+        }
         registrar.playToServer(
                 CharacterSelectionRequestPayload.TYPE,
                 CharacterSelectionRequestPayload.STREAM_CODEC,
