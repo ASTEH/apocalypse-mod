@@ -389,7 +389,7 @@ public final class CharacterSelectionScreen extends LuminaScreen {
                 summaryRows.addChild(label(tr("screen.aftermath.character.starting_skills_none"), MUTED, 0.84f));
             } else {
                 profession.skillBonuses().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(skill ->
-                        summaryRows.addChild(label(tr("skill.aftermath." + skill.getKey()) + "  ·  " + tr("screen.aftermath.character.skill_level_short", skill.getValue()),
+                        summaryRows.addChild(label(tr("skill.aftermath." + skill.getKey()) + "  ·  " + tr("screen.aftermath.character.skill_level", skill.getValue()),
                                 GREEN, 0.88f)));
             }
 
