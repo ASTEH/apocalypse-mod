@@ -47,8 +47,7 @@ public final class TaczCompatibility {
     public static synchronized void applyFirearmTraitEffects(Entity shooter,
                                                               double firearmSpreadMultiplier,
                                                               double firearmRecoilMultiplier,
-                                                              double quickReloadDurationMultiplier,
-                                                              boolean weaponProgressionEnabled) {
+                                                              double quickReloadDurationMultiplier) {
         if (shooter == null) return;
 
         double spreadMultiplier = boundedScale(firearmSpreadMultiplier, 0.1D, 4.0D);
@@ -73,10 +72,6 @@ public final class TaczCompatibility {
         }
 
         double reloadMultiplier = boundedDurationMultiplier(quickReloadDurationMultiplier);
-        if (weaponProgressionEnabled && shooter instanceof ServerPlayer player) {
-            reloadMultiplier = boundedDurationMultiplier(
-                    reloadMultiplier * proficiencyReloadDurationMultiplier(player));
-        }
 
         if (reloadMultiplier < 0.999D) {
             accelerateReload(shooter, reloadMultiplier);
@@ -291,7 +286,8 @@ public final class TaczCompatibility {
      * Firearm mastery adds a modest server-authoritative reload benefit at levels 2, 5 and 10.
      * The held TaCZ gun is resolved from TaCZ's active-gun supplier, not from a guessed item ID.
      */
-    private static double proficiencyReloadDurationMultiplier(ServerPlayer player) {
+    public static double proficiencyReloadDurationMultiplier(ServerPlayer player) {
+        if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()) return 1.0D;
         Object dataHolder = invokeNoArgs(player, "getDataHolder");
         Object currentGun = publicFieldValue(dataHolder, "currentGunItem");
         if (!(currentGun instanceof Supplier<?> supplier)) return 1.0D;
