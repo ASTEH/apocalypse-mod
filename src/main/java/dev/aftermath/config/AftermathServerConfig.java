@@ -12,6 +12,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_CHARACTER_CREATION;
     public static final ModConfigSpec.BooleanValue ALLOW_CHARACTER_RESELECTION;
     public static final ModConfigSpec.BooleanValue ENABLE_WEAPON_PROGRESSION;
+    public static final ModConfigSpec.BooleanValue ENABLE_FIREARM_TRAIT_EFFECTS;
     public static final ModConfigSpec.BooleanValue ENABLE_LEARNING;
     public static final ModConfigSpec.BooleanValue ENABLE_NOISE_EVENTS;
     public static final ModConfigSpec.BooleanValue ENABLE_HORDE_BEHAVIOR;
@@ -31,6 +32,8 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.IntValue MAX_BLEEDING_SEVERITY;
     public static final ModConfigSpec.IntValue BLEEDING_TICK_INTERVAL_TICKS;
     public static final ModConfigSpec.DoubleValue BLEEDING_DAMAGE_PER_SEVERITY;
+    public static final ModConfigSpec.DoubleValue EAGLE_EYE_STRENGTH_SCALE;
+    public static final ModConfigSpec.DoubleValue QUICK_RELOAD_STRENGTH_SCALE;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -42,6 +45,8 @@ public final class AftermathServerConfig {
                 .define("allowCharacterReselection", true);
         ENABLE_WEAPON_PROGRESSION = builder.comment("Enable weapon-class XP and levels.")
                 .define("enableWeaponProgression", true);
+        ENABLE_FIREARM_TRAIT_EFFECTS = builder.comment("Enable the Eagle Eye and Quick Reload character-trait effects for supported TaCZ firearms.")
+                .define("enableFirearmTraitEffects", true);
         ENABLE_LEARNING = builder.comment("Enable manual and television learning systems.")
                 .define("enableLearning", true);
         ENABLE_NOISE_EVENTS = builder.comment("Enable server-side noise events. Noise never spawns mobs near players.")
@@ -54,6 +59,13 @@ public final class AftermathServerConfig {
                 .define("enableDayProgression", true);
         ENABLE_BLEEDING = builder.comment("Enable bleeding caused by hostile attacks and treatment with bandages.")
                 .define("enableBleeding", true);
+        builder.pop();
+
+        builder.push("firearm_traits");
+        EAGLE_EYE_STRENGTH_SCALE = builder.comment("Scale applied to the Eagle Eye trait value from datapacks. 1.0 uses the datapack value; lower values make the spread tighter.")
+                .defineInRange("eagleEyeStrengthScale", 1.0D, 0.1D, 2.0D);
+        QUICK_RELOAD_STRENGTH_SCALE = builder.comment("Scale applied to the Quick Reload trait value from datapacks. 1.0 uses the datapack value; lower values make reloads faster.")
+                .defineInRange("quickReloadStrengthScale", 1.0D, 0.1D, 2.0D);
         builder.pop();
 
         builder.push("weapon_progression");
