@@ -124,6 +124,16 @@ This is distinct from the historical M1–M7 milestones above. It extends the ex
 
 **Acceptance:** all active trait definitions load without errors; the UI and server agree on points and compatibility; relog restores selected client-side sound/visual behavior; standalone NeoForge works with optional mods absent.
 
+## User roadmap — Zombie senses: blood and exposed light
+
+- [x] Player damage creates a temporary blood scent spot; ongoing Aftermath bleeding leaves additional trail spots.
+- [x] Blood spots are time-limited, merged only for immediate duplicates, and capped per dimension; pulses use the existing attraction service and entity budget.
+- [x] Player-placed light-emitting blocks are indexed immediately; broken blocks and changed light states are removed, and a slow scan discovers existing lights near active players.
+- [x] Light signals require a clear block ray from zombie eye position to the light source; tracked sources, scans, and attraction checks are capped, and unloaded chunks are never requested.
+- [ ] Manually test hurt once vs ongoing bleeding, bandage stopping further trails, scent expiry, torch/lantern/redstone lamp placement/removal, wall/door line-of-sight, modded lamps, and dense zombie populations.
+
+**Acceptance:** damage and active bleeding leave short-lived signals; nearby zombie-like mobs investigate blood and visible light sources using the existing horde destination path; blocked light sources do not alert through solid walls; no extra dependency on Zombie Awareness/CoroUtil is introduced.
+  
 ## User roadmap — Stage 4: firearm handling and mastery
 
 This stage implements uncomfortable novice firearm handling and improves it as the player uses each weapon class. TaCZ remains optional.
