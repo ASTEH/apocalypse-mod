@@ -222,12 +222,12 @@ public final class LightSourceAwarenessService {
         if (lights == null || lights.isEmpty()) return new LightTestResult(false, null, 0);
 
         long now = level.getGameTime();
-        long bestDistance = 64L * 64L;
+        double bestDistance = 64.0D * 64.0D;
         BlockPos bestPos = null;
         for (Long packed : lights.keySet()) {
             BlockPos pos = BlockPos.of(packed);
             if (!level.hasChunkAt(pos) || !isDetectableLight(level, pos, level.getBlockState(pos))) continue;
-            long distance = pos.distSqr(player.blockPosition());
+            double distance = pos.distSqr(player.blockPosition());
             if (distance <= bestDistance) {
                 bestDistance = distance;
                 bestPos = pos.immutable();
@@ -235,9 +235,10 @@ public final class LightSourceAwarenessService {
         }
         if (bestPos == null) return new LightTestResult(false, null, 0);
 
-        NoiseService.NoiseResult result = NoiseService.emitNoise(level, Vec3.atCenterOf(bestPos),
-                NoiseService.lightSourceEventId(), UUID.randomUUID(), mob -> canSeeLight(level, mob, bestPos));
-        return new LightTestResult(true, bestPos, result.affectedEntities());
+        BlockPos targetPos = bestPos;
+        NoiseService.NoiseResult result = NoiseService.emitNoise(level, Vec3.atCenterOf(targetPos),
+                NoiseService.lightSourceEventId(), UUID.randomUUID(), mob -> canSeeLight(level, mob, targetPos));
+        return new LightTestResult(true, targetPos, result.affectedEntities());
     }
 
     public record LightTestResult(boolean foundSource, BlockPos source, int affectedEntities) {}
