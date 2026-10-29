@@ -9,20 +9,20 @@
 
 ## Persistence
 
-- Player profile, weapon XP and learning history: persistent player attachment with explicit serializer/codec and deliberate copy-on-death policy.
+- Character profile, weapon XP, and learning XP/completion history use persistent player attachments with explicit codecs and copy-on-death semantics.
 - Global day progression and persistent world events: `SavedData`.
 - Temporary noise signals and horde membership: level-scoped, expiring memory; never force-load chunks to keep events active.
+- In-progress reading/TV sessions are transient; interruption grants no XP.
 
 ## Services
 
 - `CharacterSelectionService`: validates profession/traits and applies effects.
-- `WeaponClassResolver`: classifies items using data-driven item tags.
-- `WeaponXpService`: XP from verified server-side kill attribution, with anti-farm controls.
-- `LearningService`: server-timed reading and TV sessions.
+- `WeaponProgressionService`: XP from verified server-side direct melee kills, with anti-farm controls.
+- `LearningDefinitions`: loads and validates lesson and TV JSON definitions.
+- `LearningService`: server-timed reading and scheduled TV sessions; persistent skill XP and per-material completion counts.
 - `WorldEventDirector`: events and world-day stages.
 - `NoiseService`: typed noise events for already-existing eligible entities.
 - `HordeDirector`: capped groups, leaders and scheduled follower/path updates.
-- `AftermathDataManager`: immutable snapshot of validated definitions.
 
 ## AI performance invariants
 
@@ -35,4 +35,4 @@
 
 ## Reload
 
-Invalid definitions log a resource ID and error; they do not partially replace active data. Publish a complete validated snapshot or keep the previous snapshot.
+Invalid definitions log a resource ID and error. Learning definitions currently reject individual malformed JSON files and publish the successfully loaded definitions; other systems should follow the same safe validation policy.

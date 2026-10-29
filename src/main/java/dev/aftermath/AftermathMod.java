@@ -5,6 +5,9 @@ import dev.aftermath.character.AftermathAttachments;
 import dev.aftermath.character.AftermathServerEvents;
 import dev.aftermath.character.CharacterDefinitions;
 import dev.aftermath.character.WeaponProgressionService;
+import dev.aftermath.content.AftermathContent;
+import dev.aftermath.learning.LearningDefinitions;
+import dev.aftermath.learning.LearningService;
 import dev.aftermath.command.AftermathCommands;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.AftermathNetworking;
@@ -24,6 +27,7 @@ public final class AftermathMod {
     public AftermathMod(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.SERVER, AftermathServerConfig.SPEC);
         AftermathAttachments.register(modEventBus);
+        AftermathContent.register(modEventBus);
         modEventBus.addListener(AftermathNetworking::registerPayloads);
         NeoForge.EVENT_BUS.addListener(AftermathCommands::registerCommands);
         NeoForge.EVENT_BUS.addListener(CharacterDefinitions::register);
@@ -31,6 +35,10 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerRespawn);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDeath);
         NeoForge.EVENT_BUS.addListener(WeaponProgressionService::onLivingDamage);
+        NeoForge.EVENT_BUS.addListener(LearningDefinitions::register);
+        NeoForge.EVENT_BUS.addListener(LearningService::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(LearningService::onLivingDamage);
+        NeoForge.EVENT_BUS.addListener(LearningService::onPlayerLogout);
 
         LOGGER.info("Aftermath Survival Framework {} initialised for Minecraft 1.21.1.",
                 modContainer.getModInfo().getVersion());

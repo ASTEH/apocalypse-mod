@@ -3,6 +3,7 @@ package dev.aftermath.command;
 import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.character.WeaponProgressionService;
+import dev.aftermath.learning.LearningService;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -35,6 +36,12 @@ public final class AftermathCommands {
                             var player = context.getSource().getPlayerOrException();
                             context.getSource().sendSuccess(
                                     () -> WeaponProgressionService.buildStatusMessage(player), false);
+                            return 1;
+                        }))
+                        .then(Commands.literal("learning").executes(context -> {
+                            var player = context.getSource().getPlayerOrException();
+                            context.getSource().sendSuccess(
+                                    () -> LearningService.buildStatusMessage(player), false);
                             return 1;
                         }))
         );

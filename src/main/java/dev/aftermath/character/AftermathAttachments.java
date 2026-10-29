@@ -29,6 +29,14 @@ public final class AftermathAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<dev.aftermath.learning.LearningProgress>> LEARNING_PROGRESS = TYPES.register(
+            "learning_progress",
+            () -> AttachmentType.builder(dev.aftermath.learning.LearningProgress::empty)
+                    .serialize(dev.aftermath.learning.LearningProgress.CODEC)
+                    .copyOnDeath()
+                    .build()
+    );
+
     public static void register(IEventBus modEventBus) {
         TYPES.register(modEventBus);
     }

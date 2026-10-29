@@ -1,0 +1,9 @@
+{
+  "title": "tv_program.aftermath.field_medicine",
+  "skill": "aftermath:first_aid",
+  "start_time": 6000,
+  "duration_ticks": 1200,
+  "xp_reward": 15,
+  "repeat_after_days": 1,
+  "max_completions_per_player": 1
+}
