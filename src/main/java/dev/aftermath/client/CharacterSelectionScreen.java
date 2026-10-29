@@ -127,7 +127,7 @@ public final class CharacterSelectionScreen extends Screen {
         int professionStart = professionPage * professionsPerPage();
         for (int slot = 0; slot < visibleProfessionCount; slot++) {
             ProfessionOption option = professions.get(professionStart + slot);
-            Component label = Component.literal("   ")
+            Component label = Component.literal("    ")
                     .append(option.id.equals(selectedProfessionId) ? Component.literal("✓ ") : Component.empty())
                     .append(Component.translatable(option.name));
             Button button = addRenderableWidget(Button.builder(label, ignored -> {
