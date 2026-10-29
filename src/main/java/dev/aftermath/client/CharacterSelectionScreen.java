@@ -356,7 +356,8 @@ public final class CharacterSelectionScreen extends Screen {
     }
 
     private void drawInterfacePanels(GuiGraphics graphics) {
-        graphics.fill(0, 0, width, height, 0xB5000000);
+        // Keep the live world visible; readability comes from the panels, not a full-screen black fade.
+        graphics.fill(0, 0, width, height, 0x18000000);
         graphics.fill(6, 6, Math.max(6, width - 6), 7, 0xFF9A5435);
         graphics.fill(6, Math.max(7, height - 7), Math.max(6, width - 6), Math.max(8, height - 6), 0xFF553629);
 
@@ -374,7 +375,7 @@ public final class CharacterSelectionScreen extends Screen {
 
     private void drawPanel(GuiGraphics graphics, int x, int y, int panelWidth, int panelHeight) {
         if (panelWidth <= 0 || panelHeight <= 0) return;
-        graphics.fill(x, y, x + panelWidth, y + panelHeight, 0xD512181A);
+        graphics.fill(x, y, x + panelWidth, y + panelHeight, 0xA512181A);
         graphics.fill(x, y, x + panelWidth, y + 1, 0xFF465153);
         graphics.fill(x, y + panelHeight - 1, x + panelWidth, y + panelHeight, 0xFF2C3538);
         graphics.fill(x, y, Math.min(x + 2, x + panelWidth), y + panelHeight, 0xFF925134);
@@ -388,6 +389,75 @@ public final class CharacterSelectionScreen extends Screen {
         graphics.fill(x, y + outlineHeight - thickness, x + outlineWidth, y + outlineHeight, color);
         graphics.fill(x, y, x + thickness, y + outlineHeight, color);
         graphics.fill(x + outlineWidth - thickness, y, x + outlineWidth, y + outlineHeight, color);
+    }
+
+    /**
+     * Paint a custom surface over vanilla Button's rendered background. Input,
+     * narration and keyboard behavior still come from Minecraft's Button widget,
+     * but the visual theme no longer uses the vanilla grey gradient.
+     */
+    private void drawCustomButtons(GuiGraphics graphics) {
+        for (Button button : getChildButtons()) {
+            int x = button.getX();
+            int y = button.getY();
+            int buttonWidth = button.getWidth();
+            int buttonHeight = button.getHeight();
+            if (buttonWidth <= 0 || buttonHeight <= 0) continue;
+
+            String label = button.getMessage().getString();
+            boolean professionButton = y == professionButtonsY() && buttonWidth > 30;
+            boolean traitButton = y >= traitRowsStartY() && y < height - 58 && buttonWidth > 30;
+            boolean confirmButton = y >= height - 35;
+            boolean hovered = button.isHoveredOrFocused();
+
+            boolean selected = false;
+            boolean granted = false;
+            if (professionButton) {
+                selected = label.startsWith("    ✓");
+            } else if (traitButton) {
+                granted = label.startsWith("★");
+                selected = granted || label.startsWith("✓");
+            }
+
+            int surface = !button.active ? 0xB51B2020 : hovered ? 0xF03A332B : 0xE5262B2B;
+            int border = hovered ? 0xFFFFB477 : 0xFF555B59;
+            int textColor = !button.active ? 0xFF858B88 : 0xFFE5E0D5;
+            if (professionButton && selected) {
+                surface = hovered ? 0xF0443025 : 0xE8322922;
+                border = 0xFFE49A61;
+                textColor = 0xFFFFD4AD;
+            } else if (traitButton && selected) {
+                surface = granted ? 0xE5223533 : 0xE5363026;
+                border = granted ? 0xFF76B8AD : 0xFFD99963;
+                textColor = granted ? 0xFFBCE5D7 : 0xFFFFD4AD;
+            } else if (confirmButton) {
+                surface = button.active ? (hovered ? 0xFFFFC08A : 0xFFE49A61) : 0xFF595650;
+                border = button.active ? 0xFFFFD8B7 : 0xFF77736C;
+                textColor = button.active ? 0xFF251A13 : 0xFFB5B0A7;
+            } else if (buttonWidth <= 30) {
+                surface = !button.active ? 0xB51B2020 : hovered ? 0xF04A392C : 0xE52B3030;
+                border = hovered ? 0xFFFFB477 : 0xFF686E69;
+                textColor = button.active ? 0xFFFFD2AB : 0xFF858B88;
+            }
+
+            graphics.fill(x, y, x + buttonWidth, y + buttonHeight, surface);
+            graphics.fill(x, y, x + buttonWidth, y + 1, border);
+            graphics.fill(x, y + buttonHeight - 1, x + buttonWidth, y + buttonHeight, 0xFF202625);
+            graphics.fill(x, y, x + 2, y + buttonHeight, border);
+            graphics.fill(x + buttonWidth - 1, y, x + buttonWidth, y + buttonHeight, 0xFF202625);
+
+            if (professionButton) {
+                int accent = selected ? 0xFFFFA66A : 0xFF67706D;
+                graphics.fill(x + 2, y + 2, x + 4, y + buttonHeight - 2, accent);
+            } else if (traitButton && (selected || granted)) {
+                graphics.fill(x + 2, y + 2, x + 4, y + buttonHeight - 2,
+                        granted ? 0xFF76B8AD : 0xFFD99963);
+            }
+
+            String visibleLabel = font.plainSubstrByWidth(label, Math.max(1, buttonWidth - 10));
+            graphics.drawCenteredString(font, Component.literal(visibleLabel),
+                    x + buttonWidth / 2, y + (buttonHeight - font.lineHeight) / 2 + 1, textColor);
+        }
     }
 
     private void drawSelectionAccents(GuiGraphics graphics) {
@@ -437,9 +507,11 @@ public final class CharacterSelectionScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics, mouseX, mouseY, partialTick);
+        // Do not call Screen.renderBackground here: it blurs/dims the live scene and
+        // made the world almost invisible behind the previous full-screen overlay.
         drawInterfacePanels(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
+        drawCustomButtons(graphics);
         drawSelectionAccents(graphics);
         drawProfessionIcons(graphics);
 
