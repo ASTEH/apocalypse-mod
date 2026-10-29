@@ -6,11 +6,9 @@ import dev.aftermath.network.TraitStatePayload;
 import dev.aftermath.weapon.TaczCompatibility;
 import dev.aftermath.weapon.FirearmDefinitions;
 import net.neoforged.neoforge.network.PacketDistributor;
-import dev.aftermath.noise.NoiseService;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -32,9 +30,6 @@ import java.util.UUID;
  * TraitClientEvents and receive only a server-authoritative list of selected trait IDs.
  */
 public final class TraitRuntimeService {
-    public static final ResourceLocation CLUMSY_FOOTSTEPS =
-            ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "footsteps");
-
     private static final Map<UUID, Float> LAST_EXHAUSTION = new HashMap<>();
     private static final Map<UUID, TraitStatePayload> LAST_SENT_FIREARM_STATE = new HashMap<>();
 
@@ -229,7 +224,6 @@ public final class TraitRuntimeService {
         }
 
         applyExhaustionHooks(player);
-        emitClumsyFootsteps(player);
     }
 
     private static void applyExhaustionHooks(ServerPlayer player) {
@@ -250,17 +244,6 @@ public final class TraitRuntimeService {
             food.addExhaustion(0.1F);
             LAST_EXHAUSTION.put(uuid, food.getExhaustionLevel());
         }
-    }
-
-    private static void emitClumsyFootsteps(ServerPlayer player) {
-        if (!hasHook(player, "clumsy_noise")
-                || !(player.level() instanceof ServerLevel level)
-                || !player.onGround() || player.isCrouching()
-                || player.getDeltaMovement().horizontalDistanceSqr() <= 0.0025D
-                || level.getGameTime() % 40L != 0L) return;
-
-        // This low-radius noise uses the same loaded-entity-only pipeline as other noise events.
-        NoiseService.emitNoise(level, player.position(), CLUMSY_FOOTSTEPS, player.getUUID());
     }
 
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
