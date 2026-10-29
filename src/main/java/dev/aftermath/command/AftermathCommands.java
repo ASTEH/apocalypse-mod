@@ -52,7 +52,7 @@ public final class AftermathCommands {
                                                 .executes(context -> chooseCharacter(context, ""))
                                                 .then(Commands.argument("traits", StringArgumentType.greedyString())
                                                         .executes(context -> chooseCharacter(context,
-                                                                StringArgumentType.getString(context, "traits"))))))
+                                                                StringArgumentType.getString(context, "traits")))))))
         );
 
         AftermathMod.LOGGER.debug("Registered /aftermath commands.");
