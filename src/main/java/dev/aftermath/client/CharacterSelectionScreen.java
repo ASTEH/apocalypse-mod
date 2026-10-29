@@ -556,8 +556,16 @@ public final class CharacterSelectionScreen extends Screen {
         drawString(graphics, fit(name, textW), textX, headY, PAPER);
         drawString(graphics, fit(tr(selected.name), textW), textX, headY + 10, GOLD);
         int descY = headY + 20;
-        if (descY + font.lineHeight < previewPanel.y + previewPanel.h) {
-            drawString(graphics, fit(tr(selected.description), textW), textX, descY, MUTED);
+        int descriptionHeight = Math.max(0, previewPanel.y + previewPanel.h - descY - 4);
+        int maxDescriptionLines = descriptionHeight / (font.lineHeight + 1);
+        if (maxDescriptionLines > 0 && textW > 0) {
+            List<FormattedCharSequence> descriptionLines =
+                    font.split(Component.translatable(selected.description), textW);
+            int linesToDraw = Math.min(maxDescriptionLines, descriptionLines.size());
+            for (int line = 0; line < linesToDraw; line++) {
+                graphics.drawString(font, descriptionLines.get(line),
+                        textX, descY + line * (font.lineHeight + 1), MUTED);
+            }
         }
     }
 
