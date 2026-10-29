@@ -393,7 +393,7 @@ public final class CharacterSelectionScreen extends LuminaScreen {
                                 GREEN, 0.88f)));
             }
 
-            summaryRows.addChild(sectionLabel(tr("screen.aftermath.character.selected_traits")));
+            summaryRows.addChild(sectionLabel(tr("screen.aftermath.character.selected_traits"), ACCENT));
             Set<String> displayed = new LinkedHashSet<>();
             for (String id : profession.grantedTraits()) {
                 TraitOption trait = trait(id);
@@ -413,7 +413,7 @@ public final class CharacterSelectionScreen extends LuminaScreen {
             }
             if (displayed.isEmpty()) summaryRows.addChild(label(tr("screen.aftermath.character.no_traits"), MUTED, 0.84f));
 
-            summaryRows.addChild(sectionLabel(tr("screen.aftermath.character.starting_items")));
+            summaryRows.addChild(sectionLabel(tr("screen.aftermath.character.starting_items"), ACCENT));
             if (profession.startingItems().isEmpty()) {
                 summaryRows.addChild(label(tr("screen.aftermath.character.no_items"), MUTED, 0.84f));
             } else {
