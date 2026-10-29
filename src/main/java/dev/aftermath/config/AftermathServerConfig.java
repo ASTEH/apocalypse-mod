@@ -68,7 +68,7 @@ public final class AftermathServerConfig {
                 .define("enableDayProgression", true);
         ENABLE_BLEEDING = builder.comment("Enable bleeding caused by hostile attacks and treatment with bandages.")
                 .define("enableBleeding", true);
-        ENABLE_DAYTIME_ZOMBIE_SUPPRESSION = builder.comment("Suppress natural zombie-like mob spawns in the Overworld during daytime.")
+        ENABLE_DAYTIME_ZOMBIE_SUPPRESSION = builder.comment("Suppress automated zombie-like mob spawns in the Overworld during daytime.")
                 .define("enableDaytimeZombieSuppression", true);
         builder.pop();
 
