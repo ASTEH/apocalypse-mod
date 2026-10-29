@@ -15,6 +15,14 @@ sourceSets.main.resources {
 }
 
 repositories {
+    exclusiveContent {
+        forRepository {
+            maven { url = 'https://api.modrinth.com/maven' }
+        }
+        filter {
+            includeGroup 'maven.modrinth'
+        }
+    }
 }
 
 base {
@@ -73,7 +81,8 @@ configurations {
 }
 
 dependencies {
-    // Optional integrations must remain absent from the published core dependency graph.
+    // Lumina is a client-side UI dependency; its minimum version is also declared in neoforge.mods.toml.
+    implementation 'maven.modrinth:lumina-ui:1.0.0'
 }
 
 def generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
