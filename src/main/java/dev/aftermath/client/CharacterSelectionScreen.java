@@ -34,6 +34,7 @@ public final class CharacterSelectionScreen extends Screen {
     private boolean waitingForServer;
     private int professionPage;
     private int traitPage;
+    private boolean widgetRefreshRequested;
 
     public CharacterSelectionScreen(String definitionsJson) {
         super(Component.translatable("screen.aftermath.character.title"));
@@ -112,6 +113,24 @@ public final class CharacterSelectionScreen extends Screen {
         refreshCharacterWidgets();
     }
 
+    /**
+     * Rebuild widgets on the next screen tick instead of while a button click is still
+     * traversing Screen's listener list. This avoids mutating the live widget collection
+     * from inside the click callback.
+     */
+    @Override
+    public void tick() {
+        super.tick();
+        if (widgetRefreshRequested) {
+            widgetRefreshRequested = false;
+            refreshCharacterWidgets();
+        }
+    }
+
+    private void requestWidgetRefresh() {
+        widgetRefreshRequested = true;
+    }
+
     private void refreshCharacterWidgets() {
         clearWidgets();
         if (professions.isEmpty()) return;
@@ -141,18 +160,18 @@ public final class CharacterSelectionScreen extends Screen {
                             || (!trait.requiresProfession.isBlank() && !trait.requiresProfession.equals(option.id));
                 });
                 resultMessageKey = "";
-                refreshCharacterWidgets();
+                requestWidgetRefresh();
             }).bounds(professionX + slot * (professionWidth + professionGap), 59, professionWidth, 20).build());
             button.active = !waitingForServer;
         }
         if (professionPageCount > 1) {
             addRenderableWidget(Button.builder(Component.literal("<"), ignored -> {
                 professionPage = Math.max(0, professionPage - 1);
-                refreshCharacterWidgets();
+                requestWidgetRefresh();
             }).bounds(8, 60, 20, 18).build()).active = !waitingForServer && professionPage > 0;
             addRenderableWidget(Button.builder(Component.literal(">"), ignored -> {
                 professionPage = Math.min(professionPageCount - 1, professionPage + 1);
-                refreshCharacterWidgets();
+                requestWidgetRefresh();
             }).bounds(width - 28, 60, 20, 18).build()).active = !waitingForServer && professionPage < professionPageCount - 1;
         }
 
@@ -168,11 +187,11 @@ public final class CharacterSelectionScreen extends Screen {
         if (pageCount > 1) {
             addRenderableWidget(Button.builder(Component.literal("<"), ignored -> {
                 traitPage = Math.max(0, traitPage - 1);
-                refreshCharacterWidgets();
+                requestWidgetRefresh();
             }).bounds(width / 2 - 88, 112, 20, 18).build()).active = !waitingForServer && traitPage > 0;
             addRenderableWidget(Button.builder(Component.literal(">"), ignored -> {
                 traitPage = Math.min(pageCount - 1, traitPage + 1);
-                refreshCharacterWidgets();
+                requestWidgetRefresh();
             }).bounds(width / 2 + 68, 112, 20, 18).build()).active = !waitingForServer && traitPage < pageCount - 1;
         }
         int rowHeight = 21;
@@ -214,7 +233,7 @@ public final class CharacterSelectionScreen extends Screen {
                         selectedTraits.add(trait.id);
                     }
                 }
-                refreshCharacterWidgets();
+                requestWidgetRefresh();
             }).bounds(traitX, y, traitWidth, 20).build());
             button.active = !waitingForServer && !granted;
             y += rowHeight;
@@ -237,7 +256,7 @@ public final class CharacterSelectionScreen extends Screen {
         if (waitingForServer || profession() == null || remainingPoints() < 0) return;
         waitingForServer = true;
         resultMessageKey = "screen.aftermath.character.saving";
-        refreshCharacterWidgets();
+        requestWidgetRefresh();
         String traitsCsv = selectedTraits.stream().sorted().reduce((a, b) -> a + "," + b).orElse("");
         PacketDistributor.sendToServer(new SelectCharacterPayload(selectedProfessionId, traitsCsv));
     }
@@ -294,7 +313,7 @@ public final class CharacterSelectionScreen extends Screen {
     public void setResult(String messageKey) {
         waitingForServer = false;
         resultMessageKey = messageKey == null ? "" : messageKey;
-        refreshCharacterWidgets();
+        requestWidgetRefresh();
     }
 
     @Override
