@@ -58,7 +58,6 @@ public final class CharacterSelectionScreen extends BaseScreen {
     private final List<ProfessionOption> professions = new ArrayList<>();
     private final List<TraitOption> traits = new ArrayList<>();
     private final Set<String> selectedTraits = new LinkedHashSet<>();
-    private final Map<String, EntryButton> professionButtons = new LinkedHashMap<>();
     private final Map<String, EntryButton> traitButtons = new LinkedHashMap<>();
 
     private String selectedProfessionId = "aftermath:medic";
@@ -66,7 +65,6 @@ public final class CharacterSelectionScreen extends BaseScreen {
     private boolean waitingForServer;
     private boolean invalidDefinitions;
 
-    private RenderWidget professionList;
     private RenderWidget traitList;
     private EntryButton confirmButton;
 
@@ -234,27 +232,9 @@ public final class CharacterSelectionScreen extends BaseScreen {
 
     @Override
     protected void addWidgets() {
-        professionList = addRenderableWidget(new RenderWidget(
-                Vector2.of(professionRowsX, professionRowsY),
-                Vector2.of(professionRowsW, professionRowsH)));
         traitList = addRenderableWidget(new RenderWidget(
                 Vector2.of(traitRowsX, traitRowsY),
                 Vector2.of(traitRowsW, traitRowsH)));
-
-        professionButtons.clear();
-        for (ProfessionOption option : professions) {
-            EntryButton button = professionList.addRenderableWidget(new EntryButton(
-                    Vector2.of(professionRowsX, professionRowsY),
-                    Vector2.of(professionRowsW, ROW_HEIGHT),
-                    () -> professionLabel(option),
-                    () -> option.id.equals(selectedProfessionId),
-                    () -> false,
-                    () -> !waitingForServer,
-                    () -> TEXT,
-                    false,
-                    () -> selectProfession(option.id)));
-            professionButtons.put(option.id, button);
-        }
 
         traitButtons.clear();
         for (TraitOption option : traits) {
@@ -298,29 +278,9 @@ public final class CharacterSelectionScreen extends BaseScreen {
     }
 
     private void layoutProfessionRows() {
-        if (professionList == null) return;
-        professionList.setPosition(professionRowsX, professionRowsY);
-        professionList.setWidth(professionRowsW);
-        professionList.setHeight(professionRowsH);
-
         int visibleCount = visibleRows(professionRowsH);
-        professionScrollOffset = clamp(professionScrollOffset, 0, Math.max(0, professions.size() - visibleCount));
-        for (int i = 0; i < professions.size(); i++) {
-            ProfessionOption option = professions.get(i);
-            EntryButton button = professionButtons.get(option.id);
-            if (button == null) continue;
-            boolean visible = i >= professionScrollOffset && i < professionScrollOffset + visibleCount;
-            button.visible = visible;
-            button.active = visible && !waitingForServer;
-            if (visible) {
-                int row = i - professionScrollOffset;
-                button.setPosition(professionRowsX, professionRowsY + row * ROW_STEP);
-                button.setWidth(professionRowsW);
-                button.setHeight(ROW_HEIGHT);
-            } else {
-                button.setPosition(professionRowsX, professionRowsY - 500);
-            }
-        }
+        professionScrollOffset = clamp(professionScrollOffset, 0,
+                Math.max(0, professions.size() - visibleCount));
     }
 
     private void layoutTraitRows() {
@@ -516,6 +476,7 @@ public final class CharacterSelectionScreen extends BaseScreen {
                     tr("screen.aftermath.character.ui.empty_professions"),
                     professionPanelX + 8, professionRowsY + 5, RED);
         }
+        drawProfessionRows(graphics, mouseX, mouseY);
         drawScrollbar(graphics, professionPanelX + professionPanelW - 7, professionRowsY,
                 professionRowsH, professions.size(), visibleRows(professionRowsH), professionScrollOffset);
 
@@ -548,6 +509,62 @@ public final class CharacterSelectionScreen extends BaseScreen {
                 : "screen.aftermath.character.ui.footer_hint";
         int statusColor = resultMessageKey.contains(".error.") || invalidDefinitions ? RED : MUTED;
         drawTruncated(graphics, tr(statusKey), footerX, footerY + 23, freeTextW, statusColor);
+    }
+
+    private void drawProfessionRows(GuiGraphics graphics, int mouseX, int mouseY) {
+        layoutProfessionRows();
+        int visibleCount = visibleRows(professionRowsH);
+        int hoveredIndex = professionIndexAt(mouseX, mouseY);
+
+        graphics.enableScissor(professionRowsX, professionRowsY,
+                professionRowsX + professionRowsW, professionRowsY + professionRowsH);
+        try {
+            for (int row = 0; row < visibleCount; row++) {
+                int index = professionScrollOffset + row;
+                if (index >= professions.size()) break;
+
+                ProfessionOption option = professions.get(index);
+                int x = professionRowsX;
+                int y = professionRowsY + row * ROW_STEP;
+                boolean selected = option.id.equals(selectedProfessionId);
+                boolean hovered = index == hoveredIndex;
+                int background = selected ? ROW_SELECTED : hovered ? ROW_HOVER : ROW;
+                int accent = selected ? ACCENT : hovered ? 0xFF889185 : BORDER;
+
+                graphics.fill(x, y, x + professionRowsW, y + ROW_HEIGHT, background);
+                graphics.fill(x, y, x + 2, y + ROW_HEIGHT, accent);
+                graphics.fill(x + 2, y, x + professionRowsW, y + 1, BORDER);
+                graphics.fill(x + 2, y + ROW_HEIGHT - 1,
+                        x + professionRowsW, y + ROW_HEIGHT, BORDER);
+
+                String label = professionLabel(option);
+                int color = selected ? 0xFFFFD8AA : TEXT;
+                graphics.drawString(Minecraft.getInstance().font, label, x + 6,
+                        y + Math.max(2, (ROW_HEIGHT - Minecraft.getInstance().font.lineHeight) / 2), color);
+            }
+        } finally {
+            graphics.disableScissor();
+        }
+    }
+
+    /**
+     * Resolves the visible row using the same content-space transform used by rendering.
+     * Clicks in row spacing, outside the clipped viewport, or beyond the list are rejected.
+     */
+    private int professionIndexAt(double mouseX, double mouseY) {
+        if (!inside(mouseX, mouseY, professionRowsX, professionRowsY,
+                professionRowsW, professionRowsH)) {
+            return -1;
+        }
+
+        double contentY = mouseY - professionRowsY + (double) professionScrollOffset * ROW_STEP;
+        int index = (int) Math.floor(contentY / ROW_STEP);
+        double withinRowY = contentY - (double) index * ROW_STEP;
+        if (withinRowY < 0.0D || withinRowY >= ROW_HEIGHT
+                || index < 0 || index >= professions.size()) {
+            return -1;
+        }
+        return index;
     }
 
     private void drawSummary(GuiGraphics graphics) {
@@ -664,6 +681,21 @@ public final class CharacterSelectionScreen extends BaseScreen {
         waitingForServer = false;
         setStatus(messageKey);
         refreshUi();
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // Intercept the entire visible profession viewport so SDM's nested widget hit-testing
+        // cannot dispatch a click using stale content coordinates after the list is scrolled.
+        if (inside(mouseX, mouseY, professionRowsX, professionRowsY,
+                professionRowsW, professionRowsH)) {
+            if (button == 0 && !waitingForServer) {
+                int index = professionIndexAt(mouseX, mouseY);
+                if (index >= 0) selectProfession(professions.get(index).id);
+            }
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
