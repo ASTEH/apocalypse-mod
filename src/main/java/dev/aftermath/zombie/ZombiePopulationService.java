@@ -8,8 +8,8 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 
 /**
- * Reduces zombie pressure during daylight without touching existing mobs, spawn eggs,
- * structure spawns, or scripted events. The chance is server-configurable.
+ * Reduces zombie pressure during daylight without deleting existing mobs or blocking manual
+ * spawn eggs, spawners, or structure-generated mobs. The chance is server-configurable.
  */
 public final class ZombiePopulationService {
     public static void onFinalizeSpawn(FinalizeSpawnEvent event) {
