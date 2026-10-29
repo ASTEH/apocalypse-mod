@@ -20,12 +20,13 @@
 - `CharacterSelectionService`: validates profession/traits and applies effects.
 - `WeaponProgressionService`: XP and level damage bonuses for direct tagged melee hits and verified TaCZ projectile kills, with anti-farm controls.
 - `FirearmDefinitions`: reloads validated external gun-ID-to-class mappings from datapack JSON.
-- `TaczCompatibility`: reflection-only optional adapter for TaCZ server bullets; resolves actual projectile owner and gun ID, and emits shot noise without loading TaCZ types when absent.
+- `TaczCompatibility`: reflection-only optional adapter for TaCZ bullets and runtime gun caches; resolves actual projectile owner/gun ID, scales spread/recoil, adjusts reload clocks, and remains safe if TaCZ is absent.
 - `LearningDefinitions`: loads and validates lesson and TV JSON definitions.
 - `LearningService`: server-timed reading and scheduled TV sessions; persistent skill XP and per-material completion counts.
 - `FirstAidService`: rolls configurable bleeding chance for damaging hostile hits, applies timed blood-loss ticks, and handles bandage treatment; Medic characters stop all bleeding with one bandage.
 - `NoiseDefinitions`: validates data-driven noise events and horde archetypes on datapack reload.
-- `NoiseService`: applies cooldowns and assigns only already-loaded, tagged mobs to a temporary noise destination.
+- `NoiseService`: translates server sound events, non-command chat, block interactions, and player movement into data-driven noise profiles; per-source cooldowns and target caps keep scans bounded. It assigns only already-loaded eligible mobs to a temporary noise destination.
+- `ZombieEntityClassifier`: accepts datapack-tagged horde members plus common hostile zombie/infected/walker variants from modpacks.
 - `HordeDirector`: adds a movement goal without replacing other AI goals, groups nearby mobs, and enforces a per-dimension path request budget.
 - `DayProgressionDefinitions`: validates and reloads stages that scale noise radius and group size.
 - `WorldProgressData`: persists the global apocalypse day in Overworld `SavedData`, shared across dimensions.
