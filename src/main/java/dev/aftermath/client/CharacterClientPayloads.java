@@ -15,7 +15,8 @@ public final class CharacterClientPayloads {
     }
 
     public static void handleTraitState(TraitStatePayload payload) {
-        TraitClientState.setSelectedTraits(payload.selectedTraitIdsCsv(), payload.eagleEyeSpreadMultiplier(),
+        TraitClientState.setSelectedTraits(payload.selectedTraitIdsCsv(), payload.firearmSpreadMultiplier(),
+                payload.firearmRecoilMultiplier(), payload.aimingSwayDegrees(),
                 payload.quickReloadDurationMultiplier());
     }
 
