@@ -1,5 +1,7 @@
 package dev.aftermath.client;
 
+import dev.aftermath.weapon.TaczCompatibility;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.WeighedSoundEvents;
@@ -8,9 +10,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.material.FogType;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.Locale;
 
@@ -21,12 +25,31 @@ import java.util.Locale;
 public final class TraitClientEvents {
     private static final float HARD_OF_HEARING_VOLUME = 0.35F;
     private static final float KEEN_HEARING_VOLUME = 1.4F;
+    private static Player lastFirearmTraitPlayer;
 
     private TraitClientEvents() {}
 
     public static void register() {
         NeoForge.EVENT_BUS.addListener(TraitClientEvents::onPlaySound);
         NeoForge.EVENT_BUS.addListener(TraitClientEvents::onRenderFog);
+        NeoForge.EVENT_BUS.addListener(TraitClientEvents::onClientTick);
+    }
+
+    /**
+     * TaCZ computes inaccuracy from its active gun cache on both logical sides. The server sends
+     * the exact effective trait multipliers; the local cache is modified only for the local player.
+     */
+    public static void onClientTick(ClientTickEvent.Post event) {
+        Player current = Minecraft.getInstance().player;
+        if (lastFirearmTraitPlayer != null && lastFirearmTraitPlayer != current) {
+            TaczCompatibility.applyFirearmTraitEffects(lastFirearmTraitPlayer, 1.0D, 1.0D, false);
+        }
+        if (current != null) {
+            TaczCompatibility.applyFirearmTraitEffects(current,
+                    TraitClientState.eagleEyeSpreadMultiplier(),
+                    TraitClientState.quickReloadDurationMultiplier(), false);
+        }
+        lastFirearmTraitPlayer = current;
     }
 
     public static void onPlaySound(PlaySoundEvent event) {
