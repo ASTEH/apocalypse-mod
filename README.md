@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** Core character creation, learning, noise/horde behavior, day progression, firearm proficiency, injuries/first aid, trait expansion, profession expansion, and the SDM UI Lib character screen are implemented in `main`. Roadmap Stage 4 adds severe novice firearm handling (spread, recoil, aiming sway) that improves with weapon XP, plus reload handling. The sound-response expansion also covers world sounds, block interactions, chat, walking, sprinting, and common modded zombie variants; in-game tuning remains to be tested.
+> **Status:** Core character creation, learning, noise/horde behavior, day progression, firearm proficiency, injuries/first aid, trait expansion, profession expansion, and the SDM UI Lib character screen are implemented in `main`. Roadmap Stage 4 adds severe novice firearm handling (spread, recoil, aiming sway) that improves with weapon XP, plus reload handling. The sound-response system also covers world sounds, block interactions, chat, walking, sprinting, blood scent, and exposed light sources; in-game tuning remains to be tested.
 
 ## Requirements
 
@@ -85,10 +85,12 @@ See [the build guide](docs/BUILDING.md), [architecture plan](docs/ARCHITECTURE.m
 
 ### Zombie-awareness integration
 
-Aftermath has its own server-side sound-response system; Zombie Awareness is not required for the sound mechanics. Running both can duplicate sound processing. Keep Zombie Awareness only if its additional blood-scent, light-source awareness, or wandering-horde behavior is desired.
+Aftermath implements its own server-side sound, blood-scent, and exposed-light awareness with bounded searches and no required gameplay dependencies. Zombie Awareness is not required for those senses. Running both can duplicate sound processing and zombie attraction; keep it only if you specifically want its separate behavior, such as its optional wandering-horde system.
 
 ### Daytime zombie population and kill counter
 
 In the server config, `enableDaytimeZombieSuppression=true` suppresses automated zombie-like spawns in the Overworld during daylight. `daytimeZombieSpawnChancePercent=0` blocks them entirely; set it to 3–5 for a small daytime chance. This does not delete zombies already present or block manual spawn eggs/commands and spawners.
 
 The HUD shows the player's persistent lifetime zombie-like kill count. `/aftermath kills` prints the value in chat, while `/aftermath dayzombies` reports the current daytime spawn settings.
+
+The zombie senses use the existing `NoiseService` and `HordeDirector`: damage and active bleeding leave temporary scent spots, while visible light-emitting blocks are cached and periodically checked with a per-tick work budget. No chunks are loaded just to find a target.
