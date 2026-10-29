@@ -1,11 +1,8 @@
 package dev.aftermath.noise;
 import dev.aftermath.config.AftermathServerConfig;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
@@ -21,8 +18,6 @@ import java.util.WeakHashMap;
 
 /** Transient horde state; adds a goal without replacing any vanilla or third-party AI goals. */
 public final class HordeDirector {
-    private static final TagKey<EntityType<?>> MEMBERS = TagKey.create(
-            Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("aftermath", "horde_members"));
     private static final Map<UUID, HordeOrder> ORDERS = new HashMap<>();
     private static final Map<ResourceLocation, PathBudget> PATH_BUDGETS = new HashMap<>();
     private static final Map<Mob, Boolean> INSTALLED = new WeakHashMap<>();
@@ -46,7 +41,8 @@ public final class HordeDirector {
         runtimeBehaviorOverride = null;
     }
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-        if (!(event.getLevel() instanceof ServerLevel) || !(event.getEntity() instanceof Mob mob) || !mob.getType().is(MEMBERS)) return;
+        if (!(event.getLevel() instanceof ServerLevel) || !(event.getEntity() instanceof Mob mob)
+                || !ZombieEntityClassifier.isZombieLike(mob)) return;
         if (INSTALLED.putIfAbsent(mob, Boolean.TRUE) == null) mob.goalSelector.addGoal(5, new BehaviorGoal(mob));
     }
     public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) { ORDERS.remove(event.getEntity().getUUID()); }
