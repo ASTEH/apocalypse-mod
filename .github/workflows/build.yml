@@ -22,3 +22,11 @@ jobs:
 
       - name: Build
         run: bash ./gradlew build
+
+      - name: Upload mod jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: aftermath-1.21.1
+          path: build/libs/aftermath-*.jar
+          if-no-files-found: error
+          retention-days: 7

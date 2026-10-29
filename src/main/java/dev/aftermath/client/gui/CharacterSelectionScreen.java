@@ -283,6 +283,11 @@ public final class CharacterSelectionScreen extends Screen {
     }
 
     @Override
+    public boolean shouldCloseOnEsc() {
+        return false;
+    }
+
+    @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics, mouseX, mouseY, partialTick);
         graphics.fill(panelLeft - 4, 28, panelLeft + panelWidth + 4, height - 8, 0xD010151D);
