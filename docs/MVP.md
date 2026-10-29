@@ -104,6 +104,21 @@
 
 **Acceptance:** only hostile damage can trigger bleeding; the server owns all wound state and damage; failed bandage use does not consume an item; injury status persists safely without TaCZ or other optional mods.
 
+## User roadmap — Stage 1: Trait expansion
+
+This is distinct from the historical M1–M7 milestones above. It extends the existing character flow instead of replacing it.
+
+- [x] Backwards-compatible trait loader accepts legacy fields and the new `id/name/description/type/pointCost/effects/incompatibleWith/requiresProfession` schema.
+- [x] Existing positive and negative traits migrated to the new schema; 18 additional traits are defined in individual JSON files.
+- [x] Server-side points, profession requirements and incompatibility checks remain authoritative; empty profession allow-lists act as data-driven "allow all".
+- [x] Attribute modifiers, Night Vision, damage mitigation, reading speed, healing reduction, fear, food exhaustion and clumsy-footstep hooks are implemented.
+- [x] Server-to-client trait-state payload gates deafness, hearing volume and short-sighted fog effects; Deaf mutes all SoundSource categories except MUSIC; uses no mixins or custom shader.
+- [x] Trait selection list supports paging so all JSON-defined traits remain selectable in the existing screen.
+- [ ] Manual test all three current professions; point-cost validation; incompatible traits; Fast Learner; Illiterate/Slow Reader; sound/fog traits; Cat's Eyes; Thick-Skinned; Clumsy horde noise.
+- [ ] TODO: Eagle Eye and Quick Reload become functional with Stage 4 firearm control; vehicle-specific Speed Demon effects are Stage 5; Sleepyhead awaits a dedicated rest/fatigue mechanic.
+
+**Acceptance:** all active trait definitions load without errors; the UI and server agree on points and compatibility; relog restores selected client-side sound/visual behavior; standalone NeoForge works with optional mods absent.
+
 ## Release gate
 
 A stage is not done until CI passes, client and dedicated server launch, clean NeoForge-only startup works and manual acceptance tests pass.

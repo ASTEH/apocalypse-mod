@@ -4,6 +4,7 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.character.AftermathAttachments;
 import dev.aftermath.character.CharacterDefinitions;
 import dev.aftermath.character.CharacterProfile;
+import dev.aftermath.character.TraitRuntimeService;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.content.AftermathContent;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -37,6 +38,10 @@ public final class LearningService {
             message(player, "message.aftermath.learning.already_active");
             return;
         }
+        if (!TraitRuntimeService.canRead(player)) {
+            message(player, "message.aftermath.learning.illiterate");
+            return;
+        }
 
         LearningDefinitions.LessonDefinition lesson = LearningDefinitions.snapshot().lessons().get(lessonId);
         if (lesson == null) {
@@ -56,6 +61,7 @@ public final class LearningService {
             return;
         }
 
+        int readingDuration = TraitRuntimeService.adjustedReadingDuration(player, lesson.durationTicks());
         ACTIVE_SESSIONS.put(player.getUUID(), new Session(
                 SessionType.READING,
                 lesson.id(),
@@ -67,14 +73,14 @@ public final class LearningService {
                 player.level().dimension().location(),
                 player.position(),
                 player.level().getGameTime(),
-                lesson.durationTicks(),
+                readingDuration,
                 lesson.xpReward(),
                 lesson.maxCompletions(),
                 lesson.cancelOnMovement(),
                 lesson.cancelOnDamage()));
         player.displayClientMessage(Component.translatable(
                 "message.aftermath.learning.started", Component.translatable(lesson.titleKey()),
-                seconds(lesson.durationTicks())), true);
+                seconds(readingDuration)), true);
     }
 
     public static void startTelevision(Player player, net.minecraft.core.BlockPos televisionPos) {

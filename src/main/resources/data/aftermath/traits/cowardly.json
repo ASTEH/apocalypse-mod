@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:cowardly",
+  "name": "trait.aftermath.cowardly",
+  "description": "trait.aftermath.cowardly.description",
+  "type": "NEGATIVE",
+  "pointCost": -3,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "cowardly",
+      "value": 1
+    }
+  ],
+  "incompatibleWith": []
+}

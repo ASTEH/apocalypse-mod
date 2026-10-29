@@ -1,6 +1,7 @@
 package dev.aftermath.network;
 
 import dev.aftermath.character.CharacterSelectionService;
+import dev.aftermath.network.TraitStatePayload;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,12 +22,25 @@ public final class AftermathNetworking {
         registrar.playToClient(CharacterSelectionResultPayload.TYPE, CharacterSelectionResultPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() ->
                         invokeClient("handleResult", CharacterSelectionResultPayload.class, payload)));
+        registrar.playToClient(TraitStatePayload.TYPE, TraitStatePayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() ->
+                        invokeClient("handleTraitState", TraitStatePayload.class, payload)));
     }
 
     /*
      * Keep client-only Minecraft classes out of this common class so the dedicated server
      * can load the networking registry. These callbacks are invoked only for clientbound payloads.
      */
+    /** Called only on the physical client; reflection keeps client-only classes out of the common class graph. */
+    public static void registerClientHooks() {
+        try {
+            Class<?> clientEvents = Class.forName("dev.aftermath.client.TraitClientEvents");
+            clientEvents.getMethod("register").invoke(null);
+        } catch (ReflectiveOperationException exception) {
+            throw new IllegalStateException("Could not register Aftermath client trait hooks", exception);
+        }
+    }
+
     private static void invokeClient(String methodName, Class<?> payloadType, Object payload) {
         try {
             Class<?> handler = Class.forName(CLIENT_HANDLER);

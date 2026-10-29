@@ -1,0 +1,14 @@
+{
+  "id": "aftermath:slow_reader",
+  "name": "trait.aftermath.slow_reader",
+  "description": "trait.aftermath.slow_reader.description",
+  "type": "NEGATIVE",
+  "pointCost": -2,
+  "effects": [
+    {
+      "type": "reading_speed_multiplier",
+      "value": 1.5
+    }
+  ],
+  "incompatibleWith": []
+}

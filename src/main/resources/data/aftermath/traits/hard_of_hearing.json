@@ -1,0 +1,18 @@
+{
+  "id": "aftermath:hard_of_hearing",
+  "name": "trait.aftermath.hard_of_hearing",
+  "description": "trait.aftermath.hard_of_hearing.description",
+  "type": "NEGATIVE",
+  "pointCost": -3,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "hard_of_hearing",
+      "value": 1
+    }
+  ],
+  "incompatibleWith": [
+    "aftermath:keen_hearing",
+    "aftermath:deaf"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:iron_stomach",
+  "name": "trait.aftermath.iron_stomach",
+  "description": "trait.aftermath.iron_stomach.description",
+  "type": "POSITIVE",
+  "pointCost": 2,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "iron_stomach",
+      "value": 1
+    }
+  ],
+  "incompatibleWith": []
+}

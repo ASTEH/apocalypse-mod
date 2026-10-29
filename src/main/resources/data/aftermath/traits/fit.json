@@ -1,8 +1,9 @@
 {
+  "id": "aftermath:fit",
   "name": "trait.aftermath.fit",
   "description": "trait.aftermath.fit.description",
-  "category": "positive",
-  "point_cost": 3,
+  "type": "POSITIVE",
+  "pointCost": 2,
   "effects": [
     {
       "type": "attribute_multiplier",
@@ -10,8 +11,7 @@
       "value": 1.08
     }
   ],
-  "conflicts": [
-    "aftermath:frail",
+  "incompatibleWith": [
     "aftermath:clumsy"
   ]
 }

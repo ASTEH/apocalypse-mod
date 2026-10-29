@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:thick_skinned",
+  "name": "trait.aftermath.thick_skinned",
+  "description": "trait.aftermath.thick_skinned.description",
+  "type": "POSITIVE",
+  "pointCost": 4,
+  "effects": [
+    {
+      "type": "damage_multiplier",
+      "target": "hostile",
+      "value": 0.8
+    }
+  ],
+  "incompatibleWith": []
+}

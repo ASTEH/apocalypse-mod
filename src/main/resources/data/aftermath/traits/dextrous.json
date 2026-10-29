@@ -1,0 +1,15 @@
+{
+  "id": "aftermath:dextrous",
+  "name": "trait.aftermath.dextrous",
+  "description": "trait.aftermath.dextrous.description",
+  "type": "POSITIVE",
+  "pointCost": 3,
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "attack_speed",
+      "value": 1.15
+    }
+  ],
+  "incompatibleWith": []
+}

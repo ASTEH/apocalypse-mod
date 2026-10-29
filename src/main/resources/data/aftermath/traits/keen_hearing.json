@@ -1,0 +1,18 @@
+{
+  "id": "aftermath:keen_hearing",
+  "name": "trait.aftermath.keen_hearing",
+  "description": "trait.aftermath.keen_hearing.description",
+  "type": "POSITIVE",
+  "pointCost": 3,
+  "effects": [
+    {
+      "type": "custom_hook",
+      "target": "keen_hearing",
+      "value": 1
+    }
+  ],
+  "incompatibleWith": [
+    "aftermath:deaf",
+    "aftermath:hard_of_hearing"
+  ]
+}

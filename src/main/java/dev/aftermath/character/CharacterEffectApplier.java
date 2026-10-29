@@ -20,6 +20,8 @@ public final class CharacterEffectApplier {
                     case "movement_speed" -> Attributes.MOVEMENT_SPEED;
                     case "max_health" -> Attributes.MAX_HEALTH;
                     case "attack_damage" -> Attributes.ATTACK_DAMAGE;
+                    case "attack_speed" -> Attributes.ATTACK_SPEED;
+                    case "armor" -> Attributes.ARMOR;
                     default -> null;
                 };
                 if (attribute == null) continue;

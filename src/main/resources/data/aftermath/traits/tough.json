@@ -1,8 +1,9 @@
 {
+  "id": "aftermath:tough",
   "name": "trait.aftermath.tough",
   "description": "trait.aftermath.tough.description",
-  "category": "positive",
-  "point_cost": 4,
+  "type": "POSITIVE",
+  "pointCost": 3,
   "effects": [
     {
       "type": "attribute_multiplier",
@@ -10,7 +11,7 @@
       "value": 1.1
     }
   ],
-  "conflicts": [
+  "incompatibleWith": [
     "aftermath:frail"
   ]
 }
