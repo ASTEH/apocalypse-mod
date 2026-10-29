@@ -116,6 +116,11 @@ public final class BloodScentService {
         if (spots.isEmpty()) SPOTS_BY_DIMENSION.remove(dimension);
     }
 
+    public static int trackedSpotCount(ServerLevel level) {
+        List<BloodSpot> spots = SPOTS_BY_DIMENSION.get(level.dimension().location());
+        return spots == null ? 0 : spots.size();
+    }
+
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         LAST_DROP_BY_PLAYER.remove(event.getEntity().getUUID());
     }
