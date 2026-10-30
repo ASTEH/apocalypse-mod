@@ -3,11 +3,14 @@
   "name": "profession.aftermath.mechanic",
   "description": "profession.aftermath.mechanic.description",
   "icon": "minecraft:iron_pickaxe",
-  "difficulty": 3,
+  "difficulty": 4,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [],
-  "uniqueTraits": ["aftermath:mechanic_tinker", "aftermath:mechanic_tool_burden"],
+  "uniqueTraits": [
+    "aftermath:mechanic_tinker",
+    "aftermath:mechanic_tool_burden"
+  ],
   "skillBonuses": {
     "mechanics": 1
   },

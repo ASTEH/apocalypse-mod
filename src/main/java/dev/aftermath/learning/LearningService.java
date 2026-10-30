@@ -9,7 +9,6 @@ import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.content.AftermathContent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,7 +19,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.CropBlock;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -38,7 +36,6 @@ public final class LearningService {
     private static final long DAY_TICKS = 24_000L;
     private static final long DRIVING_SAMPLE_TICKS = 200L;
     private static final double MIN_DRIVING_DISTANCE_SQR = 256.0D;
-    private static final String VHS_DATA_KEY = "VhsTapeId";
     private static final TagKey<Item> COOKING_ITEMS = TagKey.create(
             Registries.ITEM, ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "learning/cooking"));
     private static final TagKey<Item> MECHANICS_ITEMS = TagKey.create(
@@ -142,12 +139,63 @@ public final class LearningService {
                 Component.translatable(onAir.titleKey()), seconds(onAir.durationTicks()));
     }
 
-    /** Starts a scheduled program from its data-driven VHS cassette, independent of broadcast time. */
-    public static void startVhsTape(ServerPlayer player, ResourceLocation tapeId, InteractionHand hand) {
+    /** Inserts a valid data-driven VHS cassette into the television's persistent slot. */
+    public static void insertVhsTape(ServerPlayer player, net.minecraft.core.BlockPos televisionPos,
+                                     InteractionHand hand) {
+        if (!AftermathServerConfig.ENABLE_LEARNING.get()) {
+            message(player, "message.aftermath.learning.disabled");
+            return;
+        }
+        if (ACTIVE_SESSIONS.containsKey(player.getUUID())) {
+            message(player, "message.aftermath.learning.already_active");
+            return;
+        }
+        if (!(player.level().getBlockEntity(televisionPos) instanceof TrainingTelevisionBlockEntity television)) {
+            message(player, "message.aftermath.learning.unavailable");
+            return;
+        }
+        if (television.hasCassette()) {
+            message(player, "message.aftermath.learning.vhs_slot_full");
+            return;
+        }
+
+        ItemStack held = player.getItemInHand(hand);
+        if (!held.is(AftermathContent.VHS_TAPE.get())) return;
+        ResourceLocation tapeId = TrainingVhsTapeItem.readTapeId(held);
+        LearningDefinitions.VhsTapeDefinition tape = tapeId == null
+                ? null : LearningDefinitions.snapshot().vhsTapes().get(tapeId);
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(held.getItem());
+        if (tape == null || !tape.itemId().equals(itemId)) {
+            message(player, "message.aftermath.learning.vhs_invalid");
+            return;
+        }
+
+        ItemStack cassette = held.copy();
+        cassette.setCount(1);
+        if (!television.insertCassette(cassette)) {
+            message(player, "message.aftermath.learning.vhs_slot_full");
+            return;
+        }
+        if (!player.getAbilities().instabuild) held.shrink(1);
+        message(player, "message.aftermath.learning.vhs_inserted");
+    }
+
+    /** Starts playback from the cassette currently inserted in the television. */
+    public static void startVhsTape(ServerPlayer player, net.minecraft.core.BlockPos televisionPos) {
         if (!canStartSession(player)) return;
-        LearningDefinitions.VhsTapeDefinition tape = LearningDefinitions.snapshot().vhsTapes().get(tapeId);
-        if (tape == null || !isHeldItem(player, hand, tape.itemId())
-                || !hasCustomDataValue(player.getItemInHand(hand), VHS_DATA_KEY, tape.id().toString())) {
+        if (!(player.level().getBlockEntity(televisionPos) instanceof TrainingTelevisionBlockEntity television)
+                || !television.hasCassette()) {
+            message(player, "message.aftermath.learning.vhs_empty");
+            return;
+        }
+
+        ItemStack cassette = television.getCassette();
+        ResourceLocation tapeId = TrainingVhsTapeItem.readTapeId(cassette);
+        LearningDefinitions.VhsTapeDefinition tape = tapeId == null
+                ? null : LearningDefinitions.snapshot().vhsTapes().get(tapeId);
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(cassette.getItem());
+        if (tape == null || !tape.itemId().equals(itemId)
+                || !television.matchesCassette(tape.itemId(), tape.id())) {
             message(player, "message.aftermath.learning.vhs_invalid");
             return;
         }
@@ -169,12 +217,33 @@ public final class LearningService {
 
         ACTIVE_SESSIONS.put(player.getUUID(), new Session(
                 SessionType.VHS, program.id(), tape.titleKey(), program.skillId(), tape.itemId(),
-                hand, null, player.level().dimension().location(), player.position(),
-                player.level().getGameTime(), program.durationTicks(), program.xpReward(),
-                program.maxCompletions(), true, true, 1.0D, 0,
-                tape.consumeOnUse(), VHS_DATA_KEY, tape.id().toString()));
+                null, televisionPos.immutable(), player.level().dimension().location(),
+                player.position(), player.level().getGameTime(), program.durationTicks(),
+                program.xpReward(), program.maxCompletions(), true, true,
+                1.0D, 0, tape.consumeOnUse(), TrainingVhsTapeItem.DATA_KEY, tape.id().toString()));
         message(player, "message.aftermath.learning.watching",
                 Component.translatable(tape.titleKey()), seconds(program.durationTicks()));
+    }
+
+    /** Sneak-right-clicking the television returns the cassette to the player. */
+    public static void ejectVhsTape(ServerPlayer player, net.minecraft.core.BlockPos televisionPos) {
+        if (!(player.level().getBlockEntity(televisionPos) instanceof TrainingTelevisionBlockEntity television)
+                || !television.hasCassette()) {
+            message(player, "message.aftermath.learning.vhs_empty");
+            return;
+        }
+
+        Session session = ACTIVE_SESSIONS.get(player.getUUID());
+        if (session != null && session.type() == SessionType.VHS
+                && televisionPos.equals(session.televisionPos())) {
+            ACTIVE_SESSIONS.remove(player.getUUID());
+        }
+
+        ItemStack cassette = television.removeCassette();
+        if (!player.getInventory().add(cassette) && !cassette.isEmpty()) {
+            player.drop(cassette, false);
+        }
+        message(player, "message.aftermath.learning.vhs_ejected");
     }
 
     private static boolean canStartSession(ServerPlayer player) {
@@ -196,13 +265,6 @@ public final class LearningService {
 
     private static boolean isHeldItem(ServerPlayer player, InteractionHand hand, ResourceLocation expected) {
         return hand != null && BuiltInRegistries.ITEM.getKey(player.getItemInHand(hand).getItem()).equals(expected);
-    }
-
-    private static boolean hasCustomDataValue(ItemStack stack, String key, String expected) {
-        CustomData data = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-        if (data == null) return false;
-        CompoundTag tag = data.copyTag();
-        return tag.contains(key) && expected.equals(tag.getString(key));
     }
 
     public static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -227,19 +289,23 @@ public final class LearningService {
             return;
         }
 
-        if (session.type() == SessionType.TELEVISION) {
+        if (session.type() == SessionType.TELEVISION || session.type() == SessionType.VHS) {
             if (session.televisionPos() == null
                     || !player.level().getBlockState(session.televisionPos()).is(AftermathContent.TRAINING_TELEVISION.get())) {
                 cancel(player, "message.aftermath.learning.cancelled");
                 return;
             }
+            if (session.type() == SessionType.VHS) {
+                ResourceLocation tapeId = ResourceLocation.tryParse(session.sourceDataValue());
+                if (!(player.level().getBlockEntity(session.televisionPos())
+                        instanceof TrainingTelevisionBlockEntity television)
+                        || !television.matchesCassette(session.sourceItemId(), tapeId)) {
+                    cancel(player, "message.aftermath.learning.vhs_invalid");
+                    return;
+                }
+            }
         } else if (!isHeldItem(player, session.hand(), session.sourceItemId())) {
             cancel(player, "message.aftermath.learning.cancelled_manual");
-            return;
-        } else if (session.sourceDataKey() != null
-                && !hasCustomDataValue(player.getItemInHand(session.hand()),
-                session.sourceDataKey(), session.sourceDataValue())) {
-            cancel(player, "message.aftermath.learning.vhs_invalid");
             return;
         }
 
@@ -440,12 +506,12 @@ public final class LearningService {
         LearningProgress updated = progress.completeProgram(
                 session.definitionId().toString(), session.skillId().toString(), reward, now);
         player.setData(AftermathAttachments.LEARNING_PROGRESS, updated);
-        if (session.type() == SessionType.VHS && session.consumeSourceItem()
-                && session.hand() != null && !player.getAbilities().instabuild) {
-            ItemStack tape = player.getItemInHand(session.hand());
-            if (isHeldItem(player, session.hand(), session.sourceItemId())
-                    && hasCustomDataValue(tape, session.sourceDataKey(), session.sourceDataValue())) {
-                tape.shrink(1);
+        if (session.type() == SessionType.VHS && session.consumeSourceItem()) {
+            ResourceLocation tapeId = ResourceLocation.tryParse(session.sourceDataValue());
+            if (session.televisionPos() != null
+                    && player.level().getBlockEntity(session.televisionPos())
+                    instanceof TrainingTelevisionBlockEntity television) {
+                television.consumeCassette(session.sourceItemId(), tapeId);
             }
         }
         message(player, "message.aftermath.learning.completed",

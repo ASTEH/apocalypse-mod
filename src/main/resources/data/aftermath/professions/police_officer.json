@@ -3,13 +3,16 @@
   "name": "profession.aftermath.police_officer",
   "description": "profession.aftermath.police_officer.description",
   "icon": "minecraft:iron_sword",
-  "difficulty": 4,
+  "difficulty": 2,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [
     "aftermath:keen_hearing"
   ],
-  "uniqueTraits": ["aftermath:police_tactical_training", "aftermath:police_rigid_procedure"],
+  "uniqueTraits": [
+    "aftermath:police_tactical_training",
+    "aftermath:police_rigid_procedure"
+  ],
   "skillBonuses": {
     "firearms": 1,
     "melee": 1

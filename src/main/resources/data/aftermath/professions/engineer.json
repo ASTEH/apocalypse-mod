@@ -3,13 +3,16 @@
   "name": "profession.aftermath.engineer",
   "description": "profession.aftermath.engineer.description",
   "icon": "minecraft:redstone",
-  "difficulty": 4,
+  "difficulty": 3,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [
     "aftermath:dextrous"
   ],
-  "uniqueTraits": ["aftermath:engineer_precision", "aftermath:engineer_machinery_noise"],
+  "uniqueTraits": [
+    "aftermath:engineer_precision",
+    "aftermath:engineer_machinery_noise"
+  ],
   "skillBonuses": {
     "mechanics": 1
   },

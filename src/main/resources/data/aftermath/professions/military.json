@@ -3,13 +3,16 @@
   "name": "profession.aftermath.military",
   "description": "profession.aftermath.military.description",
   "icon": "minecraft:crossbow",
-  "difficulty": 5,
+  "difficulty": 1,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [
     "aftermath:strong"
   ],
-  "uniqueTraits": ["aftermath:military_discipline", "aftermath:military_ptsd"],
+  "uniqueTraits": [
+    "aftermath:military_discipline",
+    "aftermath:military_ptsd"
+  ],
   "skillBonuses": {
     "firearms": 2,
     "melee": 1
@@ -63,7 +66,6 @@
         "MaxCapacity": 30
       }
     },
-
     {
       "mod": "fracturepoint",
       "item": "fracturepoint:shturmovikv2_chestplate",
