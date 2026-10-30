@@ -282,5 +282,7 @@
   "tv_program.aftermath.driving_basics": "Основы вождения",
   "tv_program.aftermath.urban_scavenging": "Городской поиск припасов",
   "vhs_tape.aftermath.driving_basics": "Запись: основы вождения",
-  "vhs_tape.aftermath.urban_scavenging": "Запись: городской поиск припасов"
+  "vhs_tape.aftermath.urban_scavenging": "Запись: городской поиск припасов",
+  "tv_program.aftermath.melee_training": "Выживание в ближнем бою",
+  "vhs_tape.aftermath.melee_training": "Запись: выживание в ближнем бою"
 }

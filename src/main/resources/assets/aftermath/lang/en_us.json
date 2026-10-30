@@ -282,5 +282,7 @@
   "tv_program.aftermath.driving_basics": "Driving Basics",
   "tv_program.aftermath.urban_scavenging": "Urban Scavenging",
   "vhs_tape.aftermath.driving_basics": "Tape: Driving Basics",
-  "vhs_tape.aftermath.urban_scavenging": "Tape: Urban Scavenging"
+  "vhs_tape.aftermath.urban_scavenging": "Tape: Urban Scavenging",
+  "tv_program.aftermath.melee_training": "Close-Quarters Survival",
+  "vhs_tape.aftermath.melee_training": "Tape: Close-Quarters Survival"
 }

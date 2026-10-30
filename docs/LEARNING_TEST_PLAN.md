@@ -45,4 +45,4 @@ Fire a supported TaCZ weapon while Zombie Awareness is installed. Confirm that t
 
 - Drive an MTS vehicle and an Immersive Vehicles vehicle for at least 16 blocks during a 200-tick sample window. Confirm Driving XP is awarded with cooldown and daily cap.
 - Read each of the eight skill manuals at its required skill level. Confirm the relevant temporary multiplier and reading interruption behavior.
-- Test scheduled TV playback and all VHS tapes: field medicine, cooking basics, farmer's corner, mechanic workshop, range safety, driving basics and urban scavenging. Confirm successful playback grants the correct skill XP and VHS consumption behavior.
+- Test scheduled TV playback and all eight VHS tapes: field medicine, cooking basics, farmer's corner, mechanic workshop, range safety, driving basics, urban scavenging and close-quarters survival. Confirm successful playback grants the correct skill XP and VHS consumption behavior.

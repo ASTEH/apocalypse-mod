@@ -1,0 +1,6 @@
+{
+  "title": "vhs_tape.aftermath.melee_training",
+  "program": "aftermath:melee_training",
+  "item": "aftermath:vhs_tape",
+  "consume_on_use": true
+}
