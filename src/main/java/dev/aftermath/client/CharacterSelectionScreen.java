@@ -1036,7 +1036,7 @@ public final class CharacterSelectionScreen extends Screen {
         if (json.has(key) && json.get(key).isJsonArray()) {
             for (JsonElement element : json.getAsJsonArray(key)) {
                 if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
-                    items.add(new StartingItem(element.getAsString(), "", "", 1));
+                    items.add(new StartingItem(element.getAsString(), "", "", 1, 1));
                     continue;
                 }
                 if (!element.isJsonObject()) continue;
