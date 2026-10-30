@@ -14,6 +14,10 @@
     "minecraft:diamond_axe",
     "minecraft:netherite_axe",
     "minecraft:trident",
-    "minecraft:mace"
+    "minecraft:mace",
+    {
+      "id": "lrtactical:melee",
+      "required": false
+    }
   ]
 }

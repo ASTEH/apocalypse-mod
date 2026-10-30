@@ -10,6 +10,7 @@ import dev.aftermath.content.AftermathContent;
 import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.learning.LearningDefinitions;
 import dev.aftermath.learning.LearningService;
+import dev.aftermath.learning.compat.LrTacticalCompatibility;
 import dev.aftermath.medical.FirstAidService;
 import dev.aftermath.weapon.FirearmDefinitions;
 import dev.aftermath.weapon.TaczCompatibility;
@@ -62,7 +63,9 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(LearningService::onCropBreak);
         NeoForge.EVENT_BUS.addListener(LearningService::onAnvilRepair);
         NeoForge.EVENT_BUS.addListener(LearningService::onContainerOpen);
+        NeoForge.EVENT_BUS.addListener(LearningService::onContainerClose);
         NeoForge.EVENT_BUS.addListener(LearningService::onLivingDamage);
+        LrTacticalCompatibility.register();
         NeoForge.EVENT_BUS.addListener(LearningService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(NoiseDefinitions::register);
         NeoForge.EVENT_BUS.addListener(NoiseService::onLevelTick);

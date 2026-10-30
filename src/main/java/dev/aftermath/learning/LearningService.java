@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.Container;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -54,6 +55,7 @@ public final class LearningService {
             Registries.ITEM, ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "learning/mechanics"));
     private static final Map<UUID, Session> ACTIVE_SESSIONS = new HashMap<>();
     private static final Map<UUID, DrivingSample> DRIVING_SAMPLES = new HashMap<>();
+    private static final Map<UUID, LootingSession> LOOTING_SESSIONS = new HashMap<>();
 
     public static void startReading(ServerPlayer player, ResourceLocation lessonId, InteractionHand hand) {
         if (!canStartSession(player)) return;
@@ -288,6 +290,7 @@ public final class LearningService {
         if (expired != progress) player.setData(AftermathAttachments.LEARNING_PROGRESS, expired);
 
         tickDriving(player, now);
+        tickLooting(player);
         Session session = ACTIVE_SESSIONS.get(player.getUUID());
         if (session == null) return;
 
@@ -420,11 +423,58 @@ public final class LearningService {
         awardSkillXp(player, id("melee"), amount, "verified_melee_kill", 20L, 60);
     }
 
-    /** Looting storage containers trains scavenging; cooldown and daily cap prevent menu-spam farming. */
+    /**
+     * Opening a chest alone grants no XP. Scavenging XP is awarded only after item counts
+     * move from the chest into the player's inventory. Cursor transfers accumulate until
+     * the carried item is placed into the inventory.
+     */
     public static void onContainerOpen(PlayerContainerEvent.Open event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)
+                || !(event.getContainer() instanceof ChestMenu menu)) return;
+
+        Container source = menu.getContainer();
+        LOOTING_SESSIONS.put(player.getUUID(), new LootingSession(
+                menu, source, countItems(source), countItems(player.getInventory())));
+    }
+
+    public static void onContainerClose(PlayerContainerEvent.Close event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (!(event.getContainer() instanceof ChestMenu)) return;
-        awardSkillXp(player, id("scavenging"), 5, "opened_loot_container", 600L, 60);
+        LootingSession session = LOOTING_SESSIONS.get(player.getUUID());
+        if (session != null && session.menu == event.getContainer()) {
+            LOOTING_SESSIONS.remove(player.getUUID());
+        }
+    }
+
+    private static void tickLooting(ServerPlayer player) {
+        LootingSession session = LOOTING_SESSIONS.get(player.getUUID());
+        if (session == null) return;
+        if (player.containerMenu != session.menu) {
+            LOOTING_SESSIONS.remove(player.getUUID());
+            return;
+        }
+
+        int currentContainerItems = countItems(session.source);
+        int currentInventoryItems = countItems(player.getInventory());
+        session.pendingContainerLoss += Math.max(0, session.previousContainerItems - currentContainerItems);
+        session.pendingInventoryGain += Math.max(0, currentInventoryItems - session.previousInventoryItems);
+        session.previousContainerItems = currentContainerItems;
+        session.previousInventoryItems = currentInventoryItems;
+
+        if (session.pendingContainerLoss > 0 && session.pendingInventoryGain > 0) {
+            awardSkillXp(player, id("scavenging"), 5, "looted_container_items", 600L, 60);
+            int transferred = Math.min(session.pendingContainerLoss, session.pendingInventoryGain);
+            session.pendingContainerLoss -= transferred;
+            session.pendingInventoryGain -= transferred;
+        }
+    }
+
+    private static int countItems(Container container) {
+        long total = 0L;
+        for (int slot = 0; slot < container.getContainerSize(); slot++) {
+            ItemStack stack = container.getItem(slot);
+            if (!stack.isEmpty()) total += stack.getCount();
+        }
+        return (int) Math.min(Integer.MAX_VALUE, total);
     }
 
     /**
@@ -486,6 +536,7 @@ public final class LearningService {
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         ACTIVE_SESSIONS.remove(event.getEntity().getUUID());
         DRIVING_SAMPLES.remove(event.getEntity().getUUID());
+        LOOTING_SESSIONS.remove(event.getEntity().getUUID());
     }
 
     public static int skillLevel(ServerPlayer player, ResourceLocation skillId) {
@@ -636,6 +687,23 @@ public final class LearningService {
             String sourceDataValue) {}
 
     private record DrivingSample(net.minecraft.world.phys.Vec3 position, long sampledAt) {}
+
+    private static final class LootingSession {
+        private final ChestMenu menu;
+        private final Container source;
+        private int previousContainerItems;
+        private int previousInventoryItems;
+        private int pendingContainerLoss;
+        private int pendingInventoryGain;
+
+        private LootingSession(ChestMenu menu, Container source,
+                               int previousContainerItems, int previousInventoryItems) {
+            this.menu = menu;
+            this.source = source;
+            this.previousContainerItems = previousContainerItems;
+            this.previousInventoryItems = previousInventoryItems;
+        }
+    }
 
     private LearningService() {}
 }
