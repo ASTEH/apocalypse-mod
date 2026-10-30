@@ -17,6 +17,31 @@
           "type": "minecraft:item",
           "name": "aftermath:training_manual_mechanics",
           "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:training_manual_cooking",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:training_manual_farming",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:training_manual_driving",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:training_manual_scavenging",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:training_manual_melee",
+          "weight": 2
         }
       ]
     }

@@ -1,0 +1,9 @@
+{
+  "title": "book.aftermath.farming_fieldguide",
+  "skill": "aftermath:farming",
+  "item": "aftermath:training_manual_farming",
+  "required_skill_level": 4,
+  "multiplier": 3,
+  "reading_ticks": 1200,
+  "buff_duration_ticks": 18000
+}

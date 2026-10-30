@@ -268,5 +268,15 @@
   "vhs_tape.aftermath.cooking_basics": "Запись: основы кулинарии",
   "vhs_tape.aftermath.farmers_corner": "Запись: уголок фермера",
   "vhs_tape.aftermath.mechanic_workshop": "Запись: мастерская механика",
-  "vhs_tape.aftermath.range_safety": "Запись: безопасность на стрельбище"
+  "vhs_tape.aftermath.range_safety": "Запись: безопасность на стрельбище",
+  "item.aftermath.training_manual_cooking": "Учебник: основы кулинарии",
+  "item.aftermath.training_manual_farming": "Учебник: полевое фермерство",
+  "item.aftermath.training_manual_driving": "Учебник: обслуживание транспорта",
+  "item.aftermath.training_manual_scavenging": "Учебник: городской поиск припасов",
+  "item.aftermath.training_manual_melee": "Учебник: выживание в ближнем бою",
+  "book.aftermath.cooking_techniques": "Кулинария: техники и безопасность пищи",
+  "book.aftermath.farming_fieldguide": "Полевое фермерство: посевы и сбор урожая",
+  "book.aftermath.driving_maintenance": "Обслуживание транспорта: полевое руководство",
+  "book.aftermath.urban_scavenging": "Городской поиск: разведка и сбор припасов",
+  "book.aftermath.melee_survival": "Выживание в ближнем бою"
 }

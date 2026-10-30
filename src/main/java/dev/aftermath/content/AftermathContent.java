@@ -58,6 +58,31 @@ public final class AftermathContent {
             () -> new TrainingManualItem(ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "mechanics_basics"),
                     new Item.Properties().stacksTo(1)));
 
+    public static final DeferredItem<TrainingManualItem> MANUAL_COOKING = ITEMS.register(
+            "training_manual_cooking",
+            () -> new TrainingManualItem(ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "cooking_techniques"),
+                    new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<TrainingManualItem> MANUAL_FARMING = ITEMS.register(
+            "training_manual_farming",
+            () -> new TrainingManualItem(ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "farming_fieldguide"),
+                    new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<TrainingManualItem> MANUAL_DRIVING = ITEMS.register(
+            "training_manual_driving",
+            () -> new TrainingManualItem(ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "driving_maintenance"),
+                    new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<TrainingManualItem> MANUAL_SCAVENGING = ITEMS.register(
+            "training_manual_scavenging",
+            () -> new TrainingManualItem(ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "urban_scavenging"),
+                    new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<TrainingManualItem> MANUAL_MELEE = ITEMS.register(
+            "training_manual_melee",
+            () -> new TrainingManualItem(ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "melee_survival"),
+                    new Item.Properties().stacksTo(1)));
+
     public static final DeferredItem<TrainingVhsTapeItem> VHS_TAPE = ITEMS.register(
             "vhs_tape", () -> new TrainingVhsTapeItem(new Item.Properties().stacksTo(1)));
 

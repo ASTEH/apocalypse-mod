@@ -268,5 +268,15 @@
   "vhs_tape.aftermath.cooking_basics": "VHS: Cooking Basics",
   "vhs_tape.aftermath.farmers_corner": "VHS: Farmer's Corner",
   "vhs_tape.aftermath.mechanic_workshop": "VHS: Mechanic Workshop",
-  "vhs_tape.aftermath.range_safety": "VHS: Range Safety"
+  "vhs_tape.aftermath.range_safety": "VHS: Range Safety",
+  "item.aftermath.training_manual_cooking": "Training Manual: Cooking Techniques",
+  "item.aftermath.training_manual_farming": "Training Manual: Field Farming",
+  "item.aftermath.training_manual_driving": "Training Manual: Vehicle Maintenance",
+  "item.aftermath.training_manual_scavenging": "Training Manual: Urban Scavenging",
+  "item.aftermath.training_manual_melee": "Training Manual: Close-Quarters Survival",
+  "book.aftermath.cooking_techniques": "Cooking: Techniques and Food Safety",
+  "book.aftermath.farming_fieldguide": "Field Farming: Crops and Harvests",
+  "book.aftermath.driving_maintenance": "Vehicle Maintenance: A Field Guide",
+  "book.aftermath.urban_scavenging": "Urban Scavenging: Search and Recovery",
+  "book.aftermath.melee_survival": "Close-Quarters Survival"
 }

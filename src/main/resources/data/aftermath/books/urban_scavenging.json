@@ -1,0 +1,9 @@
+{
+  "title": "book.aftermath.urban_scavenging",
+  "skill": "aftermath:scavenging",
+  "item": "aftermath:training_manual_scavenging",
+  "required_skill_level": 4,
+  "multiplier": 3,
+  "reading_ticks": 1200,
+  "buff_duration_ticks": 18000
+}
