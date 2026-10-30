@@ -59,8 +59,11 @@ public final class WeaponProgressionService {
                 new RewardStamp(victim.level().dimension().location(), now));
         cleanOldVictims(now, victim.level().dimension().location());
         if (gainedXp <= 0) return;
-        if (!"melee".equals(weaponClass)) {
-            LearningService.awardFirearmsXp(killer, Math.max(1, gainedXp / 2));
+        int learningXp = Math.max(1, gainedXp / 2);
+        if ("melee".equals(weaponClass)) {
+            LearningService.awardMeleeXp(killer, learningXp);
+        } else {
+            LearningService.awardFirearmsXp(killer, learningXp);
         }
 
         WeaponProgress before = killer.getData(AftermathAttachments.WEAPON_PROGRESS);

@@ -30,7 +30,7 @@ public final class AftermathContent {
     public static final DeferredBlock<TrainingTelevisionBlock> TRAINING_TELEVISION = BLOCKS.registerBlock(
             "training_television",
             TrainingTelevisionBlock::new,
-            BlockBehaviour.Properties.of().strength(1.5F).sound(SoundType.WOOD).noOcclusion());
+            BlockBehaviour.Properties.of().strength(1.5F).sound(SoundType.WOOD));
 
     public static final DeferredItem<BlockItem> TRAINING_TELEVISION_ITEM =
             ITEMS.registerSimpleBlockItem(TRAINING_TELEVISION, new Item.Properties());

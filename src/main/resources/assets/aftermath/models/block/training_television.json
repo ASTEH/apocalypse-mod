@@ -1,12 +1,7 @@
 {
-  "parent": "minecraft:block/cube",
+  "parent": "minecraft:block/cube_all",
   "textures": {
-    "particle": "minecraft:block/gray_concrete",
-    "down": "minecraft:block/black_concrete",
-    "up": "minecraft:block/gray_concrete",
-    "north": "minecraft:block/observer_front",
-    "south": "minecraft:block/gray_concrete",
-    "east": "minecraft:block/gray_concrete",
-    "west": "minecraft:block/gray_concrete"
+    "all": "minecraft:block/gray_concrete",
+    "particle": "minecraft:block/gray_concrete"
   }
 }

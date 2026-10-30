@@ -17,18 +17,21 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.CropBlock;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 /** Server-timed learning sessions and action-based skill progression. */
@@ -36,6 +39,9 @@ public final class LearningService {
     private static final long DAY_TICKS = 24_000L;
     private static final long DRIVING_SAMPLE_TICKS = 200L;
     private static final double MIN_DRIVING_DISTANCE_SQR = 256.0D;
+    private static final List<String> SKILL_STATUS_ORDER = List.of(
+            "cooking", "farming", "mechanics", "first_aid",
+            "driving", "firearms", "melee", "scavenging");
     private static final TagKey<Item> COOKING_ITEMS = TagKey.create(
             Registries.ITEM, ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "learning/cooking"));
     private static final TagKey<Item> MECHANICS_ITEMS = TagKey.create(
@@ -403,6 +409,18 @@ public final class LearningService {
         awardSkillXp(player, id("firearms"), amount, "verified_firearm_kill", 20L, 60);
     }
 
+    /** Called only after a verified hostile kill with a tagged melee weapon. */
+    public static void awardMeleeXp(ServerPlayer player, int amount) {
+        awardSkillXp(player, id("melee"), amount, "verified_melee_kill", 20L, 60);
+    }
+
+    /** Looting storage containers trains scavenging; cooldown and daily cap prevent menu-spam farming. */
+    public static void onContainerOpen(PlayerContainerEvent.Open event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getContainer() instanceof ChestMenu)) return;
+        awardSkillXp(player, id("scavenging"), 5, "opened_loot_container", 600L, 60);
+    }
+
     public static void awardSkillXp(ServerPlayer player, ResourceLocation skillId, int baseXp,
                                     String actionId, long cooldownTicks, int dailyCap) {
         if (!AftermathServerConfig.ENABLE_LEARNING.get() || baseXp <= 0
@@ -454,10 +472,17 @@ public final class LearningService {
 
     public static Component buildStatusMessage(ServerPlayer player) {
         LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
-        return Component.translatable("message.aftermath.learning.status",
-                progress.experienceFor("aftermath:first_aid"),
-                progress.experienceFor("aftermath:firearms"),
-                progress.experienceFor("aftermath:mechanics"));
+        Component[] statuses = SKILL_STATUS_ORDER.stream().map(skillPath -> {
+            ResourceLocation skillId = id(skillPath);
+            LearningDefinitions.SkillDefinition definition =
+                    LearningDefinitions.snapshot().skills().get(skillId);
+            Component skillName = definition == null
+                    ? Component.literal(skillPath)
+                    : Component.translatable(definition.nameKey());
+            return Component.translatable("message.aftermath.learning.skill_status",
+                    skillName, skillLevel(player, skillId), progress.experienceFor(skillId.toString()));
+        }).toArray(Component[]::new);
+        return Component.translatable("message.aftermath.learning.status", (Object[]) statuses);
     }
 
     private static void complete(ServerPlayer player, Session session) {

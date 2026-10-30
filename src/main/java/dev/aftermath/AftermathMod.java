@@ -61,6 +61,7 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(LearningService::onItemSmelted);
         NeoForge.EVENT_BUS.addListener(LearningService::onCropBreak);
         NeoForge.EVENT_BUS.addListener(LearningService::onAnvilRepair);
+        NeoForge.EVENT_BUS.addListener(LearningService::onContainerOpen);
         NeoForge.EVENT_BUS.addListener(LearningService::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(LearningService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(NoiseDefinitions::register);

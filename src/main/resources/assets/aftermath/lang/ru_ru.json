@@ -66,7 +66,7 @@
   "message.aftermath.learning.cancelled_damage": "Обучение прервано: ты получил урон.",
   "message.aftermath.learning.completed": "Изучен материал «%1$s»: +%2$s опыта. Всего навыка: %3$s XP.",
   "message.aftermath.learning.already_claimed": "Награда за этот материал уже получена.",
-  "message.aftermath.learning.status": "Опыт навыков — первая помощь: %1$s XP; обращение с оружием: %2$s XP; механика: %3$s XP.",
+  "message.aftermath.learning.status": "Навыки:\n%1$s\n%2$s\n%3$s\n%4$s\n%5$s\n%6$s\n%7$s\n%8$s",
   "message.aftermath.noise.disabled": "Система шума отключена на сервере.",
   "message.aftermath.noise.unknown_event": "Определение шума не загружено. Проверь datapack и перезапусти мир.",
   "message.aftermath.noise.cooldown": "Шумовой сигнал пока на перезарядке. Повтори через секунду.",
@@ -263,5 +263,6 @@
   "message.aftermath.learning.vhs_inserted": "Кассета вставлена. Нажмите ПКМ по телевизору для просмотра; Shift+ПКМ — извлечь.",
   "message.aftermath.learning.vhs_ejected": "Кассета извлечена.",
   "message.aftermath.learning.vhs_slot_full": "В телевизоре уже есть кассета. Сначала извлеките её.",
-  "message.aftermath.learning.vhs_empty": "В телевизоре нет кассеты."
+  "message.aftermath.learning.vhs_empty": "В телевизоре нет кассеты.",
+  "message.aftermath.learning.skill_status": "%1$s — ур. %2$s, %3$s XP"
 }
