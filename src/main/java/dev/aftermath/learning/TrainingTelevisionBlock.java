@@ -1,5 +1,6 @@
 package dev.aftermath.learning;
 
+import com.mojang.serialization.MapCodec;
 import dev.aftermath.content.AftermathContent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,6 +17,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 public final class TrainingTelevisionBlock extends BaseEntityBlock {
+    public static final MapCodec<TrainingTelevisionBlock> CODEC =
+            simpleCodec(TrainingTelevisionBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
     public TrainingTelevisionBlock(Properties properties) {
         super(properties);
     }
