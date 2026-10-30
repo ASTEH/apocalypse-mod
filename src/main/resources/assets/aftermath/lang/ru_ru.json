@@ -56,7 +56,7 @@
   "message.aftermath.learning.wrong_manual": "Этот учебник не подходит для данного урока.",
   "message.aftermath.learning.lesson_completed": "Ты уже изучил этот учебный материал.",
   "message.aftermath.learning.program_completed": "Ты уже посмотрел эту телепередачу.",
-  "message.aftermath.learning.tv_off_air": "Сейчас телепередача не идёт. Полевая медицина выходит в полдень.",
+  "message.aftermath.learning.tv_off_air": "Сейчас передач нет. Проверь расписание следующих программ.",
   "message.aftermath.learning.started": "Начато чтение: %1$s. Время: %2$s сек. Не двигайся и не получай урон.",
   "message.aftermath.learning.watching": "Начат просмотр: %1$s. Время: %2$s сек. Не двигайся и не получай урон.",
   "message.aftermath.learning.progress": "%1$s: %2$s/%3$s сек.",
@@ -264,5 +264,9 @@
   "message.aftermath.learning.vhs_ejected": "Кассета извлечена.",
   "message.aftermath.learning.vhs_slot_full": "В телевизоре уже есть кассета. Сначала извлеките её.",
   "message.aftermath.learning.vhs_empty": "В телевизоре нет кассеты.",
-  "message.aftermath.learning.skill_status": "%1$s — ур. %2$s, %3$s XP"
+  "message.aftermath.learning.skill_status": "%1$s — ур. %2$s, %3$s XP",
+  "vhs_tape.aftermath.cooking_basics": "Запись: основы кулинарии",
+  "vhs_tape.aftermath.farmers_corner": "Запись: уголок фермера",
+  "vhs_tape.aftermath.mechanic_workshop": "Запись: мастерская механика",
+  "vhs_tape.aftermath.range_safety": "Запись: безопасность на стрельбище"
 }

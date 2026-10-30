@@ -1,0 +1,6 @@
+{
+  "title": "vhs_tape.aftermath.cooking_basics",
+  "program": "aftermath:cooking_basics",
+  "item": "aftermath:vhs_tape",
+  "consume_on_use": true
+}

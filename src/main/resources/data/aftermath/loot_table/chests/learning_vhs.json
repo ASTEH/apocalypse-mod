@@ -1,0 +1,99 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:vhs_tape",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": {
+                  "VhsTapeId": "aftermath:field_medicine"
+                },
+                "minecraft:custom_name": {
+                  "translate": "vhs_tape.aftermath.field_medicine"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:vhs_tape",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": {
+                  "VhsTapeId": "aftermath:cooking_basics"
+                },
+                "minecraft:custom_name": {
+                  "translate": "vhs_tape.aftermath.cooking_basics"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:vhs_tape",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": {
+                  "VhsTapeId": "aftermath:farmers_corner"
+                },
+                "minecraft:custom_name": {
+                  "translate": "vhs_tape.aftermath.farmers_corner"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:vhs_tape",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": {
+                  "VhsTapeId": "aftermath:mechanic_workshop"
+                },
+                "minecraft:custom_name": {
+                  "translate": "vhs_tape.aftermath.mechanic_workshop"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:vhs_tape",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": {
+                  "VhsTapeId": "aftermath:range_safety"
+                },
+                "minecraft:custom_name": {
+                  "translate": "vhs_tape.aftermath.range_safety"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

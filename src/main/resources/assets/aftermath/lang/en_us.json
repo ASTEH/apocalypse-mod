@@ -56,7 +56,7 @@
   "message.aftermath.learning.wrong_manual": "That manual does not match this lesson.",
   "message.aftermath.learning.lesson_completed": "You have already studied this manual.",
   "message.aftermath.learning.program_completed": "You have already watched this program.",
-  "message.aftermath.learning.tv_off_air": "This program is off air. Field Medicine broadcasts at noon.",
+  "message.aftermath.learning.tv_off_air": "The TV is off air. Check the schedule for the next program.",
   "message.aftermath.learning.started": "Started reading: %1$s. Time: %2$s sec. Stay still and avoid damage.",
   "message.aftermath.learning.watching": "Started watching: %1$s. Time: %2$s sec. Stay still and avoid damage.",
   "message.aftermath.learning.progress": "%1$s: %2$s/%3$s sec.",
@@ -264,5 +264,9 @@
   "message.aftermath.learning.vhs_ejected": "Cassette ejected.",
   "message.aftermath.learning.vhs_slot_full": "The television already contains a cassette. Eject it first.",
   "message.aftermath.learning.vhs_empty": "There is no cassette inserted in the television.",
-  "message.aftermath.learning.skill_status": "%1$s — Lv. %2$s, %3$s XP"
+  "message.aftermath.learning.skill_status": "%1$s — Lv. %2$s, %3$s XP",
+  "vhs_tape.aftermath.cooking_basics": "VHS: Cooking Basics",
+  "vhs_tape.aftermath.farmers_corner": "VHS: Farmer's Corner",
+  "vhs_tape.aftermath.mechanic_workshop": "VHS: Mechanic Workshop",
+  "vhs_tape.aftermath.range_safety": "VHS: Range Safety"
 }

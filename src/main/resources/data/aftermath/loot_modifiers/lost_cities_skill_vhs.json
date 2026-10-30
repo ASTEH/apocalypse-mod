@@ -1,0 +1,14 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "lostcities:chests/lostcitychest"
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.06
+    }
+  ],
+  "table": "aftermath:chests/learning_vhs"
+}

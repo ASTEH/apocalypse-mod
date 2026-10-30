@@ -17,21 +17,6 @@
           "type": "minecraft:item",
           "name": "aftermath:training_manual_mechanics",
           "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "name": "aftermath:vhs_tape",
-          "weight": 1,
-          "functions": [
-            {
-              "function": "minecraft:set_components",
-              "components": {
-                "minecraft:custom_data": {
-                  "VhsTapeId": "aftermath:field_medicine"
-                }
-              }
-            }
-          ]
         }
       ]
     }
