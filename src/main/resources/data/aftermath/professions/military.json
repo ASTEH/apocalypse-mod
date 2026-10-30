@@ -23,9 +23,45 @@
       }
     },
     {
-      "item": "minecraft:arrow",
-      "count": 24
+      "mod": "taczmagazines",
+      "item": "taczmagazines:magazine",
+      "fallback": "minecraft:arrow",
+      "count": 1,
+      "fallback_count": 8,
+      "custom_data": {
+        "MagazineFamily": "556x45_30",
+        "AmmoId": "tacz:556x45",
+        "AmmoCount": 30,
+        "MaxCapacity": 30
+      }
     },
+    {
+      "mod": "taczmagazines",
+      "item": "taczmagazines:magazine",
+      "fallback": "minecraft:arrow",
+      "count": 1,
+      "fallback_count": 8,
+      "custom_data": {
+        "MagazineFamily": "556x45_30",
+        "AmmoId": "tacz:556x45",
+        "AmmoCount": 30,
+        "MaxCapacity": 30
+      }
+    },
+    {
+      "mod": "taczmagazines",
+      "item": "taczmagazines:magazine",
+      "fallback": "minecraft:arrow",
+      "count": 1,
+      "fallback_count": 8,
+      "custom_data": {
+        "MagazineFamily": "556x45_30",
+        "AmmoId": "tacz:556x45",
+        "AmmoCount": 30,
+        "MaxCapacity": 30
+      }
+    },
+
     {
       "mod": "fracturepoint",
       "item": "fracturepoint:shturmovikv2_chestplate",
