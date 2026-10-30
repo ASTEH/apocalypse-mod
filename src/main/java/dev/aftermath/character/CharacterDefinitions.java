@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import dev.aftermath.AftermathMod;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -252,7 +253,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                 throw new IllegalArgumentException("fallback_count in " + key + " requires a fallback item");
             }
 
-            Map<String, String> customData = customData(item, key);
+            Map<String, JsonPrimitive> customData = customData(item, key);
             result.add(new StartingItem(reference, modId, fallback, count, fallbackCount, customData));
         }
         return List.copyOf(result);
@@ -265,17 +266,17 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
         }
     }
 
-    private static Map<String, String> customData(JsonObject item, String field) {
+    private static Map<String, JsonPrimitive> customData(JsonObject item, String field) {
         if (!item.has("custom_data")) return Map.of();
         if (!item.get("custom_data").isJsonObject()) {
-            throw new IllegalArgumentException("custom_data in " + field + " must be an object of string values");
+            throw new IllegalArgumentException("custom_data in " + field + " must be an object");
         }
-        Map<String, String> result = new LinkedHashMap<>();
+        Map<String, JsonPrimitive> result = new LinkedHashMap<>();
         for (Map.Entry<String, JsonElement> entry : item.getAsJsonObject("custom_data").entrySet()) {
-            if (!entry.getValue().isJsonPrimitive() || !entry.getValue().getAsJsonPrimitive().isString()) {
-                throw new IllegalArgumentException("custom_data values must be strings in " + field);
+            if (!entry.getValue().isJsonPrimitive()) {
+                throw new IllegalArgumentException("custom_data values must be strings, numbers or booleans in " + field);
             }
-            result.put(entry.getKey(), entry.getValue().getAsString());
+            result.put(entry.getKey(), entry.getValue().getAsJsonPrimitive());
         }
         return Map.copyOf(result);
     }
@@ -374,7 +375,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                         if (!startingItem.fallbackReference().isBlank()) item.addProperty("fallback", startingItem.fallbackReference());
                         if (!startingItem.customData().isEmpty()) {
                             JsonObject customData = new JsonObject();
-                            startingItem.customData().forEach(customData::addProperty);
+                            startingItem.customData().forEach(customData::add);
                             item.add("custom_data", customData);
                         }
                         startingItems.add(item);
@@ -438,7 +439,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
 
     public record TraitEffect(String type, String target, double value, int durationTicks) {}
     public record StartingItem(String itemReference, String modId, String fallbackReference,
-                               int count, int fallbackCount, Map<String, String> customData) {
+                               int count, int fallbackCount, Map<String, JsonPrimitive> customData) {
         public StartingItem {
             itemReference = itemReference == null ? "" : itemReference;
             modId = modId == null ? "" : modId;
