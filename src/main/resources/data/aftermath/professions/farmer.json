@@ -9,6 +9,7 @@
   "grantedTraits": [
     "aftermath:light_eater"
   ],
+  "uniqueTraits": ["aftermath:farmer_green_thumb", "aftermath:farmer_bad_back"],
   "skillBonuses": {
     "farming": 1
   },

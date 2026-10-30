@@ -9,6 +9,7 @@
   "grantedTraits": [
     "aftermath:clumsy"
   ],
+  "uniqueTraits": ["aftermath:homeless_streetwise", "aftermath:homeless_malnourished"],
   "skillBonuses": {
     "scavenging": 1
   },

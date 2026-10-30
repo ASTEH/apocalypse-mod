@@ -9,6 +9,7 @@
   "grantedTraits": [
     "aftermath:fit"
   ],
+  "uniqueTraits": ["aftermath:firefighter_hardened", "aftermath:firefighter_smoke_exposure"],
   "skillBonuses": {
     "first_aid": 1
   },

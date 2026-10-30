@@ -62,11 +62,20 @@ public final class CharacterSelectionService {
         List<CharacterDefinitions.TraitDefinition> selectedTraits = new ArrayList<>();
         for (ResourceLocation grantedId : profession.grantedTraits()) {
             CharacterDefinitions.TraitDefinition granted = definitions.traits().get(grantedId);
-            if (granted == null || !selectedIds.add(grantedId)) {
+            if (granted == null || granted.professionOnly() || !selectedIds.add(grantedId)) {
                 respond(player, false, "screen.aftermath.character.error.invalid_trait");
                 return;
             }
             selectedTraits.add(granted);
+        }
+        for (ResourceLocation uniqueId : profession.uniqueTraits()) {
+            CharacterDefinitions.TraitDefinition unique = definitions.traits().get(uniqueId);
+            if (unique == null || !unique.professionOnly()
+                    || !profession.id().equals(unique.requiresProfession()) || !selectedIds.add(uniqueId)) {
+                respond(player, false, "screen.aftermath.character.error.invalid_trait");
+                return;
+            }
+            selectedTraits.add(unique);
         }
         for (String rawId : rawIds) {
             ResourceLocation traitId = ResourceLocation.tryParse(rawId);
@@ -79,7 +88,7 @@ public final class CharacterSelectionService {
                 return;
             }
             CharacterDefinitions.TraitDefinition trait = definitions.traits().get(traitId);
-            if (trait == null) {
+            if (trait == null || trait.professionOnly()) {
                 respond(player, false, "screen.aftermath.character.error.invalid_trait");
                 return;
             }
@@ -101,7 +110,7 @@ public final class CharacterSelectionService {
 
         int remainingPoints = profession.startingPoints();
         for (CharacterDefinitions.TraitDefinition trait : selectedTraits) {
-            if (profession.grantedTraits().contains(trait.id())) continue;
+            if (profession.grantedTraits().contains(trait.id()) || profession.uniqueTraits().contains(trait.id())) continue;
             remainingPoints += trait.positive() ? -trait.pointCost() : trait.pointCredit();
         }
         if (remainingPoints < 0) {

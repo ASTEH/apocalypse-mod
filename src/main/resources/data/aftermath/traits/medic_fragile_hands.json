@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.medic_fragile_hands",
+  "description": "trait.aftermath.medic_fragile_hands.description",
+  "type": "NEGATIVE",
+  "pointCost": -1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:medic",
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "attack_damage",
+      "value": 0.95
+    }
+  ]
+}

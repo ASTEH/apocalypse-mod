@@ -1,0 +1,16 @@
+{
+  "name": "trait.aftermath.firefighter_hardened",
+  "description": "trait.aftermath.firefighter_hardened.description",
+  "type": "POSITIVE",
+  "pointCost": 1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:firefighter",
+  "effects": [
+    {
+      "type": "mob_effect",
+      "target": "minecraft:fire_resistance",
+      "value": 0,
+      "duration_ticks": 220
+    }
+  ]
+}

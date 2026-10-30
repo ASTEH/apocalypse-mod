@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.homeless_malnourished",
+  "description": "trait.aftermath.homeless_malnourished.description",
+  "type": "NEGATIVE",
+  "pointCost": -1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:homeless",
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "max_health",
+      "value": 0.9
+    }
+  ]
+}

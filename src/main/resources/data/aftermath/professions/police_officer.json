@@ -9,6 +9,7 @@
   "grantedTraits": [
     "aftermath:keen_hearing"
   ],
+  "uniqueTraits": ["aftermath:police_tactical_training", "aftermath:police_rigid_procedure"],
   "skillBonuses": {
     "firearms": 1,
     "melee": 1

@@ -9,6 +9,7 @@
   "grantedTraits": [
     "aftermath:dextrous"
   ],
+  "uniqueTraits": ["aftermath:engineer_precision", "aftermath:engineer_machinery_noise"],
   "skillBonuses": {
     "mechanics": 1
   },

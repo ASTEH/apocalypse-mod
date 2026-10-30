@@ -9,6 +9,7 @@
   "grantedTraits": [
     "aftermath:strong"
   ],
+  "uniqueTraits": ["aftermath:military_discipline", "aftermath:military_ptsd"],
   "skillBonuses": {
     "firearms": 2,
     "melee": 1

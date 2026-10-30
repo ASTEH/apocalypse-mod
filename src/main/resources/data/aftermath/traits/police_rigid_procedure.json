@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.police_rigid_procedure",
+  "description": "trait.aftermath.police_rigid_procedure.description",
+  "type": "NEGATIVE",
+  "pointCost": -1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:police_officer",
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "movement_speed",
+      "value": 0.95
+    }
+  ]
+}

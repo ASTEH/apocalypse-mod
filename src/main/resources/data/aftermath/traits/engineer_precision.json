@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.engineer_precision",
+  "description": "trait.aftermath.engineer_precision.description",
+  "type": "POSITIVE",
+  "pointCost": 1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:engineer",
+  "effects": [
+    {
+      "type": "skill_xp_multiplier",
+      "target": "aftermath:mechanics",
+      "value": 1.2
+    }
+  ]
+}

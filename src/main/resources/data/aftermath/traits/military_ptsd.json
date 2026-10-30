@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.military_ptsd",
+  "description": "trait.aftermath.military_ptsd.description",
+  "type": "NEGATIVE",
+  "pointCost": -1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:military",
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "max_health",
+      "value": 0.95
+    }
+  ]
+}

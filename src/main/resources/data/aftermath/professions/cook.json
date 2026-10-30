@@ -9,6 +9,7 @@
   "grantedTraits": [
     "aftermath:iron_stomach"
   ],
+  "uniqueTraits": ["aftermath:cook_gourmet", "aftermath:cook_picky_eater"],
   "skillBonuses": {
     "cooking": 1
   },

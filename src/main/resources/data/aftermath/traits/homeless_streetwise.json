@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.homeless_streetwise",
+  "description": "trait.aftermath.homeless_streetwise.description",
+  "type": "POSITIVE",
+  "pointCost": 1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:homeless",
+  "effects": [
+    {
+      "type": "skill_xp_multiplier",
+      "target": "aftermath:scavenging",
+      "value": 1.3
+    }
+  ]
+}

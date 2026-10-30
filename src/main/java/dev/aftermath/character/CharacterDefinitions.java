@@ -28,6 +28,7 @@ import java.util.Set;
 public final class CharacterDefinitions extends SimplePreparableReloadListener<CharacterDefinitions.Snapshot> {
     public static final CharacterDefinitions INSTANCE = new CharacterDefinitions();
     private static final Set<String> ATTRIBUTE_TARGETS = Set.of("movement_speed", "max_health", "attack_damage", "attack_speed", "armor");
+    private static final Set<String> SKILL_XP_TARGETS = Set.of("aftermath:cooking", "aftermath:farming", "aftermath:mechanics", "aftermath:first_aid", "aftermath:driving", "aftermath:firearms", "aftermath:scavenging", "aftermath:melee");
     private static final Set<String> CUSTOM_HOOKS = Set.of("iron_stomach", "keen_hearing", "light_eater", "deaf", "hard_of_hearing", "short_sighted", "slow_healer", "clumsy_noise", "cowardly", "asthmatic", "eagle_eye", "quick_reload", "speed_demon", "sleepyhead", "illiterate");
     private static volatile Snapshot current = Snapshot.empty();
 
@@ -93,9 +94,11 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                 List<StartingItem> startingItems = startingItems(json);
                 String grantsKey = json.has("grantedTraits") ? "grantedTraits" : "granted_traits";
                 List<ResourceLocation> grantedTraits = idList(json, grantsKey);
+                String uniqueKey = json.has("uniqueTraits") ? "uniqueTraits" : "unique_traits";
+                List<ResourceLocation> uniqueTraits = idList(json, uniqueKey);
                 Map<String, Integer> skillBonuses = skillBonuses(json);
                 result.put(id, new ProfessionDefinition(id, name, description, icon, points, difficulty,
-                        allowedTraits, startingItems, grantedTraits, skillBonuses));
+                        allowedTraits, startingItems, grantedTraits, uniqueTraits, skillBonuses));
             } catch (Exception exception) {
                 AftermathMod.LOGGER.error("Could not load character profession {}: {}", entry.getKey(), exception.getMessage());
             }
@@ -109,14 +112,24 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                 && profession.allowedTraits().stream().anyMatch(id -> !traits.containsKey(id))) {
             return false;
         }
-        Set<ResourceLocation> granted = Set.copyOf(profession.grantedTraits());
+        Set<ResourceLocation> granted = new java.util.LinkedHashSet<>(profession.grantedTraits());
         if (granted.size() != profession.grantedTraits().size()) return false;
+        Set<ResourceLocation> unique = new java.util.LinkedHashSet<>(profession.uniqueTraits());
+        if (unique.size() != profession.uniqueTraits().size() || unique.stream().anyMatch(granted::contains)) return false;
+        granted.addAll(unique);
         for (ResourceLocation id : profession.grantedTraits()) {
             TraitDefinition trait = traits.get(id);
-            if (trait == null) return false;
+            if (trait == null || trait.professionOnly()) return false;
             if (!profession.allowedTraits().isEmpty() && !profession.allowedTraits().contains(id)) return false;
             if (trait.requiresProfession() != null && !trait.requiresProfession().equals(profession.id())) return false;
             if (trait.conflicts().stream().anyMatch(granted::contains)) return false;
+        }
+        for (ResourceLocation id : profession.uniqueTraits()) {
+            TraitDefinition trait = traits.get(id);
+            if (trait == null || !trait.professionOnly()
+                    || trait.requiresProfession() == null
+                    || !trait.requiresProfession().equals(profession.id())
+                    || trait.conflicts().stream().anyMatch(granted::contains)) return false;
         }
         return true;
     }
@@ -158,7 +171,13 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                 List<TraitEffect> effects = effects(json);
                 List<ResourceLocation> conflicts = json.has("incompatibleWith") ? idList(json, "incompatibleWith") : idList(json, "conflicts");
                 ResourceLocation requiresProfession = optionalId(json, "requiresProfession", "requires_profession");
-                result.put(id, new TraitDefinition(id, name, description, category, cost, credit, effects, conflicts, requiresProfession));
+                boolean professionOnly = json.has("professionOnly") ? json.get("professionOnly").getAsBoolean()
+                        : json.has("profession_only") && json.get("profession_only").getAsBoolean();
+                if (professionOnly && requiresProfession == null) {
+                    throw new IllegalArgumentException("professionOnly traits must define requiresProfession");
+                }
+                result.put(id, new TraitDefinition(id, name, description, category, cost, credit,
+                        effects, conflicts, requiresProfession, professionOnly));
             } catch (Exception exception) {
                 AftermathMod.LOGGER.error("Could not load character trait {}: {}", entry.getKey(), exception.getMessage());
             }
@@ -322,6 +341,11 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                 case "learning_xp_multiplier", "weapon_xp_multiplier", "reading_speed_multiplier" -> {
                     if (value < 0.25 || value > 3.0) throw new IllegalArgumentException(type + " value must be between 0.25 and 3.0");
                 }
+                case "skill_xp_multiplier" -> {
+                    if (!SKILL_XP_TARGETS.contains(target) || value < 0.25 || value > 3.0) {
+                        throw new IllegalArgumentException("skill_xp_multiplier requires a supported aftermath skill and value in [0.25, 3.0]");
+                    }
+                }
                 case "damage_multiplier" -> {
                     if (!target.equals("hostile") || value < 0.25 || value > 1.0) {
                         throw new IllegalArgumentException("damage_multiplier requires target hostile and value in [0.25, 1.0]");
@@ -364,6 +388,9 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                     JsonArray granted = new JsonArray();
                     value.grantedTraits().forEach(id -> granted.add(id.toString()));
                     json.add("granted_traits", granted);
+                    JsonArray unique = new JsonArray();
+                    value.uniqueTraits().forEach(id -> unique.add(id.toString()));
+                    json.add("unique_traits", unique);
                     JsonObject bonuses = new JsonObject();
                     value.skillBonuses().forEach((skill, level) -> bonuses.addProperty(skill, level));
                     json.add("skill_bonuses", bonuses);
@@ -398,6 +425,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                     json.addProperty("point_cost", value.pointCost());
                     json.addProperty("point_credit", value.pointCredit());
                     if (value.requiresProfession() != null) json.addProperty("requires_profession", value.requiresProfession().toString());
+                    json.addProperty("profession_only", value.professionOnly());
                     JsonArray conflicts = new JsonArray();
                     value.conflicts().forEach(id -> conflicts.add(id.toString()));
                     json.add("conflicts", conflicts);
@@ -423,12 +451,14 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
     public record ProfessionDefinition(ResourceLocation id, String nameKey, String descriptionKey,
                                        ResourceLocation icon, int startingPoints, int difficulty,
                                        List<ResourceLocation> allowedTraits, List<StartingItem> startingItems,
-                                       List<ResourceLocation> grantedTraits, Map<String, Integer> skillBonuses) {
+                                       List<ResourceLocation> grantedTraits, List<ResourceLocation> uniqueTraits,
+                                       Map<String, Integer> skillBonuses) {
         public ProfessionDefinition {
             if (difficulty < 1 || difficulty > 5) throw new IllegalArgumentException("difficulty must be 1..5");
             allowedTraits = List.copyOf(allowedTraits);
             startingItems = List.copyOf(startingItems);
             grantedTraits = List.copyOf(grantedTraits);
+            uniqueTraits = List.copyOf(uniqueTraits);
             skillBonuses = Map.copyOf(skillBonuses);
         }
     }
@@ -436,7 +466,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
     public record TraitDefinition(ResourceLocation id, String nameKey, String descriptionKey,
                                   String category, int pointCost, int pointCredit,
                                   List<TraitEffect> effects, List<ResourceLocation> conflicts,
-                                  ResourceLocation requiresProfession) {
+                                  ResourceLocation requiresProfession, boolean professionOnly) {
         public boolean positive() { return category.equals("positive"); }
     }
 

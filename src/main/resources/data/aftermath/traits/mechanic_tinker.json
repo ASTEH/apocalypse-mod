@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.mechanic_tinker",
+  "description": "trait.aftermath.mechanic_tinker.description",
+  "type": "POSITIVE",
+  "pointCost": 1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:mechanic",
+  "effects": [
+    {
+      "type": "skill_xp_multiplier",
+      "target": "aftermath:mechanics",
+      "value": 1.25
+    }
+  ]
+}

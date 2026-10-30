@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.farmer_green_thumb",
+  "description": "trait.aftermath.farmer_green_thumb.description",
+  "type": "POSITIVE",
+  "pointCost": 1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:farmer",
+  "effects": [
+    {
+      "type": "skill_xp_multiplier",
+      "target": "aftermath:farming",
+      "value": 1.25
+    }
+  ]
+}

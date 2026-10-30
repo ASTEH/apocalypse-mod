@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.firefighter_smoke_exposure",
+  "description": "trait.aftermath.firefighter_smoke_exposure.description",
+  "type": "NEGATIVE",
+  "pointCost": -1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:firefighter",
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "attack_speed",
+      "value": 0.95
+    }
+  ]
+}

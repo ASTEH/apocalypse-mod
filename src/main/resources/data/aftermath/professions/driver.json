@@ -9,6 +9,7 @@
   "grantedTraits": [
     "aftermath:speed_demon"
   ],
+  "uniqueTraits": ["aftermath:driver_road_instinct", "aftermath:driver_road_fatigue"],
   "skillBonuses": {
     "driving": 1
   },

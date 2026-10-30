@@ -7,6 +7,7 @@
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [],
+  "uniqueTraits": ["aftermath:medic_triage", "aftermath:medic_fragile_hands"],
   "skillBonuses": {
     "first_aid": 2
   },

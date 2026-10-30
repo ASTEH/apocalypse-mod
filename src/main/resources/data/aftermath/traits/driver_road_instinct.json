@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.driver_road_instinct",
+  "description": "trait.aftermath.driver_road_instinct.description",
+  "type": "POSITIVE",
+  "pointCost": 1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:driver",
+  "effects": [
+    {
+      "type": "skill_xp_multiplier",
+      "target": "aftermath:driving",
+      "value": 1.25
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.cook_picky_eater",
+  "description": "trait.aftermath.cook_picky_eater.description",
+  "type": "NEGATIVE",
+  "pointCost": -1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:cook",
+  "effects": [
+    {
+      "type": "attribute_multiplier",
+      "target": "max_health",
+      "value": 0.95
+    }
+  ]
+}

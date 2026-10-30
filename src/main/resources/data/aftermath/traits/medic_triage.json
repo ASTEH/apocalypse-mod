@@ -1,0 +1,15 @@
+{
+  "name": "trait.aftermath.medic_triage",
+  "description": "trait.aftermath.medic_triage.description",
+  "type": "POSITIVE",
+  "pointCost": 1,
+  "professionOnly": true,
+  "requiresProfession": "aftermath:medic",
+  "effects": [
+    {
+      "type": "skill_xp_multiplier",
+      "target": "aftermath:first_aid",
+      "value": 1.25
+    }
+  ]
+}

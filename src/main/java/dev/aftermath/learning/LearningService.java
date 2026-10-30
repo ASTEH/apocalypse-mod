@@ -217,7 +217,7 @@ public final class LearningService {
             return;
         }
 
-        int reward = Math.max(0, (int) Math.round(session.baseXpReward() * learningMultiplier(player)));
+        int reward = Math.max(0, (int) Math.round(session.baseXpReward() * learningMultiplier(player, session.skillId())));
         LearningProgress updated = session.type() == SessionType.READING
                 ? progress.completeLesson(session.definitionId().toString(), session.skillId().toString(), reward)
                 : progress.completeProgram(session.definitionId().toString(), session.skillId().toString(), reward);
@@ -232,7 +232,7 @@ public final class LearningService {
                 session.definitionId(), reward);
     }
 
-    private static double learningMultiplier(ServerPlayer player) {
+    private static double learningMultiplier(ServerPlayer player, ResourceLocation skillId) {
         CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
         double multiplier = 1.0D;
         for (String rawId : profile.traitIds()) {
@@ -242,9 +242,12 @@ public final class LearningService {
             if (trait == null) continue;
             for (CharacterDefinitions.TraitEffect effect : trait.effects()) {
                 if (effect.type().equals("learning_xp_multiplier")) multiplier *= effect.value();
+                if (effect.type().equals("skill_xp_multiplier") && effect.target().equals(skillId.toString())) {
+                    multiplier *= effect.value();
+                }
             }
         }
-        return Math.max(0.5D, Math.min(2.0D, multiplier));
+        return Math.max(0.25D, Math.min(3.0D, multiplier));
     }
 
     private static void cancel(ServerPlayer player, String key) {

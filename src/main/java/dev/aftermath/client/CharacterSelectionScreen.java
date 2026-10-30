@@ -109,6 +109,7 @@ public final class CharacterSelectionScreen extends Screen {
                             integer(json, "difficulty", 3),
                             stringSet(json, "allowed_traits"),
                             stringSet(json, "granted_traits"),
+                            stringSet(json, "unique_traits"),
                             integerMap(json, "skill_bonuses"),
                             startingItems(json)));
                 }
@@ -126,7 +127,8 @@ public final class CharacterSelectionScreen extends Screen {
                             integer(json, "point_cost", 0),
                             integer(json, "point_credit", 0),
                             stringSet(json, "conflicts"),
-                            string(json, "requires_profession", "")));
+                            string(json, "requires_profession", ""),
+                            json.has("profession_only") && json.get("profession_only").getAsBoolean()));
                 }
             }
             if (professions.isEmpty() || traits.isEmpty()) {
@@ -329,6 +331,7 @@ public final class CharacterSelectionScreen extends Screen {
         ProfessionOption selected = profession();
         if (selected == null) return List.of();
         return traits.stream()
+                .filter(trait -> !trait.professionOnly)
                 .filter(trait -> selected.allowedTraits.isEmpty() || selected.allowedTraits.contains(trait.id))
                 .filter(trait -> trait.requiresProfession.isBlank() || trait.requiresProfession.equals(selected.id))
                 .toList();
@@ -342,7 +345,10 @@ public final class CharacterSelectionScreen extends Screen {
     private Set<String> activeTraitIds() {
         Set<String> active = new LinkedHashSet<>(selectedTraits);
         ProfessionOption selected = profession();
-        if (selected != null) active.addAll(selected.grantedTraits);
+        if (selected != null) {
+            active.addAll(selected.grantedTraits);
+            active.addAll(selected.uniqueTraits);
+        }
         return active;
     }
 
@@ -426,7 +432,11 @@ public final class CharacterSelectionScreen extends Screen {
             ProfessionOption option = professions.get(professionIndex);
             String difficulty = tr("screen.aftermath.character.difficulty") + ": "
                     + tr(difficultyKey(option.difficulty)) + " (" + option.difficulty + "/5)";
-            drawTooltip(graphics, mouseX, mouseY, tr(option.name), tr(option.description), difficulty);
+            String special = option.uniqueTraits.stream().map(this::traitById).filter(java.util.Objects::nonNull)
+                    .map(trait -> tr(trait.name)).reduce((left, right) -> left + ", " + right).orElse("");
+            String extra = special.isBlank() ? difficulty : difficulty + " | "
+                    + tr("screen.aftermath.character.profession_traits") + ": " + special;
+            drawTooltip(graphics, mouseX, mouseY, tr(option.name), tr(option.description), extra);
         } else if (traitIndex >= 0) {
             TraitOption option = activeTabTraits().get(traitIndex);
             TraitOption conflict = conflictingSelectedTrait(option, activeTraitIds());
@@ -1096,11 +1106,13 @@ public final class CharacterSelectionScreen extends Screen {
     private record Draft(String professionId, List<String> traitIds) {}
     private record ProfessionOption(String id, String name, String description, String icon,
                                     int startingPoints, int difficulty, Set<String> allowedTraits,
-                                    Set<String> grantedTraits, Map<String, Integer> skillBonuses,
+                                    Set<String> grantedTraits, Set<String> uniqueTraits,
+                                    Map<String, Integer> skillBonuses,
                                     List<StartingItem> startingItems) {
         private ProfessionOption {
             allowedTraits = Set.copyOf(allowedTraits);
             grantedTraits = Set.copyOf(grantedTraits);
+            uniqueTraits = Set.copyOf(uniqueTraits);
             skillBonuses = Map.copyOf(skillBonuses);
             startingItems = List.copyOf(startingItems);
         }
@@ -1108,7 +1120,7 @@ public final class CharacterSelectionScreen extends Screen {
 
     private record TraitOption(String id, String name, String description, String category,
                                int pointCost, int pointCredit, Set<String> conflicts,
-                               String requiresProfession) {
+                               String requiresProfession, boolean professionOnly) {
         private TraitOption {
             conflicts = Set.copyOf(conflicts);
         }
