@@ -11,7 +11,11 @@ displayURL="https://github.com/ASTEH/apocalypse-mod"
 authors="ASTEH"
 description='''A server-authoritative survival framework for a zombie-apocalypse modpack.
 Adds character traits, weapon proficiency, learning systems and configurable zombie meta-events.
-Requires no gameplay mods.'''
+Requires no gameplay mods; optional integrations activate when supported mods are installed.'''
+
+[[mixins]]
+config="aftermath.create.mixins.json"
+requiredMods=["create"]
 
 [[dependencies.${mod_id}]]
 modId="neoforge"

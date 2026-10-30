@@ -8,7 +8,7 @@ The core requires only Minecraft/NeoForge. TaCZ compatibility is isolated and us
 | TaCZ Additions, Magazines, Guns Lights, Elite X Quality Guns, Fallout Gunpack and other gun packs | Custom-gunpack XP inference is implemented, but per-pack balance still needs validation; exact mappings can be added with datapack JSON | Core remains independent; ambiguous IDs default to rifle. |
 | Other firearms mods | Not yet individually integrated | No firearm XP until an isolated adapter is added. |
 | Farmer's Delight | Optional cooking adapter and food tags | Vanilla cooking/crafting remain learning sources. |
-| Create family | Optional production-completion adapter only if needed | No Create imports or dependency. |
+| Create 6.0.10 (1.21.1 NeoForge) | Implemented optional Mixin adapter awards Mechanics XP after successful mechanical pressing, basin processing (including mixers and basin presses), and millstone processing. The nearest active player within 16 blocks receives 3 XP, subject to a 5-second per-player cooldown and 80 XP/day cap. | Create remains optional; its classes are referenced only by string-based mixin targets. No XP is granted when no player is nearby. Crushing wheels, saws, fan processing and deployers are not yet covered. |
 | Cold Sweat / Serene Seasons | Optional environmental integration after API verification | Base traits work without temperature mods. |
 | Nutritional / FFFoodSpoilageAndPreservation / Realism Tweaks Reworked / Fracture Point / Hematic | Do not duplicate food, spoilage, wound or infection systems | Existing mechanics stay independent. |
 | Zombie Awareness / Zombie Apocalypse Addon / Simple Enemy Mod / Weather2 | Configurable AI participation and explicit noise hooks; no blanket removal of goals | Disable Aftermath AI without changing foreign AI. |
@@ -26,4 +26,4 @@ The core requires only Minecraft/NeoForge. TaCZ compatibility is isolated and us
 - LostCities, Big Lost City, Abandoned City Buildings and TNAS need testing together in a fresh world. Aftermath won't replace worldgen.
 - Create and its add-ons overlap in production systems; that matters only for future optional adapters.
 - Do not remove GeckoLib, Curios, CoroUtil, GlitchCore, Kotlin for Forge, Moonlight Lib, Fzzy Config, YACL, Cloth Config, Atlas Lib, OctoLib, MRU or Navaronee Core just because they look like libraries; other installed mods may require them.
-- Earlier logs showed a Mixin redirect warning between Navaronee CoreLib and Lithium. That is a pack-level warning, not proof of an Aftermath issue. Core will avoid mixins by default.
+- Earlier logs showed a Mixin redirect warning between Navaronee CoreLib and Lithium. That is a pack-level warning, not proof of an Aftermath issue. Core gameplay avoids mixins; the narrow Create adapter is isolated in a config that loads only when Create is present.

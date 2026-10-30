@@ -1,0 +1,14 @@
+{
+  "required": false,
+  "minVersion": "0.8.5",
+  "package": "dev.aftermath.mixin.create",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "RecipeApplierMixin",
+    "BasinRecipeMixin",
+    "MillstoneBlockEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

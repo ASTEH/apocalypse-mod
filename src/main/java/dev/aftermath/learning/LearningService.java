@@ -7,10 +7,12 @@ import dev.aftermath.character.CharacterProfile;
 import dev.aftermath.character.TraitRuntimeService;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.content.AftermathContent;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
@@ -20,7 +22,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
@@ -29,6 +34,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -419,6 +425,28 @@ public final class LearningService {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (!(event.getContainer() instanceof ChestMenu)) return;
         awardSkillXp(player, id("scavenging"), 5, "opened_loot_container", 600L, 60);
+    }
+
+    /**
+     * Create machine output is credited to the nearest active player within 16 blocks.
+     * A shared cooldown and daily cap keep unattended factories from becoming an XP farm.
+     */
+    public static void awardCreateProcessingXp(Level level, BlockPos machinePos) {
+        if (!(level instanceof ServerLevel serverLevel)) return;
+
+        Vec3 center = Vec3.atCenterOf(machinePos);
+        AABB searchArea = new AABB(machinePos).inflate(16.0D);
+        ServerPlayer learner = serverLevel.getEntitiesOfClass(
+                        ServerPlayer.class,
+                        searchArea,
+                        player -> player.isAlive() && !player.isSpectator())
+                .stream()
+                .min(Comparator.comparingDouble(player -> player.distanceToSqr(center)))
+                .orElse(null);
+        if (learner == null) return;
+
+        awardSkillXp(learner, id("mechanics"), 3,
+                "create_machine_processing", 100L, 80);
     }
 
     public static void awardSkillXp(ServerPlayer player, ResourceLocation skillId, int baseXp,

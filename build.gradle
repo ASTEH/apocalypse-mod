@@ -20,6 +20,13 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+repositories {
+    maven {
+        name = 'SpongePowered'
+        url = 'https://repo.spongepowered.org/repository/maven-public/'
+    }
+}
+
 neoForge {
     version = project.neo_version
 
@@ -69,7 +76,10 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
-dependencies {}
+dependencies {
+    // NeoForge provides Mixin at runtime; this is compile-time API only.
+    compileOnly 'org.spongepowered:mixin:0.8.7'
+}
 
 def generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     def replaceProperties = [
