@@ -1,5 +1,6 @@
 package dev.aftermath.character;
 
+import com.google.gson.JsonPrimitive;
 import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.CharacterSelectionResultPayload;
@@ -19,6 +20,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -197,10 +199,27 @@ public final class CharacterSelectionService {
         return item == Items.AIR ? null : item;
     }
 
-    private static void applyCustomData(ItemStack stack, java.util.Map<String, String> customData) {
+    private static void applyCustomData(ItemStack stack, java.util.Map<String, JsonPrimitive> customData) {
         if (customData.isEmpty()) return;
         CompoundTag tag = new CompoundTag();
-        customData.forEach(tag::putString);
+        customData.forEach((key, value) -> {
+            if (value.isString()) {
+                tag.putString(key, value.getAsString());
+            } else if (value.isBoolean()) {
+                tag.putBoolean(key, value.getAsBoolean());
+            } else if (value.isNumber()) {
+                BigDecimal number = value.getAsBigDecimal();
+                try {
+                    tag.putInt(key, number.intValueExact());
+                } catch (ArithmeticException outsideIntRangeOrFractional) {
+                    try {
+                        tag.putLong(key, number.longValueExact());
+                    } catch (ArithmeticException outsideLongRangeOrFractional) {
+                        tag.putDouble(key, number.doubleValue());
+                    }
+                }
+            }
+        });
         stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, CustomData.of(tag));
     }
 
