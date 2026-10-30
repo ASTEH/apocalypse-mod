@@ -193,5 +193,7 @@
   "screen.aftermath.character.ui.tab.negative": "ОТРИЦАТЕЛЬНЫЕ",
   "screen.aftermath.character.ui.tab.negative.short": "МИНУС",
   "screen.aftermath.character.ui.tab.neutral": "ДРУГИЕ",
-  "screen.aftermath.character.ui.tab.neutral.short": "ДРУГИЕ"
+  "screen.aftermath.character.ui.tab.neutral.short": "ДРУГИЕ",
+  "hud.aftermath.zombie_kills": "Убито зомби: %1$s",
+  "message.aftermath.zombie_kills.status": "Ты убил зомби: %1$s."
 }
