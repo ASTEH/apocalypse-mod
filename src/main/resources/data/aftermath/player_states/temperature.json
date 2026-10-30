@@ -22,26 +22,23 @@
       "priority": 1,
       "when": {
         "operator": "lte",
-        "value": -35
+        "value": -40
       },
       "name_key": "moodle.aftermath.temperature.chilly",
       "description_key": "moodle.aftermath.temperature.chilly.description",
-      "effects": {
-        "movement_speed_multiplier": 0.98
-      }
+      "effects": {}
     },
     {
       "id": "cold",
       "priority": 2,
       "when": {
         "operator": "lte",
-        "value": -65
+        "value": -70
       },
       "name_key": "moodle.aftermath.temperature.cold",
       "description_key": "moodle.aftermath.temperature.cold.description",
       "effects": {
-        "movement_speed_multiplier": 0.94,
-        "attack_speed_multiplier": 0.95
+        "movement_speed_multiplier": 0.97
       }
     },
     {
@@ -49,13 +46,13 @@
       "priority": 3,
       "when": {
         "operator": "lte",
-        "value": -90
+        "value": -100
       },
       "name_key": "moodle.aftermath.temperature.freezing",
       "description_key": "moodle.aftermath.temperature.freezing.description",
       "effects": {
-        "movement_speed_multiplier": 0.88,
-        "attack_speed_multiplier": 0.9
+        "movement_speed_multiplier": 0.9,
+        "attack_speed_multiplier": 0.93
       }
     },
     {
@@ -63,26 +60,23 @@
       "priority": 1,
       "when": {
         "operator": "gte",
-        "value": 35
+        "value": 40
       },
       "name_key": "moodle.aftermath.temperature.warm",
       "description_key": "moodle.aftermath.temperature.warm.description",
-      "effects": {
-        "movement_speed_multiplier": 0.98
-      }
+      "effects": {}
     },
     {
       "id": "hot",
       "priority": 2,
       "when": {
         "operator": "gte",
-        "value": 65
+        "value": 70
       },
       "name_key": "moodle.aftermath.temperature.hot",
       "description_key": "moodle.aftermath.temperature.hot.description",
       "effects": {
-        "movement_speed_multiplier": 0.94,
-        "attack_speed_multiplier": 0.95
+        "movement_speed_multiplier": 0.97
       }
     },
     {
@@ -90,13 +84,13 @@
       "priority": 3,
       "when": {
         "operator": "gte",
-        "value": 90
+        "value": 100
       },
       "name_key": "moodle.aftermath.temperature.heatstroke",
       "description_key": "moodle.aftermath.temperature.heatstroke.description",
       "effects": {
-        "movement_speed_multiplier": 0.88,
-        "attack_speed_multiplier": 0.9
+        "movement_speed_multiplier": 0.9,
+        "attack_speed_multiplier": 0.93
       }
     }
   ]

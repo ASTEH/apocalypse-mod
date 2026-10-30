@@ -11,14 +11,14 @@
   "sources": [
     {
       "type": "awake_time",
-      "delta_per_second": 0.018,
+      "delta_per_second": 0.02,
       "trait_multipliers": {
         "aftermath:sleepyhead": 1.5
       }
     },
     {
       "type": "sprinting",
-      "delta_per_second": 0.08,
+      "delta_per_second": 0.04,
       "trait_multipliers": {
         "aftermath:asthmatic": 1.4
       }
@@ -27,7 +27,7 @@
   "recovery": [
     {
       "type": "sleeping",
-      "delta_per_second": -0.45
+      "delta_per_second": -0.2
     }
   ],
   "interactions": [
@@ -49,9 +49,9 @@
       "name_key": "moodle.aftermath.tired.drowsy",
       "description_key": "moodle.aftermath.tired.drowsy.description",
       "effects": {
-        "melee_damage_multiplier": 0.9,
-        "attack_speed_multiplier": 0.9,
-        "learning_xp_multiplier": 0.9
+        "melee_damage_multiplier": 0.95,
+        "attack_speed_multiplier": 0.95,
+        "learning_xp_multiplier": 0.95
       }
     },
     {
@@ -64,9 +64,9 @@
       "name_key": "moodle.aftermath.tired.tired",
       "description_key": "moodle.aftermath.tired.tired.description",
       "effects": {
-        "melee_damage_multiplier": 0.7,
-        "attack_speed_multiplier": 0.8,
-        "learning_xp_multiplier": 0.75
+        "melee_damage_multiplier": 0.85,
+        "attack_speed_multiplier": 0.88,
+        "learning_xp_multiplier": 0.85
       }
     },
     {
@@ -79,10 +79,10 @@
       "name_key": "moodle.aftermath.tired.exhausted",
       "description_key": "moodle.aftermath.tired.exhausted.description",
       "effects": {
-        "melee_damage_multiplier": 0.5,
-        "attack_speed_multiplier": 0.65,
-        "movement_speed_multiplier": 0.9,
-        "learning_xp_multiplier": 0.6
+        "melee_damage_multiplier": 0.7,
+        "attack_speed_multiplier": 0.8,
+        "movement_speed_multiplier": 0.93,
+        "learning_xp_multiplier": 0.7
       }
     }
   ]

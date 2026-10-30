@@ -11,7 +11,7 @@
   "sources": [
     {
       "type": "near_tagged_hostile",
-      "delta_per_second": 0.12,
+      "delta_per_second": 0.1,
       "radius": 16,
       "max_entities": 5,
       "trait_multipliers": {
@@ -22,7 +22,7 @@
     },
     {
       "type": "damage_taken",
-      "delta_per_event": 3,
+      "delta_per_event": 1.5,
       "trait_multipliers": {
         "aftermath:military_discipline": 0.75,
         "aftermath:military_ptsd": 1.5
@@ -30,15 +30,14 @@
     },
     {
       "type": "gunshot",
-      "delta_per_event": 0.15
+      "delta_per_event": 0.1
     }
   ],
   "recovery": [
     {
       "type": "no_nearby_hostiles",
-      "delta_per_second": -0.18,
-      "radius": 16,
-      "max_entities": 1
+      "delta_per_second": -0.15,
+      "radius": 16
     },
     {
       "type": "resting",
@@ -46,7 +45,7 @@
     },
     {
       "type": "sleeping",
-      "delta_per_second": -0.45
+      "delta_per_second": -0.08
     }
   ],
   "interactions": [],
@@ -61,8 +60,8 @@
       "name_key": "moodle.aftermath.stress.tense",
       "description_key": "moodle.aftermath.stress.tense.description",
       "effects": {
-        "firearm_spread_additive": 0.03,
-        "learning_xp_multiplier": 0.95
+        "firearm_spread_additive": 0.01,
+        "learning_xp_multiplier": 0.97
       }
     },
     {
@@ -75,8 +74,8 @@
       "name_key": "moodle.aftermath.stress.stressed",
       "description_key": "moodle.aftermath.stress.stressed.description",
       "effects": {
-        "firearm_spread_additive": 0.09,
-        "learning_xp_multiplier": 0.88
+        "firearm_spread_additive": 0.03,
+        "learning_xp_multiplier": 0.92
       }
     },
     {
@@ -89,8 +88,8 @@
       "name_key": "moodle.aftermath.stress.overwhelmed",
       "description_key": "moodle.aftermath.stress.overwhelmed.description",
       "effects": {
-        "firearm_spread_additive": 0.18,
-        "learning_xp_multiplier": 0.75
+        "firearm_spread_additive": 0.06,
+        "learning_xp_multiplier": 0.85
       }
     }
   ]

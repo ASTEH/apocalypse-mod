@@ -11,13 +11,13 @@
   "sources": [
     {
       "type": "indoors_idle",
-      "delta_per_second": 0.04
+      "delta_per_second": 0.05
     }
   ],
   "recovery": [
     {
       "type": "outdoors_moving",
-      "delta_per_second": -0.2
+      "delta_per_second": -0.15
     },
     {
       "type": "entertainment",
@@ -49,7 +49,7 @@
       "name_key": "moodle.aftermath.boredom.very_bored",
       "description_key": "moodle.aftermath.boredom.very_bored.description",
       "effects": {
-        "learning_xp_multiplier": 0.9
+        "learning_xp_multiplier": 0.92
       }
     },
     {
@@ -62,7 +62,7 @@
       "name_key": "moodle.aftermath.boredom.restless",
       "description_key": "moodle.aftermath.boredom.restless.description",
       "effects": {
-        "learning_xp_multiplier": 0.82
+        "learning_xp_multiplier": 0.85
       }
     }
   ]

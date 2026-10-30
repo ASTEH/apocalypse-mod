@@ -11,24 +11,28 @@
   "sources": [
     {
       "type": "near_tagged_hostile",
-      "delta_per_second": 0.35,
-      "radius": 14,
-      "max_entities": 5,
+      "delta_per_second": 0.5,
+      "radius": 12,
+      "max_entities": 6,
       "trait_multipliers": {
-        "aftermath:military_discipline": 0.6,
-        "aftermath:cowardly": 1.35
+        "aftermath:military_discipline": 0.5,
+        "aftermath:cowardly": 1.5
       }
     },
     {
       "type": "damage_taken",
-      "delta_per_event": 3
+      "delta_per_event": 2.5
     }
   ],
   "recovery": [
     {
       "type": "no_nearby_hostiles",
-      "delta_per_second": -0.1,
-      "radius": 14
+      "delta_per_second": -1.2,
+      "radius": 12
+    },
+    {
+      "type": "awake_time",
+      "delta_per_second": -0.15
     }
   ],
   "interactions": [],
@@ -38,13 +42,13 @@
       "priority": 1,
       "when": {
         "operator": "gte",
-        "value": 25
+        "value": 30
       },
       "name_key": "moodle.aftermath.panic.anxious",
       "description_key": "moodle.aftermath.panic.anxious.description",
       "effects": {
-        "firearm_spread_additive": 0.07,
-        "learning_xp_multiplier": 0.95
+        "firearm_spread_additive": 0.02,
+        "learning_xp_multiplier": 0.97
       }
     },
     {
@@ -52,14 +56,14 @@
       "priority": 2,
       "when": {
         "operator": "gte",
-        "value": 50
+        "value": 55
       },
       "name_key": "moodle.aftermath.panic.panic",
       "description_key": "moodle.aftermath.panic.panic.description",
       "effects": {
-        "firearm_spread_additive": 0.18,
-        "critical_chance_multiplier": 0.7,
-        "learning_xp_multiplier": 0.85
+        "firearm_spread_additive": 0.05,
+        "critical_chance_multiplier": 0.85,
+        "learning_xp_multiplier": 0.92
       }
     },
     {
@@ -67,14 +71,14 @@
       "priority": 3,
       "when": {
         "operator": "gte",
-        "value": 75
+        "value": 80
       },
       "name_key": "moodle.aftermath.panic.terror",
       "description_key": "moodle.aftermath.panic.terror.description",
       "effects": {
-        "firearm_spread_additive": 0.35,
-        "critical_chance_multiplier": 0.4,
-        "learning_xp_multiplier": 0.7
+        "firearm_spread_additive": 0.1,
+        "critical_chance_multiplier": 0.65,
+        "learning_xp_multiplier": 0.85
       }
     }
   ]
