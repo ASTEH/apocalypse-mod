@@ -2,6 +2,7 @@ package dev.aftermath.character;
 
 import dev.aftermath.AftermathMod;
 import dev.aftermath.medical.BleedingStatus;
+import dev.aftermath.state.PlayerStateData;
 import com.mojang.serialization.Codec;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -44,6 +45,14 @@ public final class AftermathAttachments {
             "zombie_kills",
             () -> AttachmentType.builder(() -> 0)
                     .serialize(Codec.INT)
+                    .copyOnDeath()
+                    .build()
+    );
+
+    public static final Supplier<AttachmentType<PlayerStateData>> PLAYER_STATES = TYPES.register(
+            "player_states",
+            () -> AttachmentType.builder(PlayerStateData::empty)
+                    .serialize(PlayerStateData.CODEC)
                     .copyOnDeath()
                     .build()
     );

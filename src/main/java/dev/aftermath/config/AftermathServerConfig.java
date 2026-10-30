@@ -18,6 +18,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_BLOCK_BREAKING;
     public static final ModConfigSpec.BooleanValue ENABLE_DAY_PROGRESSION;
     public static final ModConfigSpec.BooleanValue ENABLE_BLEEDING;
+    public static final ModConfigSpec.BooleanValue ENABLE_MOODLES;
 
     public static final ModConfigSpec.IntValue WEAPON_XP_PER_KILL;
     public static final ModConfigSpec.IntValue MAX_XP_PER_VICTIM_PER_MINUTE;
@@ -54,6 +55,8 @@ public final class AftermathServerConfig {
                 .define("enableDayProgression", true);
         ENABLE_BLEEDING = builder.comment("Enable bleeding caused by hostile attacks and treatment with bandages.")
                 .define("enableBleeding", true);
+        ENABLE_MOODLES = builder.comment("Enable server-authoritative tiredness, exertion and panic Moodles.")
+                .define("enableMoodles", true);
         builder.pop();
 
         builder.push("weapon_progression");

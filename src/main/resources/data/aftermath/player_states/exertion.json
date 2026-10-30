@@ -1,0 +1,92 @@
+{
+  "name_key": "moodle.aftermath.exertion",
+  "description_key": "moodle.aftermath.exertion.description",
+  "icon": "aftermath:textures/gui/moodles/exertion.png",
+  "value": {
+    "min": 0,
+    "max": 100,
+    "initial": 100
+  },
+  "update_interval_ticks": 20,
+  "sources": [
+    {
+      "type": "sprinting",
+      "delta_per_second": -5,
+      "trait_multipliers": {
+        "aftermath:fit": 0.75,
+        "aftermath:asthmatic": 1.35
+      }
+    },
+    {
+      "type": "resting",
+      "delta_per_second": 2,
+      "trait_multipliers": {
+        "aftermath:fit": 1.15
+      }
+    },
+    {
+      "type": "sleeping",
+      "delta_per_second": 8
+    },
+    {
+      "type": "melee_hit",
+      "delta_per_event": -1
+    }
+  ],
+  "recovery": [],
+  "interactions": [
+    {
+      "source_state": "aftermath:tired",
+      "operator": "gte",
+      "threshold": 70,
+      "multiplier": 0.65
+    }
+  ],
+  "levels": [
+    {
+      "id": "moderate",
+      "priority": 1,
+      "when": {
+        "operator": "lte",
+        "value": 75
+      },
+      "name_key": "moodle.aftermath.exertion.moderate",
+      "description_key": "moodle.aftermath.exertion.moderate.description",
+      "effects": {
+        "melee_damage_multiplier": 0.95,
+        "attack_speed_multiplier": 0.93
+      }
+    },
+    {
+      "id": "heavy",
+      "priority": 2,
+      "when": {
+        "operator": "lte",
+        "value": 40
+      },
+      "name_key": "moodle.aftermath.exertion.heavy",
+      "description_key": "moodle.aftermath.exertion.heavy.description",
+      "effects": {
+        "melee_damage_multiplier": 0.65,
+        "movement_speed_multiplier": 0.85,
+        "attack_speed_multiplier": 0.8
+      }
+    },
+    {
+      "id": "exhausted",
+      "priority": 3,
+      "when": {
+        "operator": "lte",
+        "value": 15
+      },
+      "name_key": "moodle.aftermath.exertion.exhausted",
+      "description_key": "moodle.aftermath.exertion.exhausted.description",
+      "effects": {
+        "melee_damage_multiplier": 0.3,
+        "movement_speed_multiplier": 0.7,
+        "attack_speed_multiplier": 0.6,
+        "sprint_allowed": 0
+      }
+    }
+  ]
+}

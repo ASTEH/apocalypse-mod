@@ -21,6 +21,8 @@ import dev.aftermath.command.AftermathCommands;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.AftermathNetworking;
 import dev.aftermath.zombie.ZombieKillService;
+import dev.aftermath.state.PlayerStateDefinitions;
+import dev.aftermath.state.PlayerStateManager;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -42,6 +44,9 @@ public final class AftermathMod {
         AftermathContent.register(modEventBus);
         modEventBus.addListener(AftermathNetworking::registerPayloads);
         NeoForge.EVENT_BUS.addListener(AftermathCommands::registerCommands);
+        NeoForge.EVENT_BUS.addListener(PlayerStateDefinitions::register);
+        NeoForge.EVENT_BUS.addListener(PlayerStateManager::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(PlayerStateManager::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(CharacterDefinitions::register);
         NeoForge.EVENT_BUS.addListener(DayProgressionDefinitions::register);
         NeoForge.EVENT_BUS.addListener(AftermathServerEvents::onPlayerLoggedIn);

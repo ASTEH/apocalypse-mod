@@ -6,6 +6,7 @@ import dev.aftermath.character.CharacterDefinitions;
 import dev.aftermath.character.CharacterProfile;
 import dev.aftermath.character.TraitRuntimeService;
 import dev.aftermath.config.AftermathServerConfig;
+import dev.aftermath.state.PlayerStateManager;
 import dev.aftermath.content.AftermathContent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -723,7 +724,8 @@ public final class LearningService {
     private static double learningMultiplier(ServerPlayer player, ResourceLocation skillId, long now) {
         CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
         LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
-        double multiplier = progress.bookMultiplierFor(skillId.toString(), now);
+        double multiplier = progress.bookMultiplierFor(skillId.toString(), now)
+                * PlayerStateManager.effect(player, "learning_xp_multiplier", 1.0D);
         for (String rawId : profile.traitIds()) {
             ResourceLocation traitId = ResourceLocation.tryParse(rawId);
             if (traitId == null) continue;
