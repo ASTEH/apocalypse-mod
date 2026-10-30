@@ -44,7 +44,6 @@
       "description_key": "moodle.aftermath.panic.anxious.description",
       "effects": {
         "firearm_spread_additive": 0.07,
-        "vignette_additive": 0.08,
         "learning_xp_multiplier": 0.95
       }
     },
@@ -60,7 +59,6 @@
       "effects": {
         "firearm_spread_additive": 0.18,
         "critical_chance_multiplier": 0.7,
-        "vignette_additive": 0.25,
         "learning_xp_multiplier": 0.85
       }
     },
@@ -76,7 +74,6 @@
       "effects": {
         "firearm_spread_additive": 0.35,
         "critical_chance_multiplier": 0.4,
-        "vignette_additive": 0.5,
         "learning_xp_multiplier": 0.7
       }
     }

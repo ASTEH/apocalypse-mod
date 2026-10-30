@@ -90,20 +90,7 @@ public final class MoodlesHud {
         Font font = minecraft.font;
         int x = minecraft.getWindow().getGuiScaledWidth() - 8 - 26;
         int y = 34; // Keep the existing zombie counter at y=8 unobstructed.
-        double vignette = entries.stream()
-                .mapToDouble(entry -> entry.effects().getOrDefault("vignette_additive", 0.0D))
-                .max().orElse(0.0D);
-        if (vignette > 0.0D) {
-            int alpha = Math.max(0, Math.min(112, (int) Math.round(vignette * 180.0D)));
-            int thickness = 8 + (int) Math.round(vignette * 34.0D);
-            int edge = (alpha << 24) | 0x00551A1A;
-            int width = minecraft.getWindow().getGuiScaledWidth();
-            int height = minecraft.getWindow().getGuiScaledHeight();
-            graphics.fill(0, 0, width, thickness, edge);
-            graphics.fill(0, height - thickness, width, height, edge);
-            graphics.fill(0, thickness, thickness, height - thickness, edge);
-            graphics.fill(width - thickness, thickness, width, height - thickness, edge);
-        }
+        // Do not draw full-screen overlays here: this layer is above Jade and other HUD overlays.
         int mouseX = (int) (minecraft.mouseHandler.xpos()
                 * minecraft.getWindow().getGuiScaledWidth() / minecraft.getWindow().getScreenWidth());
         int mouseY = (int) (minecraft.mouseHandler.ypos()
@@ -119,14 +106,14 @@ public final class MoodlesHud {
 
             graphics.fill(x - 1, itemY - 1, x + 27, itemY + 27, 0xD9000000);
             graphics.fill(x, itemY, x + 25, itemY + 25, 0xE51A1D22);
-            graphics.fill(x + 2, itemY + 2, x + 23, itemY + 23, accent);
-            net.minecraft.resources.ResourceLocation icon =
-                    net.minecraft.resources.ResourceLocation.tryParse(moodle.icon());
+            ResourceLocation icon = ResourceLocation.tryParse(moodle.icon());
             boolean hasIcon = icon != null
                     && minecraft.getResourceManager().getResource(icon).isPresent();
             if (hasIcon) {
-                graphics.blit(icon, x + 2, itemY + 2, 0.0F, 0.0F, 21, 21, 32, 32);
+                // Texture contains its own dark frame and transparent rounded corners.
+                graphics.blit(icon, x, itemY, 0.0F, 0.0F, 25, 25, 32, 32);
             } else {
+                graphics.fill(x + 2, itemY + 2, x + 23, itemY + 23, accent);
                 graphics.fill(x + 3, itemY + 3, x + 22, itemY + 22, 0xC915171A);
                 graphics.drawString(font, symbol(moodle.id()), x + 7, itemY + 7, 0xFFF4F0E8, true);
             }
