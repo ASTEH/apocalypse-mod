@@ -29,7 +29,10 @@
       "count": 6,
       "fallback_count": 42,
       "custom_data": {
-        "MagazineFamily": "45acp_7"
+        "MagazineFamily": "45acp_7",
+        "AmmoId": "tacz:45acp",
+        "AmmoCount": 7,
+        "MaxCapacity": 7
       }
     },
     {
