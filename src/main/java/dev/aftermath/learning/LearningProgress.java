@@ -206,12 +206,19 @@ public record LearningProgress(
 
     private static void trimDailyXp(Map<String, Integer> dailyXp, String keepFirst, String keepSecond) {
         if (dailyXp.size() <= 128) return;
+        String currentDayPrefix = dayPrefix(keepFirst != null ? keepFirst : keepSecond);
         for (String key : new ArrayList<>(dailyXp.keySet())) {
             if (dailyXp.size() <= 64) break;
-            if (!key.equals(keepFirst) && !key.equals(keepSecond)) {
+            if (currentDayPrefix == null || !key.startsWith(currentDayPrefix)) {
                 dailyXp.remove(key);
             }
         }
+    }
+
+    private static String dayPrefix(String key) {
+        if (key == null) return null;
+        int separator = key.indexOf(':');
+        return separator < 0 ? null : key.substring(0, separator + 1);
     }
 
     public long actionLastUsedAt(String actionId) {

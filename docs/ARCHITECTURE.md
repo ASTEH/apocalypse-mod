@@ -22,7 +22,7 @@
 - `FirearmDefinitions`: reloads validated external gun-ID-to-class mappings from datapack JSON.
 - `TaczCompatibility`: reflection-only optional adapter for TaCZ server bullets; resolves actual projectile owner and gun ID, and emits shot noise without loading TaCZ types when absent.
 - `LearningDefinitions`: loads and validates lesson and TV JSON definitions.
-- `LearningService`: server-timed reading and scheduled TV sessions; persistent skill XP and per-material completion counts. Create processing XP is credited to the nearest active player near supported machines, with cooldown and daily-cap safeguards.
+- `LearningService`: server-timed reading and scheduled TV sessions; persistent skill XP and per-material completion counts. All XP sources share a 120 XP per-skill in-game-day ceiling in addition to action-specific cooldowns and caps. Create and Farmer's Delight machine XP is credited to the nearest active player within 16 blocks.
 - `CreateLearningHooks`: optional mixin bridge for Create 6.0.10 recipe application, basin, millstone, fan item processing, crushing wheels and saw cutting; no Create classes are linked from core Java.
 - `FarmersDelightLearningHooks`: optional mixin bridge for completed cooking-pot and skillet recipes; output XP is credited to a nearby player with cooldown and daily cap.
 - `ZombieAwarenessCompatibility`: reflection-only bridge forwards validated Aftermath noise events to Zombie Awareness' SOUND scent API; it fails closed when the mod or its API is unavailable.
