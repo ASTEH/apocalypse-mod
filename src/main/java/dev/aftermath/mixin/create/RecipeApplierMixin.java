@@ -24,6 +24,8 @@ public abstract class RecipeApplierMixin {
             boolean returnProcessingRemainder,
             CallbackInfo callbackInfo
     ) {
-        CreateLearningHooks.awardAt(processedItem);
+        if (processedItem.isAlive()) {
+            CreateLearningHooks.awardAt(processedItem);
+        }
     }
 }

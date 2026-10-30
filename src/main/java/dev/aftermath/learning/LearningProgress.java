@@ -3,6 +3,7 @@ package dev.aftermath.learning;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -173,20 +174,44 @@ public record LearningProgress(
 
     public LearningProgress addActionExperience(String skillId, int xp, String actionId,
                                                 long now, String dailyKey) {
+        return addActionExperience(skillId, xp, actionId, now, dailyKey, null);
+    }
+
+    public LearningProgress addActionExperience(String skillId, int xp, String actionId,
+                                                long now, String actionDailyKey, String skillDailyKey) {
+        if (xp <= 0) return this;
         Map<String, Integer> updatedXp = new LinkedHashMap<>(skillExperience);
         updatedXp.put(skillId, safeAdd(experienceFor(skillId), xp));
         Map<String, Long> updatedCooldowns = new LinkedHashMap<>(actionCooldowns);
         updatedCooldowns.put(actionId, Math.max(0L, now));
         Map<String, Integer> updatedDaily = new LinkedHashMap<>(actionDailyXp);
-        updatedDaily.put(dailyKey, safeAdd(updatedDaily.getOrDefault(dailyKey, 0), xp));
-        if (updatedDaily.size() > 128) {
-            updatedDaily.keySet().removeIf(key -> !key.equals(dailyKey) && !key.equals(actionId));
-            while (updatedDaily.size() > 64) {
-                updatedDaily.remove(updatedDaily.keySet().iterator().next());
-            }
+        updatedDaily.put(actionDailyKey, safeAdd(updatedDaily.getOrDefault(actionDailyKey, 0), xp));
+        if (skillDailyKey != null && !skillDailyKey.equals(actionDailyKey)) {
+            updatedDaily.put(skillDailyKey, safeAdd(updatedDaily.getOrDefault(skillDailyKey, 0), xp));
         }
+        trimDailyXp(updatedDaily, actionDailyKey, skillDailyKey);
         return copy(updatedXp, lessonCompletions, programCompletions, programLastCompletedAt,
                 skillBookMultipliers, skillBookExpiresAt, updatedCooldowns, updatedDaily);
+    }
+
+    /** Adds study rewards to the same per-skill daily budget used by action XP. */
+    public LearningProgress addDailySkillExperience(String skillDailyKey, int xp) {
+        if (xp <= 0) return this;
+        Map<String, Integer> updatedDaily = new LinkedHashMap<>(actionDailyXp);
+        updatedDaily.put(skillDailyKey, safeAdd(updatedDaily.getOrDefault(skillDailyKey, 0), xp));
+        trimDailyXp(updatedDaily, skillDailyKey, null);
+        return copy(skillExperience, lessonCompletions, programCompletions, programLastCompletedAt,
+                skillBookMultipliers, skillBookExpiresAt, actionCooldowns, updatedDaily);
+    }
+
+    private static void trimDailyXp(Map<String, Integer> dailyXp, String keepFirst, String keepSecond) {
+        if (dailyXp.size() <= 128) return;
+        for (String key : new ArrayList<>(dailyXp.keySet())) {
+            if (dailyXp.size() <= 64) break;
+            if (!key.equals(keepFirst) && !key.equals(keepSecond)) {
+                dailyXp.remove(key);
+            }
+        }
     }
 
     public long actionLastUsedAt(String actionId) {

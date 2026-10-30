@@ -47,6 +47,7 @@ import java.util.UUID;
 /** Server-timed learning sessions and action-based skill progression. */
 public final class LearningService {
     private static final long DAY_TICKS = 24_000L;
+    private static final int SKILL_DAILY_XP_CAP = 120;
     private static final long DRIVING_SAMPLE_TICKS = 200L;
     private static final double MIN_DRIVING_DISTANCE_SQR = 256.0D;
     private static final List<String> SKILL_STATUS_ORDER = List.of(
@@ -432,6 +433,7 @@ public final class LearningService {
      * the vanilla block interaction creates the ChestMenu and unpacks its generated loot.
      */
     public static void onLootContainerInteract(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getHand() != InteractionHand.MAIN_HAND) return;
         if (!(event.getEntity() instanceof ServerPlayer player)
                 || !(event.getLevel() instanceof ServerLevel level)) return;
 
@@ -570,13 +572,17 @@ public final class LearningService {
 
         long day = Math.floorDiv(now, DAY_TICKS);
         String dailyKey = day + ":" + actionId;
-        int remainingDaily = Math.max(0, dailyCap - progress.actionDailyXp(dailyKey));
-        if (remainingDaily <= 0) return;
+        String skillDailyKey = skillDailyKey(day, skillId);
+        int remainingActionDaily = Math.max(0, dailyCap - progress.actionDailyXp(dailyKey));
+        int remainingSkillDaily = Math.max(0,
+                SKILL_DAILY_XP_CAP - progress.actionDailyXp(skillDailyKey));
+        if (remainingActionDaily <= 0 || remainingSkillDaily <= 0) return;
 
         int requested = Math.max(1, (int) Math.round(baseXp * learningMultiplier(player, skillId, now)));
-        int gained = Math.min(requested, remainingDaily);
+        int gained = Math.min(requested, Math.min(remainingActionDaily, remainingSkillDaily));
+        if (gained <= 0) return;
         LearningProgress updated = progress.addActionExperience(
-                skillId.toString(), gained, actionId, now, dailyKey);
+                skillId.toString(), gained, actionId, now, dailyKey, skillDailyKey);
         player.setData(AftermathAttachments.LEARNING_PROGRESS, updated);
 
         LearningDefinitions.SkillDefinition skill = LearningDefinitions.snapshot().skills().get(skillId);
@@ -645,10 +651,12 @@ public final class LearningService {
                 message(player, "message.aftermath.learning.already_claimed");
                 return;
             }
-            int reward = Math.max(0, (int) Math.round(
+            int requestedReward = Math.max(0, (int) Math.round(
                     session.baseXpReward() * learningMultiplier(player, session.skillId(), now)));
+            int reward = capStudyReward(progress, session.skillId(), requestedReward, now);
             LearningProgress updated = progress.completeLesson(
                     session.definitionId().toString(), session.skillId().toString(), reward);
+            updated = updated.addDailySkillExperience(skillDailyKey(now, session.skillId()), reward);
             player.setData(AftermathAttachments.LEARNING_PROGRESS, updated);
             message(player, "message.aftermath.learning.completed",
                     Component.translatable(session.titleKey()), reward,
@@ -665,10 +673,12 @@ public final class LearningService {
             return;
         }
 
-        int reward = Math.max(0, (int) Math.round(
+        int requestedReward = Math.max(0, (int) Math.round(
                 session.baseXpReward() * learningMultiplier(player, session.skillId(), now)));
+        int reward = capStudyReward(progress, session.skillId(), requestedReward, now);
         LearningProgress updated = progress.completeProgram(
                 session.definitionId().toString(), session.skillId().toString(), reward, now);
+        updated = updated.addDailySkillExperience(skillDailyKey(now, session.skillId()), reward);
         player.setData(AftermathAttachments.LEARNING_PROGRESS, updated);
         if (session.type() == SessionType.VHS && session.consumeSourceItem()) {
             ResourceLocation tapeId = ResourceLocation.tryParse(session.sourceDataValue());
@@ -681,6 +691,21 @@ public final class LearningService {
         message(player, "message.aftermath.learning.completed",
                 Component.translatable(session.titleKey()), reward,
                 updated.experienceFor(session.skillId().toString()));
+    }
+
+    private static int capStudyReward(LearningProgress progress, ResourceLocation skillId,
+                                      int requestedReward, long now) {
+        String dailyKey = skillDailyKey(now, skillId);
+        int remaining = Math.max(0, SKILL_DAILY_XP_CAP - progress.actionDailyXp(dailyKey));
+        return Math.min(Math.max(0, requestedReward), remaining);
+    }
+
+    private static String skillDailyKey(long now, ResourceLocation skillId) {
+        return skillDailyKey(Math.floorDiv(now, DAY_TICKS), skillId);
+    }
+
+    private static String skillDailyKey(long day, ResourceLocation skillId) {
+        return day + ":skill:" + skillId;
     }
 
     private static double learningMultiplier(ServerPlayer player, ResourceLocation skillId, long now) {
