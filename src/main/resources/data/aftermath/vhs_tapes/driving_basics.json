@@ -1,0 +1,6 @@
+{
+  "title": "vhs_tape.aftermath.driving_basics",
+  "program": "aftermath:driving_basics",
+  "item": "aftermath:vhs_tape",
+  "consume_on_use": true
+}

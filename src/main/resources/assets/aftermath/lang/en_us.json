@@ -278,5 +278,9 @@
   "book.aftermath.farming_fieldguide": "Field Farming: Crops and Harvests",
   "book.aftermath.driving_maintenance": "Vehicle Maintenance: A Field Guide",
   "book.aftermath.urban_scavenging": "Urban Scavenging: Search and Recovery",
-  "book.aftermath.melee_survival": "Close-Quarters Survival"
+  "book.aftermath.melee_survival": "Close-Quarters Survival",
+  "tv_program.aftermath.driving_basics": "Driving Basics",
+  "tv_program.aftermath.urban_scavenging": "Urban Scavenging",
+  "vhs_tape.aftermath.driving_basics": "Tape: Driving Basics",
+  "vhs_tape.aftermath.urban_scavenging": "Tape: Urban Scavenging"
 }

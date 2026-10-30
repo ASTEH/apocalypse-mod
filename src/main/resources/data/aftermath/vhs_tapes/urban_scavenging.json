@@ -1,0 +1,6 @@
+{
+  "title": "vhs_tape.aftermath.urban_scavenging",
+  "program": "aftermath:urban_scavenging",
+  "item": "aftermath:vhs_tape",
+  "consume_on_use": true
+}

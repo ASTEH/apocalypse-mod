@@ -92,6 +92,42 @@
               }
             }
           ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:vhs_tape",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": {
+                  "VhsTapeId": "aftermath:driving_basics"
+                },
+                "minecraft:custom_name": {
+                  "translate": "vhs_tape.aftermath.driving_basics"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "aftermath:vhs_tape",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": {
+                  "VhsTapeId": "aftermath:urban_scavenging"
+                },
+                "minecraft:custom_name": {
+                  "translate": "vhs_tape.aftermath.urban_scavenging"
+                }
+              }
+            }
+          ]
         }
       ]
     }

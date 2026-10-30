@@ -1,0 +1,9 @@
+{
+  "title": "tv_program.aftermath.urban_scavenging",
+  "skill": "aftermath:scavenging",
+  "start_time": 3000,
+  "duration_ticks": 1200,
+  "xp_reward": 14,
+  "repeat_after_days": 1,
+  "max_completions_per_player": 7
+}

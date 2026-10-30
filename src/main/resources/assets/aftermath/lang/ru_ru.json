@@ -278,5 +278,9 @@
   "book.aftermath.farming_fieldguide": "Полевое фермерство: посевы и сбор урожая",
   "book.aftermath.driving_maintenance": "Обслуживание транспорта: полевое руководство",
   "book.aftermath.urban_scavenging": "Городской поиск: разведка и сбор припасов",
-  "book.aftermath.melee_survival": "Выживание в ближнем бою"
+  "book.aftermath.melee_survival": "Выживание в ближнем бою",
+  "tv_program.aftermath.driving_basics": "Основы вождения",
+  "tv_program.aftermath.urban_scavenging": "Городской поиск припасов",
+  "vhs_tape.aftermath.driving_basics": "Запись: основы вождения",
+  "vhs_tape.aftermath.urban_scavenging": "Запись: городской поиск припасов"
 }
