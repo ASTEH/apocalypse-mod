@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,6 +49,7 @@ import java.util.UUID;
 public final class LearningService {
     private static final long DAY_TICKS = 24_000L;
     private static final int SKILL_DAILY_XP_CAP = 120;
+    private static final String LOOT_CONTAINER_MARKER = "AftermathLootContainer";
     private static final long DRIVING_SAMPLE_TICKS = 200L;
     private static final double MIN_DRIVING_DISTANCE_SQR = 256.0D;
     private static final List<String> SKILL_STATUS_ORDER = List.of(
@@ -438,7 +440,17 @@ public final class LearningService {
                 || !(event.getLevel() instanceof ServerLevel level)) return;
 
         BlockEntity blockEntity = level.getBlockEntity(event.getPos());
-        if (blockEntity == null || !hasUnopenedLootTable(blockEntity)) {
+        if (blockEntity == null) {
+            PENDING_LOOT_CONTAINERS.remove(player.getUUID());
+            return;
+        }
+
+        CompoundTag persistentData = blockEntity.getPersistentData();
+        if (hasUnopenedLootTable(blockEntity) && !persistentData.getBoolean(LOOT_CONTAINER_MARKER)) {
+            persistentData.putBoolean(LOOT_CONTAINER_MARKER, true);
+            blockEntity.setChanged();
+        }
+        if (!persistentData.getBoolean(LOOT_CONTAINER_MARKER)) {
             PENDING_LOOT_CONTAINERS.remove(player.getUUID());
             return;
         }

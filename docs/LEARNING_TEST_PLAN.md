@@ -19,6 +19,8 @@ This checklist is for the Aftermath branch targeting Minecraft 1.21.1, NeoForge 
 
 - Open a fresh loot-table chest in a Lost Cities area. Merely opening it must not award XP.
 - Transfer an item into the player inventory, including by shift-click and by cursor placement. Confirm that the first successful transfer awards 5 Scavenging XP.
+- Let a second player open the same generated loot chest later and transfer a remaining item. The saved block-entity marker should still identify it as a loot container.
+- Restart the server, then repeat the second-player transfer test with remaining contents. The marker should survive the world save.
 - Open an ordinary player-placed chest or barrel. Opening it and moving its contents must not award Scavenging XP.
 - Test a second interaction with the off-hand. It must not start or cancel the main-hand loot tracking session.
 - Confirm that closing the menu, changing dimension or logging out clears the temporary tracking session.
