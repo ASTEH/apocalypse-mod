@@ -6,7 +6,10 @@
   "mixins": [
     "RecipeApplierMixin",
     "BasinRecipeMixin",
-    "MillstoneBlockEntityMixin"
+    "MillstoneBlockEntityMixin",
+    "FanProcessingMixin",
+    "CrushingWheelControllerMixin",
+    "SawBlockEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

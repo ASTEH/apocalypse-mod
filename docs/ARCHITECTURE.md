@@ -23,7 +23,7 @@
 - `TaczCompatibility`: reflection-only optional adapter for TaCZ server bullets; resolves actual projectile owner and gun ID, and emits shot noise without loading TaCZ types when absent.
 - `LearningDefinitions`: loads and validates lesson and TV JSON definitions.
 - `LearningService`: server-timed reading and scheduled TV sessions; persistent skill XP and per-material completion counts. Create processing XP is credited to the nearest active player near supported machines, with cooldown and daily-cap safeguards.
-- `CreateLearningHooks`: optional mixin bridge for Create 6.0.10 press, basin, and millstone completion paths; no Create classes are linked from core Java.
+- `CreateLearningHooks`: optional mixin bridge for Create 6.0.10 recipe application, basin, millstone, fan item processing, crushing wheels and saw cutting; no Create classes are linked from core Java.
 - `FirstAidService`: rolls configurable bleeding chance for damaging hostile hits, applies timed blood-loss ticks, and handles bandage treatment; Medic characters stop all bleeding with one bandage.
 - `NoiseDefinitions`: validates data-driven noise events and horde archetypes on datapack reload.
 - `NoiseService`: applies cooldowns and assigns only already-loaded, tagged mobs to a temporary noise destination.
