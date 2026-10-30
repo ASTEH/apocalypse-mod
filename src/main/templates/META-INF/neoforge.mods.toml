@@ -17,6 +17,10 @@ Requires no gameplay mods; optional integrations activate when supported mods ar
 config="aftermath.create.mixins.json"
 requiredMods=["create"]
 
+[[mixins]]
+config="aftermath.farmersdelight.mixins.json"
+requiredMods=["farmersdelight"]
+
 [[dependencies.${mod_id}]]
 modId="neoforge"
 type="required"

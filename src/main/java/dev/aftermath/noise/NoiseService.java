@@ -3,6 +3,7 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.day.WorldProgressData;
+import dev.aftermath.noise.compat.ZombieAwarenessCompatibility;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -47,6 +48,7 @@ public final class NoiseService {
         int stageGroupLimit = AftermathServerConfig.ENABLE_DAY_PROGRESSION.get()
                 ? dayStage.groupSize() : AftermathServerConfig.MAX_HORDE_SIZE.get();
         if (radius == 0) return new NoiseResult(Status.EMITTED, 0, 0);
+        ZombieAwarenessCompatibility.emitSoundSense(level, origin, radius);
         AABB bounds = new AABB(origin.x - radius, origin.y - radius, origin.z - radius,
                 origin.x + radius, origin.y + radius, origin.z + radius);
         TagKey<EntityType<?>> tag = TagKey.create(Registries.ENTITY_TYPE, def.targetTag());

@@ -24,9 +24,11 @@
 - `LearningDefinitions`: loads and validates lesson and TV JSON definitions.
 - `LearningService`: server-timed reading and scheduled TV sessions; persistent skill XP and per-material completion counts. Create processing XP is credited to the nearest active player near supported machines, with cooldown and daily-cap safeguards.
 - `CreateLearningHooks`: optional mixin bridge for Create 6.0.10 recipe application, basin, millstone, fan item processing, crushing wheels and saw cutting; no Create classes are linked from core Java.
+- `FarmersDelightLearningHooks`: optional mixin bridge for completed cooking-pot and skillet recipes; output XP is credited to a nearby player with cooldown and daily cap.
+- `ZombieAwarenessCompatibility`: reflection-only bridge forwards validated Aftermath noise events to Zombie Awareness' SOUND scent API; it fails closed when the mod or its API is unavailable.
 - `FirstAidService`: rolls configurable bleeding chance for damaging hostile hits, applies timed blood-loss ticks, and handles bandage treatment; Medic characters stop all bleeding with one bandage.
 - `NoiseDefinitions`: validates data-driven noise events and horde archetypes on datapack reload.
-- `NoiseService`: applies cooldowns and assigns only already-loaded, tagged mobs to a temporary noise destination.
+- `NoiseService`: applies cooldowns and assigns only already-loaded, tagged mobs to a temporary noise destination, while optionally forwarding the event to Zombie Awareness.
 - `HordeDirector`: adds a movement goal without replacing other AI goals, groups nearby mobs, and enforces a per-dimension path request budget.
 - `DayProgressionDefinitions`: validates and reloads stages that scale noise radius and group size.
 - `WorldProgressData`: persists the global apocalypse day in Overworld `SavedData`, shared across dimensions.

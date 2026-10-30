@@ -8,6 +8,7 @@ import dev.aftermath.character.TraitRuntimeService;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.content.AftermathContent;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -32,9 +33,11 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,6 +59,7 @@ public final class LearningService {
     private static final Map<UUID, Session> ACTIVE_SESSIONS = new HashMap<>();
     private static final Map<UUID, DrivingSample> DRIVING_SAMPLES = new HashMap<>();
     private static final Map<UUID, LootingSession> LOOTING_SESSIONS = new HashMap<>();
+    private static final Map<UUID, PendingLoot> PENDING_LOOT_CONTAINERS = new HashMap<>();
 
     public static void startReading(ServerPlayer player, ResourceLocation lessonId, InteractionHand hand) {
         if (!canStartSession(player)) return;
@@ -424,13 +428,51 @@ public final class LearningService {
     }
 
     /**
-     * Opening a chest alone grants no XP. Scavenging XP is awarded only after item counts
-     * move from the chest into the player's inventory. Cursor transfers accumulate until
-     * the carried item is placed into the inventory.
+     * Mark only a block entity that still owns an unopened loot table. This happens before
+     * the vanilla block interaction creates the ChestMenu and unpacks its generated loot.
+     */
+    public static void onLootContainerInteract(PlayerInteractEvent.RightClickBlock event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)
+                || !(event.getLevel() instanceof ServerLevel level)) return;
+
+        BlockEntity blockEntity = level.getBlockEntity(event.getPos());
+        if (blockEntity == null || !hasUnopenedLootTable(blockEntity)) {
+            PENDING_LOOT_CONTAINERS.remove(player.getUUID());
+            return;
+        }
+
+        PENDING_LOOT_CONTAINERS.put(player.getUUID(), new PendingLoot(
+                level.dimension().location(), event.getPos().immutable(), blockEntity,
+                level.getGameTime() + 40L));
+    }
+
+    private static boolean hasUnopenedLootTable(BlockEntity blockEntity) {
+        try {
+            Method getter = blockEntity.getClass().getMethod("getLootTable");
+            return getter.invoke(blockEntity) instanceof ResourceLocation;
+        } catch (NoSuchMethodException exception) {
+            return false;
+        } catch (ReflectiveOperationException | RuntimeException exception) {
+            AftermathMod.LOGGER.debug("Could not inspect loot table for {}: {}",
+                    blockEntity.getType(), exception.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * A chest GUI alone grants no XP. Only a ChestMenu opened immediately after interacting
+     * with an ungenerated loot-table block is tracked; XP requires an actual transfer.
      */
     public static void onContainerOpen(PlayerContainerEvent.Open event) {
         if (!(event.getEntity() instanceof ServerPlayer player)
                 || !(event.getContainer() instanceof ChestMenu menu)) return;
+
+        PendingLoot pending = PENDING_LOOT_CONTAINERS.remove(player.getUUID());
+        if (pending == null
+                || !pending.dimension().equals(player.level().dimension().location())
+                || player.level().getGameTime() > pending.expiresAt()
+                || player.distanceToSqr(Vec3.atCenterOf(pending.position())) > 64.0D
+                || player.level().getBlockEntity(pending.position()) != pending.blockEntity()) return;
 
         Container source = menu.getContainer();
         LOOTING_SESSIONS.put(player.getUUID(), new LootingSession(
@@ -446,6 +488,12 @@ public final class LearningService {
     }
 
     private static void tickLooting(ServerPlayer player) {
+        PendingLoot pending = PENDING_LOOT_CONTAINERS.get(player.getUUID());
+        if (pending != null && (player.level().getGameTime() > pending.expiresAt()
+                || !pending.dimension().equals(player.level().dimension().location()))) {
+            PENDING_LOOT_CONTAINERS.remove(player.getUUID());
+        }
+
         LootingSession session = LOOTING_SESSIONS.get(player.getUUID());
         if (session == null) return;
         if (player.containerMenu != session.menu) {
@@ -482,6 +530,18 @@ public final class LearningService {
      * A shared cooldown and daily cap keep unattended factories from becoming an XP farm.
      */
     public static void awardCreateProcessingXp(Level level, BlockPos machinePos) {
+        awardNearbyMachineXp(level, machinePos, id("mechanics"), 3,
+                "create_machine_processing", 100L, 80);
+    }
+
+    /** Farmer's Delight cooking pot and skillet have dedicated non-crafting output paths. */
+    public static void awardFarmersDelightCookingXp(Level level, BlockPos machinePos) {
+        awardNearbyMachineXp(level, machinePos, id("cooking"), 5,
+                "farmers_delight_machine_cooking", 20L, 80);
+    }
+
+    private static void awardNearbyMachineXp(Level level, BlockPos machinePos, ResourceLocation skillId,
+                                              int baseXp, String actionId, long cooldownTicks, int dailyCap) {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         Vec3 center = Vec3.atCenterOf(machinePos);
@@ -495,8 +555,7 @@ public final class LearningService {
                 .orElse(null);
         if (learner == null) return;
 
-        awardSkillXp(learner, id("mechanics"), 3,
-                "create_machine_processing", 100L, 80);
+        awardSkillXp(learner, skillId, baseXp, actionId, cooldownTicks, dailyCap);
     }
 
     public static void awardSkillXp(ServerPlayer player, ResourceLocation skillId, int baseXp,
@@ -537,6 +596,7 @@ public final class LearningService {
         ACTIVE_SESSIONS.remove(event.getEntity().getUUID());
         DRIVING_SAMPLES.remove(event.getEntity().getUUID());
         LOOTING_SESSIONS.remove(event.getEntity().getUUID());
+        PENDING_LOOT_CONTAINERS.remove(event.getEntity().getUUID());
     }
 
     public static int skillLevel(ServerPlayer player, ResourceLocation skillId) {
@@ -687,6 +747,8 @@ public final class LearningService {
             String sourceDataValue) {}
 
     private record DrivingSample(net.minecraft.world.phys.Vec3 position, long sampledAt) {}
+    private record PendingLoot(ResourceLocation dimension, BlockPos position,
+                               BlockEntity blockEntity, long expiresAt) {}
 
     private static final class LootingSession {
         private final ChestMenu menu;
