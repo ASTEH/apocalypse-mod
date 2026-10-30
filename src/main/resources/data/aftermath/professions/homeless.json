@@ -3,6 +3,7 @@
   "name": "profession.aftermath.homeless",
   "description": "profession.aftermath.homeless.description",
   "icon": "minecraft:leather",
+  "difficulty": 5,
   "startPoints": 10,
   "allowed_traits": [],
   "grantedTraits": [

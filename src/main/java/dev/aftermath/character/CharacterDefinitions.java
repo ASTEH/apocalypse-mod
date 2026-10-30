@@ -84,6 +84,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                 String description = requiredString(json, "description");
                 String pointsKey = json.has("startPoints") ? "startPoints" : "starting_points";
                 int points = boundedInt(json, pointsKey, 0, 100);
+                int difficulty = json.has("difficulty") ? boundedInt(json, "difficulty", 1, 5) : 3;
                 String allowedKey = json.has("allowedTraits") ? "allowedTraits" : "allowed_traits";
                 List<ResourceLocation> allowedTraits = idList(json, allowedKey);
                 ResourceLocation icon = ResourceLocation.tryParse(json.has("icon")
@@ -93,7 +94,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                 String grantsKey = json.has("grantedTraits") ? "grantedTraits" : "granted_traits";
                 List<ResourceLocation> grantedTraits = idList(json, grantsKey);
                 Map<String, Integer> skillBonuses = skillBonuses(json);
-                result.put(id, new ProfessionDefinition(id, name, description, icon, points,
+                result.put(id, new ProfessionDefinition(id, name, description, icon, points, difficulty,
                         allowedTraits, startingItems, grantedTraits, skillBonuses));
             } catch (Exception exception) {
                 AftermathMod.LOGGER.error("Could not load character profession {}: {}", entry.getKey(), exception.getMessage());
@@ -356,6 +357,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                     json.addProperty("description", value.descriptionKey());
                     json.addProperty("icon", value.icon().toString());
                     json.addProperty("starting_points", value.startingPoints());
+                    json.addProperty("difficulty", value.difficulty());
                     JsonArray allowed = new JsonArray();
                     value.allowedTraits().forEach(id -> allowed.add(id.toString()));
                     json.add("allowed_traits", allowed);
@@ -419,10 +421,11 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
     }
 
     public record ProfessionDefinition(ResourceLocation id, String nameKey, String descriptionKey,
-                                       ResourceLocation icon, int startingPoints,
+                                       ResourceLocation icon, int startingPoints, int difficulty,
                                        List<ResourceLocation> allowedTraits, List<StartingItem> startingItems,
                                        List<ResourceLocation> grantedTraits, Map<String, Integer> skillBonuses) {
         public ProfessionDefinition {
+            if (difficulty < 1 || difficulty > 5) throw new IllegalArgumentException("difficulty must be 1..5");
             allowedTraits = List.copyOf(allowedTraits);
             startingItems = List.copyOf(startingItems);
             grantedTraits = List.copyOf(grantedTraits);

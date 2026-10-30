@@ -194,6 +194,12 @@
   "screen.aftermath.character.ui.tab.negative.short": "NEG",
   "screen.aftermath.character.ui.tab.neutral": "OTHER",
   "screen.aftermath.character.ui.tab.neutral.short": "OTHER",
+  "screen.aftermath.character.difficulty": "Difficulty",
+  "screen.aftermath.character.difficulty.easy": "Easy",
+  "screen.aftermath.character.difficulty.normal": "Normal",
+  "screen.aftermath.character.difficulty.hard": "Hard",
+  "screen.aftermath.character.difficulty.expert": "Hardcore",
+  "screen.aftermath.character.difficulty.extreme": "Insane",
   "hud.aftermath.zombie_kills": "Zombies killed: %1$s",
   "message.aftermath.zombie_kills.status": "Zombies killed by you: %1$s."
 }

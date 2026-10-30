@@ -3,6 +3,7 @@
   "name": "profession.aftermath.cook",
   "description": "profession.aftermath.cook.description",
   "icon": "minecraft:cooked_beef",
+  "difficulty": 2,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [

@@ -3,6 +3,7 @@
   "name": "profession.aftermath.engineer",
   "description": "profession.aftermath.engineer.description",
   "icon": "minecraft:redstone",
+  "difficulty": 4,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [

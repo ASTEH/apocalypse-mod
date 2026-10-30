@@ -106,6 +106,7 @@ public final class CharacterSelectionScreen extends Screen {
                             string(json, "description", ""),
                             string(json, "icon", "minecraft:player_head"),
                             integer(json, "starting_points", 8),
+                            integer(json, "difficulty", 3),
                             stringSet(json, "allowed_traits"),
                             stringSet(json, "granted_traits"),
                             integerMap(json, "skill_bonuses"),
@@ -174,7 +175,7 @@ public final class CharacterSelectionScreen extends Screen {
                 Math.max(1, professionPanel.h - 29));
 
         int rightX = innerX + leftW + gap;
-        int previewH = Math.max(36, Math.min(84, bodyH * 34 / 100));
+        int previewH = Math.max(36, Math.min(100, bodyH * 38 / 100));
         previewPanel = new Box(rightX, bodyY, rightW, Math.min(bodyH, previewH));
         int traitY = bodyY + previewPanel.h + gap;
         traitPanel = new Box(rightX, traitY, rightW,
@@ -423,7 +424,9 @@ public final class CharacterSelectionScreen extends Screen {
         int traitIndex = traitIndexAt(mouseX, mouseY);
         if (professionIndex >= 0) {
             ProfessionOption option = professions.get(professionIndex);
-            drawTooltip(graphics, mouseX, mouseY, tr(option.name), tr(option.description), null);
+            String difficulty = tr("screen.aftermath.character.difficulty") + ": "
+                    + tr(difficultyKey(option.difficulty)) + " (" + option.difficulty + "/5)";
+            drawTooltip(graphics, mouseX, mouseY, tr(option.name), tr(option.description), difficulty);
         } else if (traitIndex >= 0) {
             TraitOption option = activeTabTraits().get(traitIndex);
             TraitOption conflict = conflictingSelectedTrait(option, activeTraitIds());
@@ -508,10 +511,12 @@ public final class CharacterSelectionScreen extends Screen {
                 ItemStack icon = professionIcon(option.icon);
                 if (!icon.isEmpty()) graphics.renderItem(icon, iconX, iconY);
                 int badgeW = Math.min(48, Math.max(28, card.w / 4));
+                int difficultyX = card.x + card.w - badgeW - 29;
+                drawDifficultyMeter(graphics, difficultyX, card.y + Math.max(3, card.h / 2 - 2), option.difficulty, 4, 1);
                 String badge = "+" + option.startingPoints;
                 drawText(graphics, badge, card.x + card.w - badgeW, card.y + Math.max(2, card.h / 2 - 4),
                         selected ? GOLD : MUTED);
-                String title = fit(tr(option.name), Math.max(8, card.w - 35 - badgeW));
+                String title = fit(tr(option.name), Math.max(8, card.w - 65 - badgeW));
                 drawString(graphics, (selected ? "› " : "  ") + title, card.x + 24,
                         card.y + Math.max(2, (card.h - font.lineHeight) / 2), selected ? GOLD : PAPER);
             }
@@ -555,7 +560,11 @@ public final class CharacterSelectionScreen extends Screen {
                 : Minecraft.getInstance().player.getGameProfile().getName();
         drawString(graphics, fit(name, textW), textX, headY, PAPER);
         drawString(graphics, fit(tr(selected.name), textW), textX, headY + 10, GOLD);
-        int descY = headY + 20;
+        String difficultyText = tr("screen.aftermath.character.difficulty") + ": "
+                + tr(difficultyKey(selected.difficulty)) + " (" + selected.difficulty + "/5)";
+        drawString(graphics, fit(difficultyText, textW), textX, headY + 21, MUTED);
+        drawDifficultyMeter(graphics, textX, headY + 31, selected.difficulty, 7, 2);
+        int descY = headY + 39;
         int descriptionHeight = Math.max(0, previewPanel.y + previewPanel.h - descY - 4);
         int maxDescriptionLines = descriptionHeight / (font.lineHeight + 1);
         if (maxDescriptionLines > 0 && textW > 0) {
@@ -756,6 +765,31 @@ public final class CharacterSelectionScreen extends Screen {
         List<FormattedCharSequence> lines = font.split(Component.literal(text), maxWidth);
         for (int i = 0; i < Math.min(maxLines, lines.size()); i++) {
             graphics.drawString(font, lines.get(i), x, y + i * (font.lineHeight + 1), color);
+        }
+    }
+
+    private static String difficultyKey(int difficulty) {
+        return switch (clamp(difficulty, 1, 5)) {
+            case 1 -> "screen.aftermath.character.difficulty.easy";
+            case 2 -> "screen.aftermath.character.difficulty.normal";
+            case 3 -> "screen.aftermath.character.difficulty.hard";
+            case 4 -> "screen.aftermath.character.difficulty.expert";
+            default -> "screen.aftermath.character.difficulty.extreme";
+        };
+    }
+
+    private void drawDifficultyMeter(GuiGraphics graphics, int x, int y, int difficulty, int segmentWidth, int gap) {
+        int value = clamp(difficulty, 1, 5);
+        for (int i = 0; i < 5; i++) {
+            int color = i < value ? switch (i) {
+                case 0 -> 0xFF6F9B63;
+                case 1 -> 0xFF9BA85E;
+                case 2 -> 0xFFD0A14E;
+                case 3 -> 0xFFD07945;
+                default -> 0xFFB94F45;
+            } : 0xFF424238;
+            int left = x + i * (segmentWidth + gap);
+            graphics.fill(left, y, left + segmentWidth, y + 4, color);
         }
     }
 
@@ -1061,7 +1095,7 @@ public final class CharacterSelectionScreen extends Screen {
 
     private record Draft(String professionId, List<String> traitIds) {}
     private record ProfessionOption(String id, String name, String description, String icon,
-                                    int startingPoints, Set<String> allowedTraits,
+                                    int startingPoints, int difficulty, Set<String> allowedTraits,
                                     Set<String> grantedTraits, Map<String, Integer> skillBonuses,
                                     List<StartingItem> startingItems) {
         private ProfessionOption {

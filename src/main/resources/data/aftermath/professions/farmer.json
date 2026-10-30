@@ -3,6 +3,7 @@
   "name": "profession.aftermath.farmer",
   "description": "profession.aftermath.farmer.description",
   "icon": "minecraft:iron_hoe",
+  "difficulty": 2,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [

@@ -3,6 +3,7 @@
   "name": "profession.aftermath.medic",
   "description": "profession.aftermath.medic.description",
   "icon": "minecraft:golden_apple",
+  "difficulty": 2,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [],

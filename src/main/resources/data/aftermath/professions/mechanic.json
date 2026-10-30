@@ -3,6 +3,7 @@
   "name": "profession.aftermath.mechanic",
   "description": "profession.aftermath.mechanic.description",
   "icon": "minecraft:iron_pickaxe",
+  "difficulty": 3,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [],

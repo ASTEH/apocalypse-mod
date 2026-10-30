@@ -194,6 +194,12 @@
   "screen.aftermath.character.ui.tab.negative.short": "МИНУС",
   "screen.aftermath.character.ui.tab.neutral": "ДРУГИЕ",
   "screen.aftermath.character.ui.tab.neutral.short": "ДРУГИЕ",
+  "screen.aftermath.character.difficulty": "Сложность",
+  "screen.aftermath.character.difficulty.easy": "Лёгкая",
+  "screen.aftermath.character.difficulty.normal": "Средняя",
+  "screen.aftermath.character.difficulty.hard": "Сложная",
+  "screen.aftermath.character.difficulty.expert": "Хардкор",
+  "screen.aftermath.character.difficulty.extreme": "Безумие",
   "hud.aftermath.zombie_kills": "Убито зомби: %1$s",
   "message.aftermath.zombie_kills.status": "Ты убил зомби: %1$s."
 }

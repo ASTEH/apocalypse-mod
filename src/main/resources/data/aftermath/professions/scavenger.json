@@ -3,6 +3,7 @@
   "name": "profession.aftermath.scavenger",
   "description": "profession.aftermath.scavenger.description",
   "icon": "minecraft:chest",
+  "difficulty": 3,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [],

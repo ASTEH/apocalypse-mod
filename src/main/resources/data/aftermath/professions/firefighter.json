@@ -3,6 +3,7 @@
   "name": "profession.aftermath.firefighter",
   "description": "profession.aftermath.firefighter.description",
   "icon": "minecraft:fire_charge",
+  "difficulty": 3,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [

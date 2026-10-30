@@ -3,6 +3,7 @@
   "name": "profession.aftermath.driver",
   "description": "profession.aftermath.driver.description",
   "icon": "minecraft:compass",
+  "difficulty": 3,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [

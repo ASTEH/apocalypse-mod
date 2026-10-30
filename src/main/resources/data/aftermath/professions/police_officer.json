@@ -3,6 +3,7 @@
   "name": "profession.aftermath.police_officer",
   "description": "profession.aftermath.police_officer.description",
   "icon": "minecraft:iron_sword",
+  "difficulty": 4,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [

@@ -3,6 +3,7 @@
   "name": "profession.aftermath.military",
   "description": "profession.aftermath.military.description",
   "icon": "minecraft:crossbow",
+  "difficulty": 5,
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [
