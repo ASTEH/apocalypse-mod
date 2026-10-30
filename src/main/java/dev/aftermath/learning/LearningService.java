@@ -584,7 +584,7 @@ public final class LearningService {
 
         long day = Math.floorDiv(now, DAY_TICKS);
         String dailyKey = day + ":" + actionId;
-        String skillDailyKey = skillDailyKey(day, skillId);
+        String skillDailyKey = skillDailyKeyForDay(day, skillId);
         int remainingActionDaily = Math.max(0, dailyCap - progress.actionDailyXp(dailyKey));
         int remainingSkillDaily = Math.max(0,
                 SKILL_DAILY_XP_CAP - progress.actionDailyXp(skillDailyKey));
@@ -713,10 +713,10 @@ public final class LearningService {
     }
 
     private static String skillDailyKey(long now, ResourceLocation skillId) {
-        return skillDailyKey(Math.floorDiv(now, DAY_TICKS), skillId);
+        return skillDailyKeyForDay(Math.floorDiv(now, DAY_TICKS), skillId);
     }
 
-    private static String skillDailyKey(long day, ResourceLocation skillId) {
+    private static String skillDailyKeyForDay(long day, ResourceLocation skillId) {
         return day + ":skill:" + skillId;
     }
 
