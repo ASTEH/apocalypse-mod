@@ -11,11 +11,15 @@
   },
   "startItems": [
     {
-      "item": "minecraft:stone_pickaxe",
+      "mod": "create",
+      "item": "create:wrench",
+      "fallback": "minecraft:stone_pickaxe",
       "count": 1
     },
     {
-      "item": "minecraft:iron_nugget",
+      "mod": "create",
+      "item": "create:cogwheel",
+      "fallback": "minecraft:iron_nugget",
       "count": 6
     },
     {

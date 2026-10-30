@@ -14,16 +14,68 @@
   },
   "startItems": [
     {
-      "item": "minecraft:crossbow",
+      "mod": "tacz",
+      "item": "tacz:modern_kinetic_gun",
+      "fallback": "minecraft:crossbow",
+      "count": 1,
+      "custom_data": {
+        "GunId": "tacz:m16a4"
+      }
+    },
+    {
+      "mod": "taczmagazines",
+      "item": "taczmagazines:magazine",
+      "fallback": "minecraft:arrow",
+      "count": 1,
+      "fallback_count": 8,
+      "custom_data": {
+        "MagazineFamily": "556x45_30",
+        "AmmoId": "tacz:556x45",
+        "AmmoCount": 30,
+        "MaxCapacity": 30
+      }
+    },
+    {
+      "mod": "taczmagazines",
+      "item": "taczmagazines:magazine",
+      "fallback": "minecraft:arrow",
+      "count": 1,
+      "fallback_count": 8,
+      "custom_data": {
+        "MagazineFamily": "556x45_30",
+        "AmmoId": "tacz:556x45",
+        "AmmoCount": 30,
+        "MaxCapacity": 30
+      }
+    },
+    {
+      "mod": "taczmagazines",
+      "item": "taczmagazines:magazine",
+      "fallback": "minecraft:arrow",
+      "count": 1,
+      "fallback_count": 8,
+      "custom_data": {
+        "MagazineFamily": "556x45_30",
+        "AmmoId": "tacz:556x45",
+        "AmmoCount": 30,
+        "MaxCapacity": 30
+      }
+    },
+
+    {
+      "mod": "fracturepoint",
+      "item": "fracturepoint:shturmovikv2_chestplate",
+      "fallback": "minecraft:chainmail_chestplate",
       "count": 1
     },
     {
-      "item": "minecraft:arrow",
-      "count": 24
-    },
-    {
-      "item": "minecraft:chainmail_chestplate",
-      "count": 1
+      "mod": "lrtactical",
+      "item": "lrtactical:throwable",
+      "fallback": "minecraft:wind_charge",
+      "count": 3,
+      "custom_data": {
+        "ThrowableId": "lrtactical:m67"
+      }
     },
     {
       "item": "minecraft:bread",

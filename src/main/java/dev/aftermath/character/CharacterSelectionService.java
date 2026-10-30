@@ -1,18 +1,26 @@
 package dev.aftermath.character;
 
+import com.google.gson.JsonPrimitive;
 import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.CharacterSelectionResultPayload;
 import dev.aftermath.network.SelectCharacterPayload;
 import dev.aftermath.network.TraitStatePayload;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -128,18 +136,94 @@ public final class CharacterSelectionService {
     private static void grantStartingItems(ServerPlayer player,
                                            CharacterDefinitions.ProfessionDefinition profession) {
         for (CharacterDefinitions.StartingItem startingItem : profession.startingItems()) {
-            Item item = BuiltInRegistries.ITEM.getOptional(startingItem.itemId()).orElse(null);
-            if (item == null || item == net.minecraft.world.item.Items.AIR) {
-                AftermathMod.LOGGER.warn("Skipping unknown starting item {} for profession {}.",
-                        startingItem.itemId(), profession.id());
+            ResolvedStartingItem resolved = resolveStartingItem(player, startingItem);
+            if (resolved == null) {
+                AftermathMod.LOGGER.warn("Skipping unresolved starting item {} (mod={}, fallback={}) for profession {}.",
+                        startingItem.itemReference(), startingItem.modId(), startingItem.fallbackReference(), profession.id());
                 continue;
             }
-            ItemStack stack = new ItemStack(item, startingItem.count());
+
+            int stackCount = resolved.primaryReference()
+                    ? startingItem.count() : startingItem.fallbackCount();
+            ItemStack stack = new ItemStack(resolved.item(), stackCount);
+            if (resolved.primaryReference()) {
+                applyCustomData(stack, startingItem.customData());
+            }
             if (!player.getInventory().add(stack) && !stack.isEmpty()) {
                 player.drop(stack, false);
             }
         }
     }
+
+    private static ResolvedStartingItem resolveStartingItem(
+            ServerPlayer player, CharacterDefinitions.StartingItem definition) {
+        if (definition.modId().isBlank()) {
+            Item item = resolveItemReference(player, definition.itemReference());
+            return item == null ? null : new ResolvedStartingItem(item, true);
+        }
+
+        if (ModList.get().isLoaded(definition.modId())) {
+            Item modItem = resolveItemReference(player, definition.itemReference());
+            if (modItem != null) return new ResolvedStartingItem(modItem, true);
+            AftermathMod.LOGGER.warn("Optional item {} from loaded mod {} is unavailable; using fallback {}.",
+                    definition.itemReference(), definition.modId(), definition.fallbackReference());
+        } else {
+            AftermathMod.LOGGER.debug("Optional mod {} is not loaded; using starting-item fallback {}.",
+                    definition.modId(), definition.fallbackReference());
+        }
+
+        Item fallback = resolveItemReference(player, definition.fallbackReference());
+        return fallback == null ? null : new ResolvedStartingItem(fallback, false);
+    }
+
+    private static Item resolveItemReference(ServerPlayer player, String reference) {
+        if (reference == null || reference.isBlank()) return null;
+        if (reference.startsWith("#")) {
+            ResourceLocation tagId = ResourceLocation.tryParse(reference.substring(1));
+            if (tagId == null) return null;
+            TagKey<Item> tagKey = TagKey.create(Registries.ITEM, tagId);
+            List<Item> candidates = BuiltInRegistries.ITEM.stream()
+                    .filter(item -> item != Items.AIR)
+                    .filter(item -> item.builtInRegistryHolder().is(tagKey))
+                    .toList();
+            if (candidates.isEmpty()) {
+                AftermathMod.LOGGER.warn("Item tag {} contains no registered items.", reference);
+                return null;
+            }
+            return candidates.get(player.getRandom().nextInt(candidates.size()));
+        }
+
+        ResourceLocation itemId = ResourceLocation.tryParse(reference);
+        if (itemId == null) return null;
+        Item item = BuiltInRegistries.ITEM.getOptional(itemId).orElse(null);
+        return item == Items.AIR ? null : item;
+    }
+
+    private static void applyCustomData(ItemStack stack, java.util.Map<String, JsonPrimitive> customData) {
+        if (customData.isEmpty()) return;
+        CompoundTag tag = new CompoundTag();
+        customData.forEach((key, value) -> {
+            if (value.isString()) {
+                tag.putString(key, value.getAsString());
+            } else if (value.isBoolean()) {
+                tag.putBoolean(key, value.getAsBoolean());
+            } else if (value.isNumber()) {
+                BigDecimal number = value.getAsBigDecimal();
+                try {
+                    tag.putInt(key, number.intValueExact());
+                } catch (ArithmeticException outsideIntRangeOrFractional) {
+                    try {
+                        tag.putLong(key, number.longValueExact());
+                    } catch (ArithmeticException outsideLongRangeOrFractional) {
+                        tag.putDouble(key, number.doubleValue());
+                    }
+                }
+            }
+        });
+        stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, CustomData.of(tag));
+    }
+
+    private record ResolvedStartingItem(Item item, boolean primaryReference) {}
 
     private static void respond(ServerPlayer player, boolean success, String messageKey) {
         PacketDistributor.sendToPlayer(player, new CharacterSelectionResultPayload(success, messageKey));

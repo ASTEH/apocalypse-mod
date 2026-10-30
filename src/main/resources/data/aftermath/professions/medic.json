@@ -21,6 +21,24 @@
     {
       "item": "aftermath:bandage",
       "count": 3
+    },
+    {
+      "mod": "lrtactical",
+      "item": "lrtactical:consumable",
+      "fallback": "minecraft:golden_apple",
+      "count": 1,
+      "custom_data": {
+        "ConsumableId": "lrtactical:ai2"
+      }
+    },
+    {
+      "mod": "lrtactical",
+      "item": "lrtactical:consumable",
+      "fallback": "minecraft:golden_apple",
+      "count": 1,
+      "custom_data": {
+        "ConsumableId": "lrtactical:carfak"
+      }
     }
   ]
 }

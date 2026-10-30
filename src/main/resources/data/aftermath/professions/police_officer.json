@@ -14,8 +14,26 @@
   },
   "startItems": [
     {
-      "item": "minecraft:iron_sword",
-      "count": 1
+      "mod": "tacz",
+      "item": "tacz:modern_kinetic_gun",
+      "fallback": "minecraft:bow",
+      "count": 1,
+      "custom_data": {
+        "GunId": "tacz:m1911"
+      }
+    },
+    {
+      "mod": "taczmagazines",
+      "item": "taczmagazines:magazine",
+      "fallback": "minecraft:arrow",
+      "count": 6,
+      "fallback_count": 42,
+      "custom_data": {
+        "MagazineFamily": "45acp_7",
+        "AmmoId": "tacz:45acp",
+        "AmmoCount": 7,
+        "MaxCapacity": 7
+      }
     },
     {
       "item": "minecraft:shield",

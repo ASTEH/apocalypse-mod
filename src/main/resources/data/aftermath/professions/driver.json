@@ -21,7 +21,9 @@
       "count": 1
     },
     {
-      "item": "minecraft:minecart",
+      "mod": "mts",
+      "item": "mts:mts.key",
+      "fallback": "minecraft:boat",
       "count": 1
     },
     {

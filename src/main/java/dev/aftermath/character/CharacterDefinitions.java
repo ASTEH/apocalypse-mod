@@ -4,13 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import dev.aftermath.AftermathMod;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.ItemStack;
 
 import java.io.Reader;
 import java.util.ArrayList;
@@ -214,16 +214,71 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
     private static List<StartingItem> startingItems(JsonObject json) {
         String key = json.has("startItems") ? "startItems" : "starting_items";
         List<StartingItem> result = new ArrayList<>();
-        if (!json.has(key) || !json.get(key).isJsonArray()) return result;
+        if (!json.has(key)) return result;
+        if (!json.get(key).isJsonArray()) throw new IllegalArgumentException(key + " must be an array");
+
         for (JsonElement element : json.getAsJsonArray(key)) {
+            if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+                String reference = element.getAsString();
+                validateItemReference(reference, key);
+                result.add(new StartingItem(reference, "", "", 1, 1, Map.of()));
+                continue;
+            }
+            if (!element.isJsonObject()) {
+                throw new IllegalArgumentException(key + " entries must be item strings or objects");
+            }
+
             JsonObject item = element.getAsJsonObject();
             String itemKey = item.has("item") ? "item" : "id";
-            ResourceLocation id = ResourceLocation.tryParse(requiredString(item, itemKey));
-            if (id == null) throw new IllegalArgumentException("invalid item ID in " + key);
-            int count = boundedInt(item, "count", 1, 64);
-            result.add(new StartingItem(id, count));
+            String reference = requiredString(item, itemKey);
+            validateItemReference(reference, key);
+
+            String modId = item.has("mod") ? requiredString(item, "mod") : "";
+            if (!modId.isBlank() && !modId.matches("[a-z0-9_.-]+")) {
+                throw new IllegalArgumentException("invalid mod ID in " + key + ": " + modId);
+            }
+            String fallback = item.has("fallback") ? requiredString(item, "fallback") : "";
+            if (!modId.isBlank() && fallback.isBlank()) {
+                throw new IllegalArgumentException("conditional item in " + key + " requires a fallback");
+            }
+            if (modId.isBlank() && !fallback.isBlank()) {
+                throw new IllegalArgumentException("fallback in " + key + " requires a mod condition");
+            }
+            if (!fallback.isBlank()) validateItemReference(fallback, key);
+
+            int count = item.has("count") ? boundedInt(item, "count", 1, 64) : 1;
+            int fallbackCount = item.has("fallback_count")
+                    ? boundedInt(item, "fallback_count", 1, 64) : count;
+            if (item.has("fallback_count") && fallback.isBlank()) {
+                throw new IllegalArgumentException("fallback_count in " + key + " requires a fallback item");
+            }
+
+            Map<String, JsonPrimitive> customData = customData(item, key);
+            result.add(new StartingItem(reference, modId, fallback, count, fallbackCount, customData));
         }
         return List.copyOf(result);
+    }
+
+    private static void validateItemReference(String reference, String field) {
+        String id = reference.startsWith("#") ? reference.substring(1) : reference;
+        if (ResourceLocation.tryParse(id) == null) {
+            throw new IllegalArgumentException("invalid item or item tag ID in " + field + ": " + reference);
+        }
+    }
+
+    private static Map<String, JsonPrimitive> customData(JsonObject item, String field) {
+        if (!item.has("custom_data")) return Map.of();
+        if (!item.get("custom_data").isJsonObject()) {
+            throw new IllegalArgumentException("custom_data in " + field + " must be an object");
+        }
+        Map<String, JsonPrimitive> result = new LinkedHashMap<>();
+        for (Map.Entry<String, JsonElement> entry : item.getAsJsonObject("custom_data").entrySet()) {
+            if (!entry.getValue().isJsonPrimitive()) {
+                throw new IllegalArgumentException("custom_data values must be strings, numbers or booleans in " + field);
+            }
+            result.put(entry.getKey(), entry.getValue().getAsJsonPrimitive());
+        }
+        return Map.copyOf(result);
     }
 
     private static Map<String, Integer> skillBonuses(JsonObject json) {
@@ -313,8 +368,16 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                     JsonArray startingItems = new JsonArray();
                     value.startingItems().forEach(startingItem -> {
                         JsonObject item = new JsonObject();
-                        item.addProperty("item", startingItem.itemId().toString());
+                        item.addProperty("item", startingItem.itemReference());
                         item.addProperty("count", startingItem.count());
+                        item.addProperty("fallback_count", startingItem.fallbackCount());
+                        if (!startingItem.modId().isBlank()) item.addProperty("mod", startingItem.modId());
+                        if (!startingItem.fallbackReference().isBlank()) item.addProperty("fallback", startingItem.fallbackReference());
+                        if (!startingItem.customData().isEmpty()) {
+                            JsonObject customData = new JsonObject();
+                            startingItem.customData().forEach(customData::add);
+                            item.add("custom_data", customData);
+                        }
                         startingItems.add(item);
                     });
                     json.add("starting_items", startingItems);
@@ -375,5 +438,13 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
     }
 
     public record TraitEffect(String type, String target, double value, int durationTicks) {}
-    public record StartingItem(ResourceLocation itemId, int count) {}
+    public record StartingItem(String itemReference, String modId, String fallbackReference,
+                               int count, int fallbackCount, Map<String, JsonPrimitive> customData) {
+        public StartingItem {
+            itemReference = itemReference == null ? "" : itemReference;
+            modId = modId == null ? "" : modId;
+            fallbackReference = fallbackReference == null ? "" : fallbackReference;
+            customData = Map.copyOf(customData);
+        }
+    }
 }
