@@ -8,49 +8,52 @@ import dev.aftermath.character.TraitRuntimeService;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.content.AftermathContent;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.block.CropBlock;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/** Server-timed reading and TV sessions. Completion and XP are always authoritative on the server. */
+/** Server-timed learning sessions and action-based skill progression. */
 public final class LearningService {
-    private static final ResourceLocation FIELD_MEDICINE_PROGRAM =
-            ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "field_medicine");
     private static final long DAY_TICKS = 24_000L;
+    private static final long DRIVING_SAMPLE_TICKS = 200L;
+    private static final double MIN_DRIVING_DISTANCE_SQR = 256.0D;
+    private static final String VHS_DATA_KEY = "VhsTapeId";
+    private static final TagKey<Item> COOKING_ITEMS = TagKey.create(
+            Registries.ITEM, ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "learning/cooking"));
+    private static final TagKey<Item> MECHANICS_ITEMS = TagKey.create(
+            Registries.ITEM, ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "learning/mechanics"));
     private static final Map<UUID, Session> ACTIVE_SESSIONS = new HashMap<>();
+    private static final Map<UUID, DrivingSample> DRIVING_SAMPLES = new HashMap<>();
 
     public static void startReading(ServerPlayer player, ResourceLocation lessonId, InteractionHand hand) {
-        if (!AftermathServerConfig.ENABLE_LEARNING.get()) {
-            message(player, "message.aftermath.learning.disabled");
-            return;
-        }
-        if (ACTIVE_SESSIONS.containsKey(player.getUUID())) {
-            message(player, "message.aftermath.learning.already_active");
-            return;
-        }
-        if (!TraitRuntimeService.canRead(player)) {
-            message(player, "message.aftermath.learning.illiterate");
-            return;
-        }
-
+        if (!canStartSession(player)) return;
         LearningDefinitions.LessonDefinition lesson = LearningDefinitions.snapshot().lessons().get(lessonId);
         if (lesson == null) {
-            AftermathMod.LOGGER.error("No loaded Aftermath lesson definition for {}.", lessonId);
             message(player, "message.aftermath.learning.unavailable");
             return;
         }
-
-        if (!BuiltInRegistries.ITEM.getKey(player.getItemInHand(hand).getItem()).equals(lesson.itemId())) {
+        if (!isHeldItem(player, hand, lesson.itemId())) {
             message(player, "message.aftermath.learning.wrong_manual");
             return;
         }
@@ -63,89 +66,159 @@ public final class LearningService {
 
         int readingDuration = TraitRuntimeService.adjustedReadingDuration(player, lesson.durationTicks());
         ACTIVE_SESSIONS.put(player.getUUID(), new Session(
-                SessionType.READING,
-                lesson.id(),
-                lesson.titleKey(),
-                lesson.skillId(),
-                lesson.itemId(),
-                hand,
-                null,
-                player.level().dimension().location(),
-                player.position(),
-                player.level().getGameTime(),
-                readingDuration,
-                lesson.xpReward(),
-                lesson.maxCompletions(),
-                lesson.cancelOnMovement(),
-                lesson.cancelOnDamage()));
-        player.displayClientMessage(Component.translatable(
-                "message.aftermath.learning.started", Component.translatable(lesson.titleKey()),
-                seconds(readingDuration)), true);
+                SessionType.READING, lesson.id(), lesson.titleKey(), lesson.skillId(), lesson.itemId(),
+                hand, null, player.level().dimension().location(), player.position(),
+                player.level().getGameTime(), readingDuration, lesson.xpReward(), lesson.maxCompletions(),
+                lesson.cancelOnMovement(), lesson.cancelOnDamage(), 1.0D, 0, false, null, null));
+        message(player, "message.aftermath.learning.started",
+                Component.translatable(lesson.titleKey()), seconds(readingDuration));
+    }
+
+    /** Reading a skill book activates a timed multiplier; it never grants XP immediately. */
+    public static void startBookReading(ServerPlayer player, ResourceLocation bookId, InteractionHand hand) {
+        if (!canStartSession(player)) return;
+        if (!TraitRuntimeService.canRead(player)) {
+            message(player, "message.aftermath.learning.illiterate");
+            return;
+        }
+
+        LearningDefinitions.BookDefinition book = LearningDefinitions.snapshot().books().get(bookId);
+        if (book == null) {
+            AftermathMod.LOGGER.error("No loaded learning book definition for {}.", bookId);
+            message(player, "message.aftermath.learning.unavailable");
+            return;
+        }
+        if (!isHeldItem(player, hand, book.itemId())) {
+            message(player, "message.aftermath.learning.wrong_manual");
+            return;
+        }
+
+        int level = skillLevel(player, book.skillId());
+        if (level < book.requiredSkillLevel()) {
+            message(player, "message.aftermath.learning.book_level_required",
+                    Component.translatable(book.titleKey()), book.requiredSkillLevel(), level);
+            return;
+        }
+
+        int readingDuration = TraitRuntimeService.adjustedReadingDuration(player, book.readingTicks());
+        ACTIVE_SESSIONS.put(player.getUUID(), new Session(
+                SessionType.BOOK, book.id(), book.titleKey(), book.skillId(), book.itemId(),
+                hand, null, player.level().dimension().location(), player.position(),
+                player.level().getGameTime(), readingDuration, 0, 1,
+                true, true, book.multiplier(), book.buffDurationTicks(), false, null, null));
+        message(player, "message.aftermath.learning.started",
+                Component.translatable(book.titleKey()), seconds(readingDuration));
     }
 
     public static void startTelevision(Player player, net.minecraft.core.BlockPos televisionPos) {
-        if (!(player instanceof ServerPlayer serverPlayer)) return;
-        if (!AftermathServerConfig.ENABLE_LEARNING.get()) {
-            message(serverPlayer, "message.aftermath.learning.disabled");
-            return;
-        }
-        if (ACTIVE_SESSIONS.containsKey(serverPlayer.getUUID())) {
-            message(serverPlayer, "message.aftermath.learning.already_active");
-            return;
-        }
-
-        LearningDefinitions.TvProgramDefinition program =
-                LearningDefinitions.snapshot().programs().get(FIELD_MEDICINE_PROGRAM);
-        if (program == null) {
-            AftermathMod.LOGGER.error("No loaded Aftermath television program definition for {}.", FIELD_MEDICINE_PROGRAM);
-            message(serverPlayer, "message.aftermath.learning.unavailable");
-            return;
-        }
-
-        LearningProgress progress = serverPlayer.getData(AftermathAttachments.LEARNING_PROGRESS);
-        if (progress.programCompletionsFor(program.id().toString()) >= program.maxCompletions()) {
-            message(serverPlayer, "message.aftermath.learning.program_completed");
-            return;
-        }
-
+        if (!(player instanceof ServerPlayer serverPlayer) || !canStartSession(serverPlayer)) return;
         long dayTime = Math.floorMod(serverPlayer.level().getDayTime(), DAY_TICKS);
-        long broadcastEnd = (long) program.startTime() + program.durationTicks();
-        if (dayTime < program.startTime() || dayTime >= broadcastEnd) {
-            message(serverPlayer, "message.aftermath.learning.tv_off_air");
+        long now = serverPlayer.getServer().overworld().getGameTime();
+        LearningProgress progress = serverPlayer.getData(AftermathAttachments.LEARNING_PROGRESS);
+
+        LearningDefinitions.TvProgramDefinition onAir = LearningDefinitions.snapshot().programs().values().stream()
+                .filter(program -> isBroadcasting(program, dayTime))
+                .filter(program -> progress.canClaimProgram(program.id().toString(), program.maxCompletions(),
+                        now, program.repeatAfterDays()))
+                .sorted(java.util.Comparator.comparing(program -> program.id().toString()))
+                .findFirst().orElse(null);
+
+        if (onAir == null) {
+            boolean scheduleExists = LearningDefinitions.snapshot().programs().values().stream()
+                    .anyMatch(program -> isBroadcasting(program, dayTime));
+            message(serverPlayer, scheduleExists
+                    ? "message.aftermath.learning.program_completed"
+                    : "message.aftermath.learning.tv_off_air");
             return;
         }
 
         ACTIVE_SESSIONS.put(serverPlayer.getUUID(), new Session(
-                SessionType.TELEVISION,
-                program.id(),
-                program.titleKey(),
-                program.skillId(),
-                null,
-                null,
-                televisionPos.immutable(),
-                serverPlayer.level().dimension().location(),
-                serverPlayer.position(),
-                serverPlayer.level().getGameTime(),
-                program.durationTicks(),
-                program.xpReward(),
-                program.maxCompletions(),
-                true,
-                true));
-        serverPlayer.displayClientMessage(Component.translatable(
-                "message.aftermath.learning.watching", Component.translatable(program.titleKey()),
-                seconds(program.durationTicks())), true);
+                SessionType.TELEVISION, onAir.id(), onAir.titleKey(), onAir.skillId(), null,
+                null, televisionPos.immutable(), serverPlayer.level().dimension().location(),
+                serverPlayer.position(), serverPlayer.level().getGameTime(), onAir.durationTicks(),
+                onAir.xpReward(), onAir.maxCompletions(), true, true,
+                1.0D, 0, false, null, null));
+        message(serverPlayer, "message.aftermath.learning.watching",
+                Component.translatable(onAir.titleKey()), seconds(onAir.durationTicks()));
+    }
+
+    /** Starts a scheduled program from its data-driven VHS cassette, independent of broadcast time. */
+    public static void startVhsTape(ServerPlayer player, ResourceLocation tapeId, InteractionHand hand) {
+        if (!canStartSession(player)) return;
+        LearningDefinitions.VhsTapeDefinition tape = LearningDefinitions.snapshot().vhsTapes().get(tapeId);
+        if (tape == null || !isHeldItem(player, hand, tape.itemId())
+                || !hasCustomDataValue(player.getItemInHand(hand), VHS_DATA_KEY, tape.id().toString())) {
+            message(player, "message.aftermath.learning.vhs_invalid");
+            return;
+        }
+
+        LearningDefinitions.TvProgramDefinition program =
+                LearningDefinitions.snapshot().programs().get(tape.programId());
+        if (program == null) {
+            message(player, "message.aftermath.learning.unavailable");
+            return;
+        }
+
+        long now = player.getServer().overworld().getGameTime();
+        LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
+        if (!progress.canClaimProgram(program.id().toString(), program.maxCompletions(),
+                now, program.repeatAfterDays())) {
+            message(player, "message.aftermath.learning.program_completed");
+            return;
+        }
+
+        ACTIVE_SESSIONS.put(player.getUUID(), new Session(
+                SessionType.VHS, program.id(), tape.titleKey(), program.skillId(), tape.itemId(),
+                hand, null, player.level().dimension().location(), player.position(),
+                player.level().getGameTime(), program.durationTicks(), program.xpReward(),
+                program.maxCompletions(), true, true, 1.0D, 0,
+                tape.consumeOnUse(), VHS_DATA_KEY, tape.id().toString()));
+        message(player, "message.aftermath.learning.watching",
+                Component.translatable(tape.titleKey()), seconds(program.durationTicks()));
+    }
+
+    private static boolean canStartSession(ServerPlayer player) {
+        if (!AftermathServerConfig.ENABLE_LEARNING.get()) {
+            message(player, "message.aftermath.learning.disabled");
+            return false;
+        }
+        if (ACTIVE_SESSIONS.containsKey(player.getUUID())) {
+            message(player, "message.aftermath.learning.already_active");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isBroadcasting(LearningDefinitions.TvProgramDefinition program, long dayTime) {
+        long elapsed = Math.floorMod(dayTime - program.startTime(), DAY_TICKS);
+        return elapsed < program.durationTicks();
+    }
+
+    private static boolean isHeldItem(ServerPlayer player, InteractionHand hand, ResourceLocation expected) {
+        return hand != null && BuiltInRegistries.ITEM.getKey(player.getItemInHand(hand).getItem()).equals(expected);
+    }
+
+    private static boolean hasCustomDataValue(ItemStack stack, String key, String expected) {
+        CustomData data = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        if (data == null) return false;
+        CompoundTag tag = data.copyTag();
+        return tag.contains(key) && expected.equals(tag.getString(key));
     }
 
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        long now = player.getServer().overworld().getGameTime();
+        LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
+        LearningProgress expired = progress.expireBookBuffs(now);
+        if (expired != progress) player.setData(AftermathAttachments.LEARNING_PROGRESS, expired);
+
+        tickDriving(player, now);
         Session session = ACTIVE_SESSIONS.get(player.getUUID());
         if (session == null) return;
 
-        if (!AftermathServerConfig.ENABLE_LEARNING.get()) {
-            cancel(player, "message.aftermath.learning.cancelled");
-            return;
-        }
-        if (!player.level().dimension().location().equals(session.dimension())) {
+        if (!AftermathServerConfig.ENABLE_LEARNING.get()
+                || !player.level().dimension().location().equals(session.dimension())) {
             cancel(player, "message.aftermath.learning.cancelled");
             return;
         }
@@ -154,23 +227,24 @@ public final class LearningService {
             return;
         }
 
-        if (session.type() == SessionType.READING) {
-            if (session.hand() == null || !BuiltInRegistries.ITEM.getKey(
-                    player.getItemInHand(session.hand()).getItem()).equals(session.sourceItemId())) {
-                cancel(player, "message.aftermath.learning.cancelled_manual");
-                return;
-            }
-        } else {
+        if (session.type() == SessionType.TELEVISION) {
             if (session.televisionPos() == null
-                    || !player.level().getBlockState(session.televisionPos())
-                    .is(AftermathContent.TRAINING_TELEVISION.get())) {
+                    || !player.level().getBlockState(session.televisionPos()).is(AftermathContent.TRAINING_TELEVISION.get())) {
                 cancel(player, "message.aftermath.learning.cancelled");
                 return;
             }
+        } else if (!isHeldItem(player, session.hand(), session.sourceItemId())) {
+            cancel(player, "message.aftermath.learning.cancelled_manual");
+            return;
+        } else if (session.sourceDataKey() != null
+                && !hasCustomDataValue(player.getItemInHand(session.hand()),
+                session.sourceDataKey(), session.sourceDataValue())) {
+            cancel(player, "message.aftermath.learning.vhs_invalid");
+            return;
         }
 
         long elapsed = player.level().getGameTime() - session.startedAt();
-        if (elapsed < 0) {
+        if (elapsed < 0L) {
             cancel(player, "message.aftermath.learning.cancelled");
             return;
         }
@@ -178,13 +252,116 @@ public final class LearningService {
             complete(player, session);
             return;
         }
-        if (elapsed > 0 && elapsed % 100L == 0L) {
-            player.displayClientMessage(Component.translatable(
-                    "message.aftermath.learning.progress",
-                    Component.translatable(session.titleKey()),
-                    seconds((int) elapsed),
-                    seconds(session.durationTicks())), true);
+        if (elapsed > 0L && elapsed % 100L == 0L) {
+            message(player, "message.aftermath.learning.progress",
+                    Component.translatable(session.titleKey()), seconds((int) elapsed),
+                    seconds(session.durationTicks()));
         }
+    }
+
+    private static void tickDriving(ServerPlayer player, long now) {
+        if (player.tickCount % 20 != 0) return;
+        Entity vehicle = player.getVehicle();
+        if (vehicle == null) {
+            DRIVING_SAMPLES.remove(player.getUUID());
+            return;
+        }
+
+        ResourceLocation vehicleId = BuiltInRegistries.ENTITY_TYPE.getKey(vehicle.getType());
+        String namespace = vehicleId.getNamespace();
+        boolean supportedVehicle = (namespace.equals("mts") && ModList.get().isLoaded("mts"))
+                || (namespace.equals("immersivevehicles") && ModList.get().isLoaded("immersivevehicles"));
+        if (!supportedVehicle) {
+            DRIVING_SAMPLES.remove(player.getUUID());
+            return;
+        }
+
+        DrivingSample previous = DRIVING_SAMPLES.get(player.getUUID());
+        if (previous == null || now < previous.sampledAt()) {
+            DRIVING_SAMPLES.put(player.getUUID(), new DrivingSample(vehicle.position(), now));
+            return;
+        }
+        if (now - previous.sampledAt() < DRIVING_SAMPLE_TICKS) return;
+
+        double distanceSqr = vehicle.position().distanceToSqr(previous.position());
+        DRIVING_SAMPLES.put(player.getUUID(), new DrivingSample(vehicle.position(), now));
+        if (distanceSqr >= MIN_DRIVING_DISTANCE_SQR) {
+            awardSkillXp(player, id("driving"), 5, "driving_distance", 200L, 40);
+        }
+    }
+
+    public static void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        ItemStack crafted = event.getCrafting();
+        if (crafted.is(COOKING_ITEMS)) {
+            awardSkillXp(player, id("cooking"), Math.min(6, Math.max(1, crafted.getCount())),
+                    "cooking_craft", 20L, 60);
+        }
+        if (crafted.is(MECHANICS_ITEMS)) {
+            awardSkillXp(player, id("mechanics"), Math.min(5, Math.max(1, crafted.getCount())),
+                    "mechanics_craft", 40L, 50);
+        }
+    }
+
+    public static void onItemSmelted(PlayerEvent.ItemSmeltedEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        ItemStack smelted = event.getSmelting();
+        if (smelted.is(COOKING_ITEMS)) {
+            awardSkillXp(player, id("cooking"), Math.min(6, Math.max(1, smelted.getCount())),
+                    "cooking_smelt", 20L, 80);
+        }
+    }
+
+    public static void onCropBreak(BlockEvent.BreakEvent event) {
+        if (!(event.getPlayer() instanceof ServerPlayer player)) return;
+        if (event.isCanceled()) return;
+        if (event.getState().getBlock() instanceof CropBlock crop && crop.isMaxAge(event.getState())) {
+            awardSkillXp(player, id("farming"), 4, "mature_crop_harvest", 20L, 60);
+        }
+    }
+
+    public static void onAnvilRepair(AnvilRepairEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || event.getOutput().isEmpty()) return;
+        if (event.getOutput().isDamageableItem() || event.getOutput().isEnchanted()) {
+            awardSkillXp(player, id("mechanics"), 6, "anvil_repair", 100L, 40);
+        }
+    }
+
+    /** Called by successful treatment actions; failed uses must not award XP. */
+    public static void awardFirstAidXp(ServerPlayer player) {
+        awardSkillXp(player, id("first_aid"), 10, "successful_first_aid", 100L, 50);
+    }
+
+    /** Called only after a verified hostile kill with a supported firearm. */
+    public static void awardFirearmsXp(ServerPlayer player, int amount) {
+        awardSkillXp(player, id("firearms"), amount, "verified_firearm_kill", 20L, 60);
+    }
+
+    public static void awardSkillXp(ServerPlayer player, ResourceLocation skillId, int baseXp,
+                                    String actionId, long cooldownTicks, int dailyCap) {
+        if (!AftermathServerConfig.ENABLE_LEARNING.get() || baseXp <= 0
+                || LearningDefinitions.snapshot().skills().get(skillId) == null) return;
+
+        long now = player.getServer().overworld().getGameTime();
+        LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
+        long last = progress.actionLastUsedAt(actionId);
+        if (last > 0L && now >= last && now - last < cooldownTicks) return;
+
+        long day = Math.floorDiv(now, DAY_TICKS);
+        String dailyKey = day + ":" + actionId;
+        int remainingDaily = Math.max(0, dailyCap - progress.actionDailyXp(dailyKey));
+        if (remainingDaily <= 0) return;
+
+        int requested = Math.max(1, (int) Math.round(baseXp * learningMultiplier(player, skillId, now)));
+        int gained = Math.min(requested, remainingDaily);
+        LearningProgress updated = progress.addActionExperience(
+                skillId.toString(), gained, actionId, now, dailyKey);
+        player.setData(AftermathAttachments.LEARNING_PROGRESS, updated);
+
+        LearningDefinitions.SkillDefinition skill = LearningDefinitions.snapshot().skills().get(skillId);
+        message(player, "message.aftermath.learning.skill_xp",
+                Component.translatable(skill.nameKey()), gained,
+                updated.experienceFor(skillId.toString()), skillLevel(player, skillId));
     }
 
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
@@ -194,8 +371,19 @@ public final class LearningService {
         cancel(player, "message.aftermath.learning.cancelled_damage");
     }
 
-    public static void onPlayerLogout(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) {
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         ACTIVE_SESSIONS.remove(event.getEntity().getUUID());
+        DRIVING_SAMPLES.remove(event.getEntity().getUUID());
+    }
+
+    public static int skillLevel(ServerPlayer player, ResourceLocation skillId) {
+        LearningDefinitions.SkillDefinition definition = LearningDefinitions.snapshot().skills().get(skillId);
+        if (definition == null) return 1;
+        LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
+        int experienceLevel = definition.levelFor(progress.experienceFor(skillId.toString()));
+        CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
+        int startingLevel = profile.skillLevels().getOrDefault(skillId.getPath(), 1);
+        return Math.max(1, Math.min(definition.maxLevel(), Math.max(experienceLevel, startingLevel)));
     }
 
     public static Component buildStatusMessage(ServerPlayer player) {
@@ -208,61 +396,103 @@ public final class LearningService {
 
     private static void complete(ServerPlayer player, Session session) {
         ACTIVE_SESSIONS.remove(player.getUUID());
+        long now = player.getServer().overworld().getGameTime();
         LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
-        int currentCompletions = session.type() == SessionType.READING
-                ? progress.lessonCompletionsFor(session.definitionId().toString())
-                : progress.programCompletionsFor(session.definitionId().toString());
-        if (currentCompletions >= session.maxCompletions()) {
+
+        if (session.type() == SessionType.BOOK) {
+            LearningProgress updated = progress.activateBook(
+                    session.skillId().toString(), session.bookMultiplier(), now + session.buffDurationTicks());
+            player.setData(AftermathAttachments.LEARNING_PROGRESS, updated);
+            message(player, "message.aftermath.learning.book_activated",
+                    Component.translatable(session.titleKey()), formatMultiplier(session.bookMultiplier()),
+                    seconds(session.buffDurationTicks()));
+            return;
+        }
+
+        if (session.type() == SessionType.READING) {
+            int currentCompletions = progress.lessonCompletionsFor(session.definitionId().toString());
+            if (currentCompletions >= session.maxCompletions()) {
+                message(player, "message.aftermath.learning.already_claimed");
+                return;
+            }
+            int reward = Math.max(0, (int) Math.round(
+                    session.baseXpReward() * learningMultiplier(player, session.skillId(), now)));
+            LearningProgress updated = progress.completeLesson(
+                    session.definitionId().toString(), session.skillId().toString(), reward);
+            player.setData(AftermathAttachments.LEARNING_PROGRESS, updated);
+            message(player, "message.aftermath.learning.completed",
+                    Component.translatable(session.titleKey()), reward,
+                    updated.experienceFor(session.skillId().toString()));
+            return;
+        }
+
+        int currentCompletions = progress.programCompletionsFor(session.definitionId().toString());
+        LearningDefinitions.TvProgramDefinition program =
+                LearningDefinitions.snapshot().programs().get(session.definitionId());
+        if (program == null || !progress.canClaimProgram(session.definitionId().toString(),
+                session.maxCompletions(), now, program.repeatAfterDays())) {
             message(player, "message.aftermath.learning.already_claimed");
             return;
         }
 
-        int reward = Math.max(0, (int) Math.round(session.baseXpReward() * learningMultiplier(player, session.skillId())));
-        LearningProgress updated = session.type() == SessionType.READING
-                ? progress.completeLesson(session.definitionId().toString(), session.skillId().toString(), reward)
-                : progress.completeProgram(session.definitionId().toString(), session.skillId().toString(), reward);
+        int reward = Math.max(0, (int) Math.round(
+                session.baseXpReward() * learningMultiplier(player, session.skillId(), now)));
+        LearningProgress updated = progress.completeProgram(
+                session.definitionId().toString(), session.skillId().toString(), reward, now);
         player.setData(AftermathAttachments.LEARNING_PROGRESS, updated);
-        player.displayClientMessage(Component.translatable(
-                "message.aftermath.learning.completed",
-                Component.translatable(session.titleKey()),
-                reward,
-                updated.experienceFor(session.skillId().toString())), false);
-        AftermathMod.LOGGER.info("Player {} completed Aftermath {} {} and received {} XP.",
-                player.getGameProfile().getName(), session.type().name().toLowerCase(),
-                session.definitionId(), reward);
+        if (session.type() == SessionType.VHS && session.consumeSourceItem()
+                && session.hand() != null && !player.getAbilities().instabuild) {
+            ItemStack tape = player.getItemInHand(session.hand());
+            if (isHeldItem(player, session.hand(), session.sourceItemId())
+                    && hasCustomDataValue(tape, session.sourceDataKey(), session.sourceDataValue())) {
+                tape.shrink(1);
+            }
+        }
+        message(player, "message.aftermath.learning.completed",
+                Component.translatable(session.titleKey()), reward,
+                updated.experienceFor(session.skillId().toString()));
     }
 
-    private static double learningMultiplier(ServerPlayer player, ResourceLocation skillId) {
+    private static double learningMultiplier(ServerPlayer player, ResourceLocation skillId, long now) {
         CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
-        double multiplier = 1.0D;
+        LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
+        double multiplier = progress.bookMultiplierFor(skillId.toString(), now);
         for (String rawId : profile.traitIds()) {
             ResourceLocation traitId = ResourceLocation.tryParse(rawId);
             if (traitId == null) continue;
-            CharacterDefinitions.TraitDefinition trait = CharacterDefinitions.snapshot().traits().get(traitId);
+            CharacterDefinitions.TraitDefinition trait =
+                    CharacterDefinitions.snapshot().traits().get(traitId);
             if (trait == null) continue;
             for (CharacterDefinitions.TraitEffect effect : trait.effects()) {
                 if (effect.type().equals("learning_xp_multiplier")) multiplier *= effect.value();
-                if (effect.type().equals("skill_xp_multiplier") && effect.target().equals(skillId.toString())) {
-                    multiplier *= effect.value();
-                }
+                if (effect.type().equals("skill_xp_multiplier")
+                        && effect.target().equals(skillId.toString())) multiplier *= effect.value();
             }
         }
-        return Math.max(0.25D, Math.min(3.0D, multiplier));
+        return Math.max(0.25D, Math.min(15.0D, multiplier));
+    }
+
+    private static int formatMultiplier(double multiplier) {
+        return (int) Math.round(multiplier);
+    }
+
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, path);
     }
 
     private static void cancel(ServerPlayer player, String key) {
         if (ACTIVE_SESSIONS.remove(player.getUUID()) != null) message(player, key);
     }
 
-    private static void message(ServerPlayer player, String key) {
-        player.displayClientMessage(Component.translatable(key), true);
+    private static void message(ServerPlayer player, String key, Object... args) {
+        player.displayClientMessage(Component.translatable(key, args), true);
     }
 
     private static int seconds(int ticks) {
         return (int) Math.ceil(Math.max(0, ticks) / 20.0D);
     }
 
-    private enum SessionType { READING, TELEVISION }
+    private enum SessionType { READING, BOOK, TELEVISION, VHS }
 
     private record Session(
             SessionType type,
@@ -273,13 +503,20 @@ public final class LearningService {
             InteractionHand hand,
             net.minecraft.core.BlockPos televisionPos,
             ResourceLocation dimension,
-            Vec3 startPosition,
+            net.minecraft.world.phys.Vec3 startPosition,
             long startedAt,
             int durationTicks,
             int baseXpReward,
             int maxCompletions,
             boolean cancelOnMovement,
-            boolean cancelOnDamage) {}
+            boolean cancelOnDamage,
+            double bookMultiplier,
+            int buffDurationTicks,
+            boolean consumeSourceItem,
+            String sourceDataKey,
+            String sourceDataValue) {}
+
+    private record DrivingSample(net.minecraft.world.phys.Vec3 position, long sampledAt) {}
 
     private LearningService() {}
 }

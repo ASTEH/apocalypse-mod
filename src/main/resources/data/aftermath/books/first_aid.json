@@ -1,0 +1,9 @@
+{
+  "title": "book.aftermath.first_aid",
+  "skill": "aftermath:first_aid",
+  "item": "aftermath:training_manual_first_aid",
+  "required_skill_level": 1,
+  "multiplier": 2,
+  "reading_ticks": 600,
+  "buff_duration_ticks": 24000
+}

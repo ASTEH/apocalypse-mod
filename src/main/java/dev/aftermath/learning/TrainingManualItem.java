@@ -21,7 +21,7 @@ public final class TrainingManualItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
-            LearningService.startReading(serverPlayer, lessonId, hand);
+            LearningService.startBookReading(serverPlayer, lessonId, hand);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }

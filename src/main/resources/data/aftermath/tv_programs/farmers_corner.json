@@ -1,0 +1,9 @@
+{
+  "title": "tv_program.aftermath.farmers_corner",
+  "skill": "aftermath:farming",
+  "start_time": 12000,
+  "duration_ticks": 1200,
+  "xp_reward": 12,
+  "repeat_after_days": 1,
+  "max_completions_per_player": 100
+}

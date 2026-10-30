@@ -1,0 +1,9 @@
+{
+  "title": "book.aftermath.mechanics_basics",
+  "skill": "aftermath:mechanics",
+  "item": "aftermath:training_manual_mechanics",
+  "required_skill_level": 6,
+  "multiplier": 5,
+  "reading_ticks": 1800,
+  "buff_duration_ticks": 12000
+}

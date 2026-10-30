@@ -3,6 +3,7 @@ package dev.aftermath.character;
 import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.weapon.TaczCompatibility;
+import dev.aftermath.learning.LearningService;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -58,6 +59,9 @@ public final class WeaponProgressionService {
                 new RewardStamp(victim.level().dimension().location(), now));
         cleanOldVictims(now, victim.level().dimension().location());
         if (gainedXp <= 0) return;
+        if (!"melee".equals(weaponClass)) {
+            LearningService.awardFirearmsXp(killer, Math.max(1, gainedXp / 2));
+        }
 
         WeaponProgress before = killer.getData(AftermathAttachments.WEAPON_PROGRESS);
         int oldXp = before.experienceFor(weaponClass);

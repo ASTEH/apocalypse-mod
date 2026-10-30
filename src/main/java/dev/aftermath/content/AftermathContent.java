@@ -2,6 +2,7 @@ package dev.aftermath.content;
 
 import dev.aftermath.AftermathMod;
 import dev.aftermath.learning.TrainingManualItem;
+import dev.aftermath.learning.TrainingVhsTapeItem;
 import dev.aftermath.medical.BandageItem;
 import dev.aftermath.learning.TrainingTelevisionBlock;
 import net.minecraft.core.registries.Registries;
@@ -45,6 +46,9 @@ public final class AftermathContent {
             "training_manual_mechanics",
             () -> new TrainingManualItem(ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "mechanics_basics"),
                     new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<TrainingVhsTapeItem> VHS_TAPE = ITEMS.register(
+            "vhs_tape", () -> new TrainingVhsTapeItem(new Item.Properties().stacksTo(1)));
 
     public static void register(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);

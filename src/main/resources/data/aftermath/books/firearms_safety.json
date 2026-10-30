@@ -1,0 +1,9 @@
+{
+  "title": "book.aftermath.firearms_safety",
+  "skill": "aftermath:firearms",
+  "item": "aftermath:training_manual_firearms_safety",
+  "required_skill_level": 3,
+  "multiplier": 3,
+  "reading_ticks": 1200,
+  "buff_duration_ticks": 18000
+}

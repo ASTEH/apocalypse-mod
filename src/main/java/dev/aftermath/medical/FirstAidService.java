@@ -4,6 +4,7 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.character.AftermathAttachments;
 import dev.aftermath.character.CharacterProfile;
 import dev.aftermath.config.AftermathServerConfig;
+import dev.aftermath.learning.LearningService;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.monster.Enemy;
@@ -105,6 +106,7 @@ public final class FirstAidService {
         }
         AftermathMod.LOGGER.debug("Player {} applied a bandage; bleeding severity {} -> {}.",
                 player.getGameProfile().getName(), status.severity(), updated.severity());
+        LearningService.awardFirstAidXp(player);
         return true;
     }
 

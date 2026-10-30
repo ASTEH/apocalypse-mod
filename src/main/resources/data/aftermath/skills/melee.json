@@ -1,0 +1,16 @@
+{
+  "name": "skill.aftermath.melee",
+  "max_level": 10,
+  "xp_thresholds": [
+    0,
+    40,
+    100,
+    180,
+    280,
+    400,
+    540,
+    700,
+    880,
+    1080
+  ]
+}

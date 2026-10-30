@@ -1,0 +1,6 @@
+{
+  "title": "vhs_tape.aftermath.field_medicine",
+  "program": "aftermath:field_medicine",
+  "item": "aftermath:vhs_tape",
+  "consume_on_use": true
+}
