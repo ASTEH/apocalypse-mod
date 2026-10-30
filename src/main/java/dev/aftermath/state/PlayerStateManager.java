@@ -8,6 +8,8 @@ import dev.aftermath.character.AftermathAttachments;
 import dev.aftermath.character.CharacterProfile;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.MoodlesSyncPayload;
+import dev.aftermath.medical.BleedingStatus;
+import dev.aftermath.compat.ColdSweatCompatibility;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -70,6 +72,32 @@ public final class PlayerStateManager {
             if (gameTime % definition.updateIntervalTicks() != 0L) continue;
             String id = definition.id().toString();
             double current = values.getOrDefault(id, definition.initialValue());
+
+            // Mirror the authoritative bleeding system without maintaining a second bleeding timer.
+            if (id.equals("aftermath:bleeding")) {
+                BleedingStatus bleeding = player.getData(AftermathAttachments.BLEEDING_STATUS);
+                int maximum = Math.max(1, AftermathServerConfig.MAX_BLEEDING_SEVERITY.get());
+                double derived = AftermathServerConfig.ENABLE_BLEEDING.get() && bleeding.isBleeding()
+                        ? 100.0D * bleeding.severity() / maximum : 0.0D;
+                double next = definition.clamp(derived);
+                if (Math.abs(next - current) > 0.000001D) {
+                    values.put(id, next);
+                    changed = true;
+                }
+                continue;
+            }
+
+            // Cold Sweat's BODY temperature is an absolute value, not a delta.
+            if (id.equals("aftermath:temperature")) {
+                double bodyTemperature = ColdSweatCompatibility.getBodyTemperature(player);
+                double next = definition.clamp(Double.isFinite(bodyTemperature) ? bodyTemperature : 0.0D);
+                if (Math.abs(next - current) > 0.000001D) {
+                    values.put(id, next);
+                    changed = true;
+                }
+                continue;
+            }
+
             double delta = 0.0D;
 
             for (PlayerStateDefinition.Source source : definition.sources()) {
@@ -105,6 +133,13 @@ public final class PlayerStateManager {
                     && player.getDeltaMovement().horizontalDistanceSqr() >= 0.0004D ? 1.0D : 0.0D;
             case "near_tagged_hostile" -> countThreats(player, source.radius(), source.maxEntities());
             case "no_nearby_hostiles" -> countThreats(player, source.radius(), 1) == 0 ? 1.0D : 0.0D;
+            case "indoors_idle" -> !player.level().canSeeSky(player.blockPosition())
+                    && !player.isSleeping() && player.getDeltaMovement().horizontalDistanceSqr() < 0.0004D
+                    ? 1.0D : 0.0D;
+            case "outdoors_moving" -> player.level().canSeeSky(player.blockPosition())
+                    && player.getDeltaMovement().horizontalDistanceSqr() >= 0.0004D ? 1.0D : 0.0D;
+            case "high_boredom" -> values.getOrDefault("aftermath:boredom", 0.0D) >= 50.0D
+                    ? 1.0D : 0.0D;
             default -> 0.0D;
         };
 
@@ -121,7 +156,7 @@ public final class PlayerStateManager {
         if (radius <= 0.0D || limit <= 0) return 0;
         AABB area = player.getBoundingBox().inflate(radius);
         return Math.min(limit, player.level().getEntitiesOfClass(LivingEntity.class, area,
-                entity -> entity.isAlive() && entity instanceof Enemy && entity.getType().is(MOODLE_THREATS)).size());
+                entity -> entity.isAlive() && (entity instanceof Enemy || entity.getType().is(MOODLE_THREATS))).size());
     }
 
     private static double interactionMultiplier(PlayerStateDefinition definition, Map<String, Double> values) {

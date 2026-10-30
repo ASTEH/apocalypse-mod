@@ -1,0 +1,97 @@
+{
+  "name_key": "moodle.aftermath.stress",
+  "description_key": "moodle.aftermath.stress.description",
+  "icon": "aftermath:textures/gui/moodles/stress.png",
+  "value": {
+    "min": 0,
+    "max": 100,
+    "initial": 0
+  },
+  "update_interval_ticks": 20,
+  "sources": [
+    {
+      "type": "near_tagged_hostile",
+      "delta_per_second": 0.12,
+      "radius": 16,
+      "max_entities": 5,
+      "trait_multipliers": {
+        "aftermath:military_discipline": 0.65,
+        "aftermath:military_ptsd": 1.4,
+        "aftermath:cowardly": 1.35
+      }
+    },
+    {
+      "type": "damage_taken",
+      "delta_per_event": 3,
+      "trait_multipliers": {
+        "aftermath:military_discipline": 0.75,
+        "aftermath:military_ptsd": 1.5
+      }
+    },
+    {
+      "type": "gunshot",
+      "delta_per_event": 0.15
+    }
+  ],
+  "recovery": [
+    {
+      "type": "no_nearby_hostiles",
+      "delta_per_second": -0.18,
+      "radius": 16,
+      "max_entities": 1
+    },
+    {
+      "type": "resting",
+      "delta_per_second": -0.1
+    },
+    {
+      "type": "sleeping",
+      "delta_per_second": -0.45
+    }
+  ],
+  "interactions": [],
+  "levels": [
+    {
+      "id": "tense",
+      "priority": 1,
+      "when": {
+        "operator": "gte",
+        "value": 25
+      },
+      "name_key": "moodle.aftermath.stress.tense",
+      "description_key": "moodle.aftermath.stress.tense.description",
+      "effects": {
+        "firearm_spread_additive": 0.03,
+        "learning_xp_multiplier": 0.95
+      }
+    },
+    {
+      "id": "stressed",
+      "priority": 2,
+      "when": {
+        "operator": "gte",
+        "value": 55
+      },
+      "name_key": "moodle.aftermath.stress.stressed",
+      "description_key": "moodle.aftermath.stress.stressed.description",
+      "effects": {
+        "firearm_spread_additive": 0.09,
+        "learning_xp_multiplier": 0.88
+      }
+    },
+    {
+      "id": "overwhelmed",
+      "priority": 3,
+      "when": {
+        "operator": "gte",
+        "value": 80
+      },
+      "name_key": "moodle.aftermath.stress.overwhelmed",
+      "description_key": "moodle.aftermath.stress.overwhelmed.description",
+      "effects": {
+        "firearm_spread_additive": 0.18,
+        "learning_xp_multiplier": 0.75
+      }
+    }
+  ]
+}

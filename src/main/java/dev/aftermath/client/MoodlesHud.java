@@ -115,15 +115,25 @@ public final class MoodlesHud {
         for (int index = 0; index < shown; index++) {
             MoodleView moodle = entries.get(index);
             int itemY = y + index * 30;
-            int accent = severityColor(moodle.severity());
+            int accent = severityColor(moodle);
 
             graphics.fill(x - 1, itemY - 1, x + 27, itemY + 27, 0xD9000000);
             graphics.fill(x, itemY, x + 25, itemY + 25, 0xE51A1D22);
             graphics.fill(x + 2, itemY + 2, x + 23, itemY + 23, accent);
-            graphics.fill(x + 3, itemY + 3, x + 22, itemY + 22, 0xC915171A);
-            graphics.drawString(font, symbol(moodle.id()), x + 7, itemY + 7, 0xFFF4F0E8, true);
+            net.minecraft.resources.ResourceLocation icon =
+                    net.minecraft.resources.ResourceLocation.tryParse(moodle.icon());
+            boolean hasIcon = icon != null
+                    && minecraft.getResourceManager().getResource(icon).isPresent();
+            if (hasIcon) {
+                graphics.blit(icon, x + 2, itemY + 2, 0.0F, 0.0F, 21, 21, 32, 32);
+            } else {
+                graphics.fill(x + 3, itemY + 3, x + 22, itemY + 22, 0xC915171A);
+                graphics.drawString(font, symbol(moodle.id()), x + 7, itemY + 7, 0xFFF4F0E8, true);
+            }
 
-            int progress = (int) Math.round(Math.max(0.0D, Math.min(100.0D, moodle.value())) / 100.0D * 19.0D);
+            double barValue = moodle.id().equals("aftermath:temperature")
+                    ? Math.abs(moodle.value()) * (100.0D / 150.0D) : moodle.value();
+            int progress = (int) Math.round(Math.max(0.0D, Math.min(100.0D, barValue)) / 100.0D * 19.0D);
             graphics.fill(x + 3, itemY + 21, x + 22, itemY + 23, 0xFF30343A);
             if (progress > 0) graphics.fill(x + 3, itemY + 21, x + 3 + progress, itemY + 23, accent);
 
@@ -142,24 +152,34 @@ public final class MoodlesHud {
             int tooltipY = Math.max(4, Math.min(
                     minecraft.getWindow().getGuiScaledHeight() - 42, hoveredY));
             graphics.fill(tooltipX, tooltipY, tooltipX + width, tooltipY + 39, 0xF0101216);
-            graphics.fill(tooltipX, tooltipY, tooltipX + 2, tooltipY + 39, severityColor(hovered.severity()));
+            graphics.fill(tooltipX, tooltipY, tooltipX + 2, tooltipY + 39, severityColor(hovered));
             graphics.drawString(font, title, tooltipX + 7, tooltipY + 5, 0xFFF2F2F2, true);
-            graphics.drawString(font, level, tooltipX + 7, tooltipY + 16, severityColor(hovered.severity()), true);
+            graphics.drawString(font, level, tooltipX + 7, tooltipY + 16, severityColor(hovered), true);
             graphics.drawString(font, Component.literal(trim(description.getString(), 34)),
                     tooltipX + 7, tooltipY + 27, 0xFFBFC4C9, false);
         }
     }
 
-    private static int severityColor(int severity) {
-        if (severity >= 3) return 0xFFB7443F;
-        if (severity == 2) return 0xFFD18A35;
+    private static int severityColor(MoodleView moodle) {
+        if (moodle.id().equals("aftermath:temperature") && moodle.value() < 0.0D) {
+            if (moodle.severity() >= 3) return 0xFF3979B8;
+            if (moodle.severity() == 2) return 0xFF4B91C5;
+            return 0xFF76A9C9;
+        }
+        if (moodle.id().equals("aftermath:bleeding")) return 0xFFB7443F;
+        if (moodle.severity() >= 3) return 0xFFB7443F;
+        if (moodle.severity() == 2) return 0xFFD18A35;
         return 0xFFC0A64E;
     }
 
     private static String symbol(String id) {
         if (id.contains("tired")) return "Zz";
         if (id.contains("exertion")) return "E";
-        if (id.contains("panic")) return "!";
+        if (id.contains("panic") || id.contains("stress")) return "!";
+        if (id.contains("boredom")) return "…";
+        if (id.contains("unhappiness")) return ":(";
+        if (id.contains("temperature")) return "°";
+        if (id.contains("bleeding")) return "+";
         return "?";
     }
 

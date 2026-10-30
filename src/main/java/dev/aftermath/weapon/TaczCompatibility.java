@@ -101,6 +101,7 @@ public final class TaczCompatibility {
 
         // Moodles affect shot stability on the authoritative server using the projectile velocity.
         applyPanicSpread(projectile, shooter);
+        PlayerStateManager.triggerEvent(shooter, "gunshot");
         if (AftermathServerConfig.ENABLE_NOISE_EVENTS.get()) {
             NoiseService.emitNoise(level, new Vec3(shooter.getX(), shooter.getY(), shooter.getZ()),
                     NoiseService.gunshotEventId(), shooter.getUUID());

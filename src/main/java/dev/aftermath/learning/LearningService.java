@@ -649,6 +649,7 @@ public final class LearningService {
         LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
 
         if (session.type() == SessionType.BOOK) {
+            PlayerStateManager.triggerEvent(player, "entertainment");
             LearningProgress updated = progress.activateBook(
                     session.skillId().toString(), session.bookMultiplier(), now + session.buffDurationTicks());
             player.setData(AftermathAttachments.LEARNING_PROGRESS, updated);
@@ -659,6 +660,7 @@ public final class LearningService {
         }
 
         if (session.type() == SessionType.READING) {
+            PlayerStateManager.triggerEvent(player, "entertainment");
             int currentCompletions = progress.lessonCompletionsFor(session.definitionId().toString());
             if (currentCompletions >= session.maxCompletions()) {
                 message(player, "message.aftermath.learning.already_claimed");
@@ -677,6 +679,7 @@ public final class LearningService {
             return;
         }
 
+        PlayerStateManager.triggerEvent(player, "entertainment");
         int currentCompletions = progress.programCompletionsFor(session.definitionId().toString());
         LearningDefinitions.TvProgramDefinition program =
                 LearningDefinitions.snapshot().programs().get(session.definitionId());

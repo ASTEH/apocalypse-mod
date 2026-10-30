@@ -15,7 +15,7 @@ public record PlayerStateData(Map<String, Double> values) {
         if (values != null) {
             values.forEach((id, value) -> {
                 if (id != null && !id.isBlank() && value != null && Double.isFinite(value)) {
-                    safe.put(id, Math.max(0.0D, Math.min(100.0D, value)));
+                    safe.put(id, Math.max(-1000.0D, Math.min(1000.0D, value)));
                 }
             });
         }
