@@ -1041,11 +1041,13 @@ public final class CharacterSelectionScreen extends Screen {
                 }
                 if (!element.isJsonObject()) continue;
                 JsonObject item = element.getAsJsonObject();
+                int count = integer(item, "count", 1);
                 items.add(new StartingItem(
                         string(item, "item", string(item, "id", "minecraft:air")),
                         string(item, "mod", ""),
                         string(item, "fallback", ""),
-                        integer(item, "count", 1)));
+                        count,
+                        integer(item, "fallback_count", count)));
             }
         }
         return List.copyOf(items);
@@ -1078,5 +1080,6 @@ public final class CharacterSelectionScreen extends Screen {
         }
     }
 
-    private record StartingItem(String itemReference, String modId, String fallbackReference, int count) {}
+    private record StartingItem(String itemReference, String modId, String fallbackReference,
+                                 int count, int fallbackCount) {}
 }

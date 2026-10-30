@@ -141,7 +141,9 @@ public final class CharacterSelectionService {
                 continue;
             }
 
-            ItemStack stack = new ItemStack(resolved.item(), startingItem.count());
+            int stackCount = resolved.primaryReference()
+                    ? startingItem.count() : startingItem.fallbackCount();
+            ItemStack stack = new ItemStack(resolved.item(), stackCount);
             if (resolved.primaryReference()) {
                 applyCustomData(stack, startingItem.customData());
             }

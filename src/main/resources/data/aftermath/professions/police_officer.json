@@ -17,11 +17,20 @@
       "mod": "tacz",
       "item": "tacz:modern_kinetic_gun",
       "fallback": "minecraft:bow",
-      "count": 1
+      "count": 1,
+      "custom_data": {
+        "GunId": "tacz:m1911"
+      }
     },
     {
-      "item": "minecraft:arrow",
-      "count": 16
+      "mod": "taczmagazines",
+      "item": "taczmagazines:magazine",
+      "fallback": "minecraft:arrow",
+      "count": 6,
+      "fallback_count": 42,
+      "custom_data": {
+        "MagazineFamily": "45acp_7"
+      }
     },
     {
       "item": "minecraft:shield",

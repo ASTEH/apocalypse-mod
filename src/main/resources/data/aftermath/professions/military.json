@@ -17,15 +17,29 @@
       "mod": "tacz",
       "item": "tacz:modern_kinetic_gun",
       "fallback": "minecraft:crossbow",
-      "count": 1
+      "count": 1,
+      "custom_data": {
+        "GunId": "tacz:m16a4"
+      }
     },
     {
       "item": "minecraft:arrow",
       "count": 24
     },
     {
-      "item": "minecraft:chainmail_chestplate",
+      "mod": "fracturepoint",
+      "item": "fracturepoint:shturmovikv2_chestplate",
+      "fallback": "minecraft:chainmail_chestplate",
       "count": 1
+    },
+    {
+      "mod": "lrtactical",
+      "item": "lrtactical:throwable",
+      "fallback": "minecraft:wind_charge",
+      "count": 3,
+      "custom_data": {
+        "ThrowableId": "lrtactical:m67"
+      }
     },
     {
       "item": "minecraft:bread",

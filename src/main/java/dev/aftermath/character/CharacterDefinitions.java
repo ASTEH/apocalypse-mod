@@ -220,7 +220,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
             if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
                 String reference = element.getAsString();
                 validateItemReference(reference, key);
-                result.add(new StartingItem(reference, "", "", 1, Map.of()));
+                result.add(new StartingItem(reference, "", "", 1, 1, Map.of()));
                 continue;
             }
             if (!element.isJsonObject()) {
@@ -246,8 +246,14 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
             if (!fallback.isBlank()) validateItemReference(fallback, key);
 
             int count = item.has("count") ? boundedInt(item, "count", 1, 64) : 1;
+            int fallbackCount = item.has("fallback_count")
+                    ? boundedInt(item, "fallback_count", 1, 64) : count;
+            if (item.has("fallback_count") && fallback.isBlank()) {
+                throw new IllegalArgumentException("fallback_count in " + key + " requires a fallback item");
+            }
+
             Map<String, String> customData = customData(item, key);
-            result.add(new StartingItem(reference, modId, fallback, count, customData));
+            result.add(new StartingItem(reference, modId, fallback, count, fallbackCount, customData));
         }
         return List.copyOf(result);
     }
@@ -363,6 +369,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
                         JsonObject item = new JsonObject();
                         item.addProperty("item", startingItem.itemReference());
                         item.addProperty("count", startingItem.count());
+                        item.addProperty("fallback_count", startingItem.fallbackCount());
                         if (!startingItem.modId().isBlank()) item.addProperty("mod", startingItem.modId());
                         if (!startingItem.fallbackReference().isBlank()) item.addProperty("fallback", startingItem.fallbackReference());
                         if (!startingItem.customData().isEmpty()) {
@@ -431,7 +438,7 @@ public final class CharacterDefinitions extends SimplePreparableReloadListener<C
 
     public record TraitEffect(String type, String target, double value, int durationTicks) {}
     public record StartingItem(String itemReference, String modId, String fallbackReference,
-                               int count, Map<String, String> customData) {
+                               int count, int fallbackCount, Map<String, String> customData) {
         public StartingItem {
             itemReference = itemReference == null ? "" : itemReference;
             modId = modId == null ? "" : modId;
