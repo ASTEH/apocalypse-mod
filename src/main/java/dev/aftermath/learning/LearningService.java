@@ -449,7 +449,7 @@ public final class LearningService {
     private static boolean hasUnopenedLootTable(BlockEntity blockEntity) {
         try {
             Method getter = blockEntity.getClass().getMethod("getLootTable");
-            return getter.invoke(blockEntity) instanceof ResourceLocation;
+            return getter.invoke(blockEntity) != null;
         } catch (NoSuchMethodException exception) {
             return false;
         } catch (ReflectiveOperationException | RuntimeException exception) {
