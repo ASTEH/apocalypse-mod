@@ -193,5 +193,7 @@
   "screen.aftermath.character.ui.tab.negative": "NEGATIVE",
   "screen.aftermath.character.ui.tab.negative.short": "NEG",
   "screen.aftermath.character.ui.tab.neutral": "OTHER",
-  "screen.aftermath.character.ui.tab.neutral.short": "OTHER"
+  "screen.aftermath.character.ui.tab.neutral.short": "OTHER",
+  "hud.aftermath.zombie_kills": "Zombies killed: %1$s",
+  "message.aftermath.zombie_kills.status": "Zombies killed by you: %1$s."
 }
