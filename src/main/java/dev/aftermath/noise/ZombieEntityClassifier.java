@@ -19,9 +19,8 @@ public final class ZombieEntityClassifier {
             Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("aftermath", "horde_members"));
 
     public static boolean isZombieLikeKillTarget(Mob mob) {
-        if (mob == null || mob.isRemoved() || mob.getType().is(DEFAULT_MEMBERS)) {
-            return mob != null && !mob.isRemoved() && mob.getType().is(DEFAULT_MEMBERS);
-        }
+        if (mob == null || mob.isRemoved()) return false;
+        if (mob.getType().is(DEFAULT_MEMBERS)) return true;
         if (!(mob instanceof Enemy)) return false;
 
         ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType());
