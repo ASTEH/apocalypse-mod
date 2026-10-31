@@ -24,6 +24,11 @@ public final class AftermathServerConfig {
 
     public static final ModConfigSpec.IntValue WEAPON_XP_PER_KILL;
     public static final ModConfigSpec.IntValue MAX_XP_PER_VICTIM_PER_MINUTE;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_SPREAD;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_RELOAD_DURATION;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_AIM_TIME;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_RECOIL_PITCH;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_RECOIL_YAW;
     public static final ModConfigSpec.IntValue DEFAULT_NOISE_RADIUS;
     public static final ModConfigSpec.IntValue MAX_HORDE_SIZE;
     public static final ModConfigSpec.IntValue AI_RECALC_INTERVAL_TICKS;
@@ -66,6 +71,16 @@ public final class AftermathServerConfig {
                 .defineInRange("weaponXpPerKill", 10, 0, 10000);
         MAX_XP_PER_VICTIM_PER_MINUTE = builder.comment("Anti-farm limit: maximum XP from repeated kills of the same victim identity in a rolling minute.")
                 .defineInRange("maxXpPerVictimPerMinute", 10, 0, 10000);
+        UNTRAINED_FIREARM_SPREAD = builder.comment("Additional TaCZ projectile spread at firearm level 0. Reaches zero at level 10.")
+                .defineInRange("untrainedFirearmSpread", 0.45D, 0.0D, 5.0D);
+        UNTRAINED_FIREARM_RELOAD_DURATION = builder.comment("Reload duration multiplier at firearm level 0. Reaches 1.0 at level 10; Quick Reload is applied afterward.")
+                .defineInRange("untrainedFirearmReloadDuration", 1.5D, 1.0D, 3.0D);
+        UNTRAINED_FIREARM_AIM_TIME = builder.comment("Aim transition time multiplier at firearm level 0. Reaches 1.0 at level 10.")
+                .defineInRange("untrainedFirearmAimTime", 1.4D, 1.0D, 3.0D);
+        UNTRAINED_FIREARM_RECOIL_PITCH = builder.comment("Additional client camera kick in degrees per successful TaCZ trigger at firearm level 0.")
+                .defineInRange("untrainedFirearmRecoilPitch", 1.25D, 0.0D, 10.0D);
+        UNTRAINED_FIREARM_RECOIL_YAW = builder.comment("Maximum random horizontal camera kick in degrees per successful TaCZ trigger at firearm level 0.")
+                .defineInRange("untrainedFirearmRecoilYaw", 0.45D, 0.0D, 10.0D);
         builder.pop();
 
         builder.push("noise_and_hordes");
