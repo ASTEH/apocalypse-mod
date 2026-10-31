@@ -8,7 +8,7 @@ import java.util.Map;
 
 /** Persistent weapon-class experience owned by the logical server. */
 public record WeaponProgress(Map<String, Integer> experience, int schemaVersion) {
-    private static final int CURRENT_SCHEMA_VERSION = 1;
+    private static final int CURRENT_SCHEMA_VERSION = 2;
     private static final int MAX_SAVED_XP = 2_000_000_000;
 
     /** Level thresholds used before the 205-kill progression rebalance. */
@@ -68,7 +68,9 @@ public record WeaponProgress(Map<String, Integer> experience, int schemaVersion)
     }
 
     private static WeaponProgress fromSerialized(Map<String, Integer> experience, int version) {
-        Map<String, Integer> loaded = version < CURRENT_SCHEMA_VERSION
+        // Version 0 used the original 2050 XP curve. Version 1 already uses the 6500 XP
+        // curve, so keep its earned XP and simply introduce the new independent sniper bucket.
+        Map<String, Integer> loaded = version <= 0
                 ? migrateLegacyExperience(experience)
                 : experience;
         return new WeaponProgress(loaded, CURRENT_SCHEMA_VERSION);
