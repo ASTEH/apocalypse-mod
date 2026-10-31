@@ -1,0 +1,8 @@
+{
+  "name": "weapon_class.aftermath.shotgun",
+  "description": "skill.aftermath.weapon_shotgun.description",
+  "category": "combat",
+  "progression_source": "weapon",
+  "progression_key": "shotgun",
+  "max_level": 10
+}

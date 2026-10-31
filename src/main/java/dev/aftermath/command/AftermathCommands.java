@@ -9,6 +9,7 @@ import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.day.WorldProgressData;
 import dev.aftermath.noise.HordeDirector;
 import dev.aftermath.noise.NoiseService;
+import dev.aftermath.skills.SkillsMenuService;
 import dev.aftermath.weapon.FirearmDefinitions;
 import dev.aftermath.weapon.TaczCompatibility;
 import dev.aftermath.zombie.ZombieKillService;
@@ -76,6 +77,11 @@ public final class AftermathCommands {
                             var player = context.getSource().getPlayerOrException();
                             context.getSource().sendSuccess(
                                     () -> LearningService.buildStatusMessage(player), false);
+                            return 1;
+                        }))
+                        .then(Commands.literal("skills").executes(context -> {
+                            var player = context.getSource().getPlayerOrException();
+                            SkillsMenuService.sendSnapshot(player);
                             return 1;
                         }))
                         .then(Commands.literal("wounds").executes(context -> {

@@ -112,17 +112,42 @@ public final class LearningDefinitions extends SimplePreparableReloadListener<Le
             if (id == null) return;
             try (Reader reader = entry.getValue().openAsReader()) {
                 JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+                String nameKey = requiredString(json, "name");
+                String descriptionKey = stringOrDefault(json, "description", nameKey + ".description");
+                String category = stringOrDefault(json, "category", "survival");
+                if (!category.matches("[a-z0-9_-]{1,32}")) {
+                    throw new IllegalArgumentException("category must be a simple lowercase identifier");
+                }
+
+                String progressionSource = stringOrDefault(json, "progression_source", "learning");
+                if (!progressionSource.equals("learning") && !progressionSource.equals("weapon")) {
+                    throw new IllegalArgumentException("progression_source must be learning or weapon");
+                }
+                String progressionKey = stringOrDefault(json, "progression_key", id.getPath());
+                if (!progressionKey.matches("[a-z0-9_.-]{1,64}")) {
+                    throw new IllegalArgumentException("progression_key must be a simple identifier");
+                }
+
                 int maxLevel = boundedInt(json, "max_level", 1, 10);
-                List<Integer> thresholds = integerList(json, "xp_thresholds", maxLevel, 0, 2_000_000_000);
-                if (thresholds.size() != maxLevel || thresholds.get(0) != 0) {
-                    throw new IllegalArgumentException("xp_thresholds must contain max_level values and start with 0");
-                }
-                for (int i = 1; i < thresholds.size(); i++) {
-                    if (thresholds.get(i) <= thresholds.get(i - 1)) {
-                        throw new IllegalArgumentException("xp_thresholds must be strictly increasing");
+                List<Integer> thresholds;
+                if (progressionSource.equals("learning")) {
+                    thresholds = integerList(json, "xp_thresholds", maxLevel, 0, 2_000_000_000);
+                    if (thresholds.get(0) != 0) {
+                        throw new IllegalArgumentException("xp_thresholds must start with 0");
                     }
+                    for (int i = 1; i < thresholds.size(); i++) {
+                        if (thresholds.get(i) <= thresholds.get(i - 1)) {
+                            throw new IllegalArgumentException("xp_thresholds must be strictly increasing");
+                        }
+                    }
+                } else {
+                    // Weapon classes keep their authoritative threshold curve in WeaponProgress.
+                    // The menu reads that same progression source instead of duplicating its values in JSON.
+                    thresholds = List.of();
                 }
-                result.put(id, new SkillDefinition(id, requiredString(json, "name"), maxLevel, thresholds));
+
+                result.put(id, new SkillDefinition(id, nameKey, descriptionKey, category,
+                        progressionSource, progressionKey, maxLevel, thresholds));
             } catch (Exception exception) {
                 AftermathMod.LOGGER.error("Could not load skill definition {}: {}",
                         entry.getKey(), exception.getMessage());
@@ -243,6 +268,16 @@ public final class LearningDefinitions extends SimplePreparableReloadListener<Le
         return value;
     }
 
+    private static String stringOrDefault(JsonObject json, String key, String fallback) {
+        if (!json.has(key)) return fallback;
+        if (!json.get(key).isJsonPrimitive() || !json.getAsJsonPrimitive(key).isString()) {
+            throw new IllegalArgumentException(key + " must be a string");
+        }
+        String value = json.get(key).getAsString();
+        if (value.isBlank()) throw new IllegalArgumentException(key + " cannot be blank");
+        return value;
+    }
+
     private static boolean boolOrDefault(JsonObject json, String key, boolean fallback) {
         return json.has(key) ? json.get(key).getAsBoolean() : fallback;
     }
@@ -271,10 +306,12 @@ public final class LearningDefinitions extends SimplePreparableReloadListener<Le
     public record TvProgramDefinition(ResourceLocation id, String titleKey, ResourceLocation skillId,
                                       int startTime, int durationTicks, int xpReward,
                                       int repeatAfterDays, int maxCompletions) {}
-    public record SkillDefinition(ResourceLocation id, String nameKey, int maxLevel,
-                                  List<Integer> xpThresholds) {
+    public record SkillDefinition(ResourceLocation id, String nameKey, String descriptionKey,
+                                  String category, String progressionSource, String progressionKey,
+                                  int maxLevel, List<Integer> xpThresholds) {
         public SkillDefinition { xpThresholds = List.copyOf(xpThresholds); }
         public int levelFor(int experience) {
+            if (!progressionSource.equals("learning") || xpThresholds.isEmpty()) return 1;
             int level = 1;
             int xp = Math.max(0, experience);
             for (int candidate = 2; candidate <= maxLevel; candidate++) {

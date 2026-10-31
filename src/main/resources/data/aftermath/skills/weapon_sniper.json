@@ -1,0 +1,8 @@
+{
+  "name": "weapon_class.aftermath.sniper",
+  "description": "skill.aftermath.weapon_sniper.description",
+  "category": "combat",
+  "progression_source": "weapon",
+  "progression_key": "sniper",
+  "max_level": 10
+}

@@ -12,5 +12,7 @@
     700,
     880,
     1080
-  ]
+  ],
+  "category": "survival",
+  "description": "skill.aftermath.scavenging.description"
 }

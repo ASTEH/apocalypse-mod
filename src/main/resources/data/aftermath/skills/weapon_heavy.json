@@ -1,0 +1,8 @@
+{
+  "name": "weapon_class.aftermath.heavy",
+  "description": "skill.aftermath.weapon_heavy.description",
+  "category": "combat",
+  "progression_source": "weapon",
+  "progression_key": "heavy",
+  "max_level": 10
+}

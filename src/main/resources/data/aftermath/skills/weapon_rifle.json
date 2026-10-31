@@ -1,0 +1,8 @@
+{
+  "name": "weapon_class.aftermath.rifle",
+  "description": "skill.aftermath.weapon_rifle.description",
+  "category": "combat",
+  "progression_source": "weapon",
+  "progression_key": "rifle",
+  "max_level": 10
+}

@@ -1,0 +1,8 @@
+{
+  "name": "weapon_class.aftermath.pistol",
+  "description": "skill.aftermath.weapon_pistol.description",
+  "category": "combat",
+  "progression_source": "weapon",
+  "progression_key": "pistol",
+  "max_level": 10
+}

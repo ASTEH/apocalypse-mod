@@ -574,8 +574,10 @@ public final class LearningService {
 
     public static boolean awardSkillXp(ServerPlayer player, ResourceLocation skillId, int baseXp,
                                         String actionId, long cooldownTicks, int dailyCap) {
+        LearningDefinitions.SkillDefinition definition =
+                LearningDefinitions.snapshot().skills().get(skillId);
         if (!AftermathServerConfig.ENABLE_LEARNING.get() || baseXp <= 0
-                || LearningDefinitions.snapshot().skills().get(skillId) == null) return false;
+                || definition == null || !definition.progressionSource().equals("learning")) return false;
 
         long now = player.getServer().overworld().getGameTime();
         LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);

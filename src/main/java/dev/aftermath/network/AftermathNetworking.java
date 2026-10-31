@@ -1,9 +1,12 @@
 package dev.aftermath.network;
 
 import dev.aftermath.character.CharacterSelectionService;
+import dev.aftermath.skills.SkillsMenuService;
 import dev.aftermath.network.TraitStatePayload;
 import dev.aftermath.network.ZombieKillCountPayload;
 import dev.aftermath.network.WeaponProgressSyncPayload;
+import dev.aftermath.network.RequestSkillsSnapshotPayload;
+import dev.aftermath.network.SkillsSnapshotPayload;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
@@ -34,6 +37,12 @@ public final class AftermathNetworking {
         registrar.playToClient(WeaponProgressSyncPayload.TYPE, WeaponProgressSyncPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() ->
                         invokeClient("handleWeaponProgress", WeaponProgressSyncPayload.class, payload)));
+        registrar.playToServer(RequestSkillsSnapshotPayload.TYPE, RequestSkillsSnapshotPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() ->
+                        SkillsMenuService.sendSnapshot(context.player())));
+        registrar.playToClient(SkillsSnapshotPayload.TYPE, SkillsSnapshotPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() ->
+                        invokeClient("handleSkillsSnapshot", SkillsSnapshotPayload.class, payload)));
     }
 
     /*
@@ -47,6 +56,8 @@ public final class AftermathNetworking {
             clientEvents.getMethod("register").invoke(null);
             Class<?> zombieKillHud = Class.forName("dev.aftermath.client.ZombieKillHud");
             zombieKillHud.getMethod("register", IEventBus.class).invoke(null, modEventBus);
+            Class<?> skillsClientEvents = Class.forName("dev.aftermath.client.SkillsClientEvents");
+            skillsClientEvents.getMethod("register", IEventBus.class).invoke(null, modEventBus);
         } catch (ReflectiveOperationException exception) {
             throw new IllegalStateException("Could not register Aftermath client hooks", exception);
         }

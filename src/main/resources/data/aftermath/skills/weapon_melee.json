@@ -1,0 +1,8 @@
+{
+  "name": "weapon_class.aftermath.melee",
+  "description": "skill.aftermath.weapon_melee.description",
+  "category": "combat",
+  "progression_source": "weapon",
+  "progression_key": "melee",
+  "max_level": 10
+}
