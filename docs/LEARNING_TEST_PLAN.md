@@ -35,14 +35,16 @@ With an active learner within 16 blocks, process valid recipes through a mechani
 - Complete a valid skillet recipe and collect the spawned output.
 - Confirm each completed machine recipe can grant Cooking XP, while invalid recipes, unheated machines and idle ticks do not.
 
-## First Aid New and LRTactical
+## Model Injuries and LRTactical
 
-- Complete a First Aid New body-part treatment. Confirm the original treatment callback runs and Aftermath First Aid XP is awarded once after completion. Run `/aftermath medical status` and confirm the callback counter increases by one.
-- Interrupt a selected treatment before completion. Confirm no Aftermath First Aid XP is awarded.
-- Repeat with the Medic's Triage trait and confirm its 25% skill XP multiplier still applies under the shared daily/action caps.
+- Complete a valid Model Injuries TreatmentItem procedure on a selected body region. Confirm XP is awarded only if Model Injuries accepts the treatment; an invalid treatment must not grant XP.
+- Complete a valid Model Injuries MedicineItem use. Confirm the medicine is accepted and XP is awarded once.
+- Try an already-active/rejected medicine. Confirm it grants no XP.
+- Confirm one successful procedure produces one XP award, never two, and the status callback/XP counters each increase by one.
+- Repeat with the Medic's Triage trait and confirm its 25% skill XP multiplier still applies under the 80 XP action cap and shared 120 XP skill cap.
 - Use a LRTactical consumable whose configured data heals or removes a negative effect. Confirm First Aid XP is awarded after its server-side consumable event.
 - Test a non-medical LRTactical consumable to confirm it grants no First Aid XP.
-- Test without First Aid New; the optional Mixin must not be loaded, and Aftermath must not reintroduce a standalone bandage/bleeding system.
+- Test without Model Injuries; its optional mixins must not load, and Aftermath must not reintroduce a standalone bandage/bleeding system.
 
 ## Zombie Awareness
 

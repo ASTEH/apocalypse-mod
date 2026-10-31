@@ -418,7 +418,7 @@ public final class LearningService {
 
     /** Called by successful treatment actions; failed uses must not award XP. */
     public static boolean awardFirstAidXp(ServerPlayer player) {
-        return awardSkillXp(player, id("first_aid"), 10, "successful_first_aid", 100L, 50);
+        return awardSkillXp(player, id("first_aid"), 10, "successful_first_aid", 20L, 80);
     }
 
     /** Called only after a verified hostile kill with a supported firearm. */

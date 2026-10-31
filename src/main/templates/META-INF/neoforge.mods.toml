@@ -22,8 +22,8 @@ config="aftermath.farmersdelight.mixins.json"
 requiredMods=["farmersdelight"]
 
 [[mixins]]
-config="aftermath.firstaid.mixins.json"
-requiredMods=["firstaid"]
+config="aftermath.modelinjuries.mixins.json"
+requiredMods=["model_injuries"]
 
 [[dependencies.${mod_id}]]
 modId="neoforge"

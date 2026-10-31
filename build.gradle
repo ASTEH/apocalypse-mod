@@ -25,11 +25,6 @@ repositories {
         name = 'SpongePowered'
         url = 'https://repo.spongepowered.org/repository/maven-public/'
     }
-    maven {
-        name = 'CurseMaven'
-        url = 'https://cursemaven.com/'
-        content { includeGroup 'curse.maven' }
-    }
 }
 
 neoForge {
@@ -84,8 +79,6 @@ configurations {
 dependencies {
     // NeoForge provides Mixin at runtime; this is compile-time API only.
     compileOnly 'org.spongepowered:mixin:0.8.7'
-    // Temporary build-only inspection of the exact Model Injuries 1.21.1 release.
-    compileOnly 'curse.maven:model-injuries-1737763:9131688'
 }
 
 def generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
@@ -122,65 +115,6 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-}
-
-// Temporary reverse-engineering task; remove after a stable integration point is found.
-abstract class InspectModelInjuriesTask extends org.gradle.api.DefaultTask {
-    @org.gradle.api.tasks.Classpath
-    abstract org.gradle.api.file.ConfigurableFileCollection getInspectionClasspath()
-
-    @org.gradle.api.tasks.TaskAction
-    void inspect() {
-        def jar = inspectionClasspath.files.find {
-            it.name.toLowerCase().contains("model-injuries")
-        }
-        if (jar == null) throw new org.gradle.api.GradleException("Model Injuries inspection dependency was not resolved.")
-        println("MODEL_INJURIES_JAR=" + jar.absolutePath)
-        def classpath = inspectionClasspath.files.collect { it.absolutePath }.join(java.io.File.pathSeparator)
-        new java.util.jar.JarFile(jar).withCloseable { archive ->
-            archive.entries().each { entry ->
-                if (entry.name.endsWith(".class") &&
-                        entry.name.toLowerCase() =~ /(injury|treatment|heal|medical|blood|medicine|wound|organ|fracture)/) {
-                    println("MODEL_CLASS=" + entry.name.replace("/", ".").replace(".class", ""))
-                }
-                if (entry.name == "META-INF/neoforge.mods.toml" ||
-                        entry.name.toLowerCase().contains("mixins") && entry.name.endsWith(".json")) {
-                    println("MODEL_RESOURCE=" + entry.name)
-                    if (entry.name.endsWith(".json") || entry.name.endsWith(".toml")) {
-                        println(new String(archive.getInputStream(entry).bytes, java.nio.charset.StandardCharsets.UTF_8))
-                    }
-                }
-            }
-        }
-        [
-            "dev.modelinjuries.InjuryEvents",
-            "dev.modelinjuries.InjuryData",
-            "dev.modelinjuries.core.Injury",
-            "dev.modelinjuries.core.InjuryState",
-            "dev.modelinjuries.core.TreatmentFeedback",
-            "dev.modelinjuries.item.TreatmentItem",
-            "dev.modelinjuries.item.MedicineItem",
-            "dev.modelinjuries.mixin.FirstAidMedicineMixin",
-            "dev.modelinjuries.mixin.FirstAidInteractionMixin",
-            "dev.modelinjuries.mixin.FirstAidContactMixin"
-        ].each { className ->
-            println("===== MODEL_JAVAP " + className + " =====")
-            def process = new ProcessBuilder(
-                    new java.io.File(System.getProperty("java.home"), "bin/javap").absolutePath,
-                    "-p", "-c", "-classpath", classpath, className)
-                    .redirectErrorStream(true).start()
-            println(process.inputStream.getText("UTF-8"))
-            if (process.waitFor() != 0) println("JAVAP_EXIT=" + process.exitValue())
-        }
-    }
-}
-
-tasks.register("inspectModelInjuries", InspectModelInjuriesTask) {
-    inspectionClasspath.from(configurations.compileClasspath)
-}
-
-tasks.named("build") {
-    dependsOn("inspectModelInjuries")
 }
 
 idea {

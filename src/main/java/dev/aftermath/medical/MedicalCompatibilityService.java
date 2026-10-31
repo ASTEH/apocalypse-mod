@@ -38,11 +38,11 @@ public final class MedicalCompatibilityService {
 
     public static void logDetectedMedicalMods() {
         if (FIRST_AID_LOADED && MODEL_INJURIES_LOADED) {
-            AftermathMod.LOGGER.info("First Aid New and Model Injuries detected. Their injury and treatment systems are authoritative; Aftermath does not register a parallel bleeding or bandage system.");
+            AftermathMod.LOGGER.info("First Aid New and Model Injuries detected. Model Injuries treatment/medicine success callbacks are connected to Aftermath First Aid XP; both mods own anatomy and medical mechanics.");
         } else if (FIRST_AID_LOADED) {
-            AftermathMod.LOGGER.info("First Aid New detected without Model Injuries. Body-part health and treatment are provided by First Aid New; advanced structural injuries are unavailable.");
+            AftermathMod.LOGGER.info("First Aid New detected without Model Injuries. Body-part health and treatment are provided by First Aid New; Model Injuries-specific treatment XP hooks are not available.");
         } else {
-            AftermathMod.LOGGER.warn("First Aid New was not detected. Aftermath's legacy bleeding and bandage fallback has been removed; install First Aid New (and Model Injuries for detailed structural injuries).");
+            AftermathMod.LOGGER.warn("First Aid New was not detected. Aftermath's legacy bleeding and bandage fallback has been removed; install First Aid New and Model Injuries for medical gameplay and treatment XP integration.");
         }
     }
 
@@ -53,8 +53,8 @@ public final class MedicalCompatibilityService {
             case "model_injuries_without_firstaid" -> "message.aftermath.medical.status.model_injuries_without_firstaid";
             default -> "message.aftermath.medical.status.missing";
         };
-        return Component.translatable(key, FirstAidSkillBridge.completedTreatmentsThisSession(),
-                FirstAidSkillBridge.awardedTreatmentsThisSession());
+        return Component.translatable(key, ModelInjuriesSkillBridge.completedProceduresThisSession(),
+                ModelInjuriesSkillBridge.xpAwardedProceduresThisSession());
     }
 
     private static String normalize(String value) {

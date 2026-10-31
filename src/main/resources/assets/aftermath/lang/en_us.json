@@ -338,8 +338,8 @@
   "moodle.aftermath.temperature.heatstroke": "Heatstroke",
   "moodle.aftermath.temperature.heatstroke.description": "Your body temperature is dangerously high.",
   "moodle.aftermath.bleeding": "Bleeding",
-  "message.aftermath.medical.status.external": "Medical: First Aid New + Model Injuries. Completed treatments observed by Aftermath since server start: %1$s; treatments that actually granted XP: %2$s.",
-  "message.aftermath.medical.status.firstaid": "Medical: First Aid New detected. Completed treatments observed by Aftermath since server start: %1$s; treatments that actually granted XP: %2$s. Model Injuries was not detected.",
+  "message.aftermath.medical.status.external": "Medical: First Aid New + Model Injuries. Successful Model Injuries procedures observed by Aftermath since server start: %1$s; procedures that granted XP: %2$s.",
+  "message.aftermath.medical.status.firstaid": "Medical: First Aid New detected, Model Injuries missing. Model Injuries procedure XP integration is inactive.",
   "message.aftermath.medical.status.model_injuries_without_firstaid": "Model Injuries was detected without its required First Aid New dependency. Check the mod installation.",
-  "message.aftermath.medical.status.missing": "First Aid New was not detected. Aftermath no longer adds its own bleeding or bandages. Install First Aid New and Model Injuries for advanced medical gameplay."
+  "message.aftermath.medical.status.missing": "First Aid New was not detected. Aftermath does not add its own bleeding or bandages; medical gameplay and Model Injuries procedure XP integration are unavailable."
 }

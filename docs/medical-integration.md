@@ -13,11 +13,18 @@ Aftermath's old standalone bleeding attachment, bandage item, recipe, Moodle and
 
 Use `/aftermath medical status` (or `/aftermath wounds`) to inspect provider detection. The Medic profession no longer starts with an Aftermath bandage. It retains its LRTactical AI2 and CarFAK medical supplies where available, with the existing vanilla golden-apple fallback.
 
-## First Aid skill integration
+## Model Injuries skill integration
 
-When First Aid New is loaded, an optional Mixin injects directly into the public `ItemHealing.onTreatmentCompleted(PartHealingContext)` callback. A second fallback observes the call from `DamageablePart.tick` for third-party treatment items that override that callback. Both paths share a weak-context deduplication guard, so a completed treatment can grant XP only once. The regular skill XP multiplier and the Medic's Triage trait continue to apply. Interrupted treatments do not trigger the completion callback and do not grant XP.
+The previous First Aid New callback integration did not observe the actual Model Injuries treatment flow and has been removed.
 
-Use `/aftermath medical status` to see how many server-side treatment callbacks Aftermath observed since the last server start. This is a diagnostic counter, not a persistent statistic. The optional mixins load only when mod ID `firstaid` is present; Aftermath does not compile against First Aid New's classes.
+For Model Injuries 0.41.0, Aftermath hooks the real success gates:
+
+- `dev.modelinjuries.InjuryEvents.finishTreatment(Player, ItemStack)` calls `InjuryState.treat(Region, Treatment)`. XP is awarded only when that method returns `true`, after Model Injuries has validated the selected region, care permission, held item, treatment time and interaction hand.
+- `dev.modelinjuries.item.MedicineItem.finishUsingItem(...)` calls `InjuryState.takeMedicine(Medicine)`. XP is awarded only when the medicine is accepted; already-active or rejected doses do not grant XP.
+
+Each successful procedure grants 10 base First Aid XP, using the existing skill multiplier and Medic Triage trait. A 1-second action cooldown and an 80 XP/day action cap limit farming; the shared 120 XP/day skill cap still applies. The optional Mixin config is loaded only when mod ID `model_injuries` is present. Model Injuries and First Aid New remain optional from Aftermath's perspective; the code uses target strings and reflection rather than compile-time API dependencies.
+
+Use `/aftermath medical status` to see successful Model Injuries procedures observed since server start and how many actually granted XP. These diagnostic counters are session-only, not persistent statistics.
 
 ## Moodles, stress and injury penalties
 

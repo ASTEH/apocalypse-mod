@@ -1,0 +1,13 @@
+{
+  "required": false,
+  "minVersion": "0.8.5",
+  "package": "dev.aftermath.mixin.modelinjuries",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "InjuryTreatmentMixin",
+    "MedicineItemTreatmentMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
