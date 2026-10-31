@@ -25,6 +25,10 @@ requiredMods=["farmersdelight"]
 config="aftermath.modelinjuries.mixins.json"
 requiredMods=["model_injuries"]
 
+[[mixins]]
+config="aftermath.tacz.mixins.json"
+requiredMods=["tacz"]
+
 [[dependencies.${mod_id}]]
 modId="neoforge"
 type="required"
