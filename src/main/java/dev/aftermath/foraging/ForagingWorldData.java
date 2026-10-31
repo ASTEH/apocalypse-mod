@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -87,19 +86,28 @@ public final class ForagingWorldData extends SavedData {
 
     private void trimOldest() {
         while (generatedFinds.size() + depletedAt.size() > MAX_SPOTS) {
-            Long oldestFind = generatedFinds.entrySet().stream()
-                    .min(Map.Entry.comparingByValue(java.util.Comparator.comparingLong(StoredFind::generatedAt)))
-                    .map(Map.Entry::getKey).orElse(null);
-            Long oldestDepleted = depletedAt.entrySet().stream()
-                    .min(Map.Entry.comparingByValue(Long::compareTo))
-                    .map(Map.Entry::getKey).orElse(null);
-            if (oldestFind == null && oldestDepleted == null) break;
-            if (oldestDepleted == null || (oldestFind != null
-                    && generatedFinds.get(oldestFind).generatedAt() <= depletedAt.get(oldestDepleted))) {
-                generatedFinds.remove(oldestFind);
-            } else {
-                depletedAt.remove(oldestDepleted);
+            Long oldestKey = null;
+            long oldestTime = Long.MAX_VALUE;
+            boolean oldestIsGenerated = false;
+
+            for (Map.Entry<Long, StoredFind> entry : generatedFinds.entrySet()) {
+                if (entry.getValue().generatedAt() < oldestTime) {
+                    oldestTime = entry.getValue().generatedAt();
+                    oldestKey = entry.getKey();
+                    oldestIsGenerated = true;
+                }
             }
+            for (Map.Entry<Long, Long> entry : depletedAt.entrySet()) {
+                if (entry.getValue() < oldestTime) {
+                    oldestTime = entry.getValue();
+                    oldestKey = entry.getKey();
+                    oldestIsGenerated = false;
+                }
+            }
+
+            if (oldestKey == null) break;
+            if (oldestIsGenerated) generatedFinds.remove(oldestKey);
+            else depletedAt.remove(oldestKey);
         }
     }
 
