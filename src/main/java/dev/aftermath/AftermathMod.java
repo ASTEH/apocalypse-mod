@@ -23,6 +23,8 @@ import dev.aftermath.network.AftermathNetworking;
 import dev.aftermath.zombie.ZombieKillService;
 import dev.aftermath.zombie.ZombieVariantDefinitions;
 import dev.aftermath.zombie.ZombieVariantService;
+import dev.aftermath.world.MilitarySpawnControlService;
+import dev.aftermath.world.MilitarySpawnDefinitions;
 import dev.aftermath.world.WorldSpawnControlService;
 import dev.aftermath.world.WorldSpawnDefinitions;
 import net.neoforged.bus.api.IEventBus;
@@ -48,6 +50,8 @@ public final class AftermathMod {
         modEventBus.addListener(AftermathNetworking::registerPayloads);
         NeoForge.EVENT_BUS.addListener(AftermathCommands::registerCommands);
         NeoForge.EVENT_BUS.addListener(WorldSpawnDefinitions::register);
+        NeoForge.EVENT_BUS.addListener(MilitarySpawnDefinitions::register);
+        NeoForge.EVENT_BUS.addListener(MilitarySpawnControlService::onMobPositionCheck);
         NeoForge.EVENT_BUS.addListener(WorldSpawnControlService::onMobPositionCheck);
         NeoForge.EVENT_BUS.addListener(WorldSpawnControlService::onChunkLoad);
         NeoForge.EVENT_BUS.addListener(ZombieVariantDefinitions::register);
