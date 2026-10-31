@@ -30,6 +30,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_RECOIL_YAW;
     public static final ModConfigSpec.DoubleValue UNTRAINED_SHOTGUN_HANDLING_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue UNTRAINED_HEAVY_HANDLING_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_SNIPER_HANDLING_MULTIPLIER;
     public static final ModConfigSpec.IntValue DEFAULT_NOISE_RADIUS;
     public static final ModConfigSpec.IntValue MAX_HORDE_SIZE;
     public static final ModConfigSpec.IntValue AI_RECALC_INTERVAL_TICKS;
@@ -84,6 +85,8 @@ public final class AftermathServerConfig {
                 .defineInRange("untrainedShotgunHandlingMultiplier", 1.25D, 1.0D, 3.0D);
         UNTRAINED_HEAVY_HANDLING_MULTIPLIER = builder.comment("Extra untrained handling penalty for heavy weapons. Affects spread, reload time, aiming and camera recoil; fades out by level 10.")
                 .defineInRange("untrainedHeavyHandlingMultiplier", 1.40D, 1.0D, 3.0D);
+        UNTRAINED_SNIPER_HANDLING_MULTIPLIER = builder.comment("Extra untrained handling penalty for sniper rifles. Affects spread, reload time, aiming and camera recoil; fades out by level 10.")
+                .defineInRange("untrainedSniperHandlingMultiplier", 1.20D, 1.0D, 3.0D);
         builder.pop();
 
         builder.push("noise_and_hordes");
