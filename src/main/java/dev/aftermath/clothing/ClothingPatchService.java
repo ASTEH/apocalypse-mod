@@ -59,8 +59,12 @@ public final class ClothingPatchService {
      * and consumption are performed only by the server.
      */
     public static void onItemStackedOnOther(ItemStackedOnOtherEvent event) {
-        ItemStack carried = event.getCarriedItem();
-        ItemStack garment = event.getStackedOnItem();
+        // NeoForge 1.21.1 passes the two ItemStack arguments to this event in the
+        // opposite order at the call site (clicked slot first, cursor second).
+        // Read the actual slot and cursor through their dedicated accessors instead
+        // of relying on the swapped getCarriedItem()/getStackedOnItem() fields.
+        ItemStack carried = event.getCarriedSlotAccess().get();
+        ItemStack garment = event.getSlot().getItem();
         if (carried.isEmpty() || garment.isEmpty()
                 || !carried.is(AftermathContent.CLOTHING_PATCH.get())
                 || event.getClickAction() != ClickAction.SECONDARY) {
