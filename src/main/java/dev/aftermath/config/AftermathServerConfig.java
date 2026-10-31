@@ -66,9 +66,9 @@ public final class AftermathServerConfig {
         builder.pop();
 
         builder.push("weapon_progression");
-        WEAPON_XP_PER_KILL = builder.comment("Weapon XP per eligible kill. With 10 XP per kill, the 6000 XP level-10 threshold requires about 600 kills per weapon class.")
+        WEAPON_XP_PER_KILL = builder.comment("Weapon XP per eligible kill. With 10 XP per zombie kill, the 6500 XP level-10 threshold requires about 650 kills per weapon class.")
                 .defineInRange("weaponXpPerKill", 10, 0, 10000);
-        MAX_XP_PER_VICTIM_PER_MINUTE = builder.comment("Safety cap on XP awarded for one victim. Keep this at or above weaponXpPerKill for the normal 600-kill progression.")
+        MAX_XP_PER_VICTIM_PER_MINUTE = builder.comment("Safety cap on XP awarded for one victim. Keep this at or above weaponXpPerKill for the normal 650-kill progression.")
                 .defineInRange("maxXpPerVictimPerMinute", 10, 0, 10000);
         UNTRAINED_FIREARM_SPREAD = builder.comment("Additional TaCZ projectile spread at firearm level 0, before weapon-class scaling. Reaches zero at level 10.")
                 .defineInRange("untrainedFirearmSpread", 0.65D, 0.0D, 5.0D);
