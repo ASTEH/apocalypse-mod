@@ -4,6 +4,7 @@ import dev.aftermath.character.CharacterSelectionService;
 import dev.aftermath.network.TraitStatePayload;
 import dev.aftermath.network.ZombieKillCountPayload;
 import dev.aftermath.network.MoodlesSyncPayload;
+import dev.aftermath.network.WeaponProgressSyncPayload;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
@@ -34,6 +35,9 @@ public final class AftermathNetworking {
         registrar.playToClient(ZombieKillCountPayload.TYPE, ZombieKillCountPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() ->
                         invokeClient("handleZombieKillCount", ZombieKillCountPayload.class, payload)));
+        registrar.playToClient(WeaponProgressSyncPayload.TYPE, WeaponProgressSyncPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() ->
+                        invokeClient("handleWeaponProgress", WeaponProgressSyncPayload.class, payload)));
     }
 
     /*
