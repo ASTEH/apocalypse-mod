@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -150,6 +151,12 @@ public final class ForagingService {
                 2, "foraging_collection", 20L, 40);
         player.sendSystemMessage(Component.translatable("message.aftermath.foraging.collected", itemName, count));
         scanAndSend(player);
+    }
+
+    /** Records rainfall per dimension even when nobody is actively searching. */
+    public static void onLevelTick(LevelTickEvent.Post event) {
+        if (!(event.getLevel() instanceof ServerLevel level) || level.getGameTime() % 200L != 0L) return;
+        if (level.isRaining()) ForagingWorldData.get(level).observeRain(level.getGameTime());
     }
 
     public static void onPlayerTick(PlayerTickEvent.Post event) {
