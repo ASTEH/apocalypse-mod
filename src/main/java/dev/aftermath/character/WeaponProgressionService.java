@@ -4,6 +4,7 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.weapon.TaczCompatibility;
 import dev.aftermath.learning.LearningService;
+import dev.aftermath.noise.ZombieEntityClassifier;
 import dev.aftermath.network.WeaponProgressSyncPayload;
 import net.neoforged.neoforge.network.PacketDistributor;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -39,7 +41,7 @@ public final class WeaponProgressionService {
     public static void onLivingDeath(LivingDeathEvent event) {
         if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()) return;
         LivingEntity victim = event.getEntity();
-        if (!(victim instanceof Enemy)) return;
+        if (!(victim instanceof Mob mob) || !ZombieEntityClassifier.isZombieLikeKillTarget(mob)) return;
 
         DamageSource source = event.getSource();
         if (!(source.getEntity() instanceof ServerPlayer killer)) return;
@@ -117,7 +119,7 @@ public final class WeaponProgressionService {
         return TaczCompatibility.weaponClassForBullet(source.getDirectEntity(), attacker);
     }
 
-    /** Level 10 requires 6000 XP; at the default 10 XP per kill this is about 600 eligible kills. */
+    /** Level 10 requires 6500 XP; at the default 10 XP per kill this is about 650 zombie kills. */
     public static int levelFor(int experience) {
         int xp = Math.max(0, experience);
         int level = 0;
