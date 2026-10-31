@@ -2,6 +2,7 @@ package dev.aftermath.network;
 
 import dev.aftermath.character.CharacterSelectionService;
 import dev.aftermath.foraging.ForagingService;
+import dev.aftermath.clothing.ClothingPatchService;
 import dev.aftermath.skills.SkillsMenuService;
 import dev.aftermath.network.TraitStatePayload;
 import dev.aftermath.network.ZombieKillCountPayload;
@@ -11,6 +12,7 @@ import dev.aftermath.network.SkillsSnapshotPayload;
 import dev.aftermath.network.ToggleForagingSearchPayload;
 import dev.aftermath.network.SetForagingFocusPayload;
 import dev.aftermath.network.CollectForagePayload;
+import dev.aftermath.network.ApplyClothingPatchPayload;
 import dev.aftermath.network.ForagingSnapshotPayload;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -67,6 +69,12 @@ public final class AftermathNetworking {
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof net.minecraft.server.level.ServerPlayer player) {
                         ForagingService.collect(player, payload.packedPosition());
+                    }
+                }));
+        registrar.playToServer(ApplyClothingPatchPayload.TYPE, ApplyClothingPatchPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof net.minecraft.server.level.ServerPlayer player) {
+                        ClothingPatchService.applyCreativePatch(player, payload.inventorySlot());
                     }
                 }));
         registrar.playToClient(ForagingSnapshotPayload.TYPE, ForagingSnapshotPayload.STREAM_CODEC,
