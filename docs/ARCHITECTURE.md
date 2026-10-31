@@ -10,7 +10,7 @@
 ## Persistence
 
 - Character profile, weapon XP, and learning XP/completion history use persistent player attachments with explicit codecs and copy-on-death semantics.
-- Bleeding severity and its countdown use a persistent attachment without copy-on-death, so wounds survive relogs but a new life does not inherit them.
+- Medical anatomy, blood loss and treatment are owned by First Aid New / Model Injuries. Aftermath has no parallel bleeding attachment or bandage item.
 - Global day progression and persistent world events: `SavedData`.
 - Temporary noise signals and horde membership: level-scoped, expiring memory; never force-load chunks to keep events active.
 - In-progress reading/TV sessions are transient; interruption grants no XP.
@@ -26,7 +26,7 @@
 - `CreateLearningHooks`: optional mixin bridge for Create 6.0.10 recipe application, basin, millstone, fan item processing, crushing wheels and saw cutting; no Create classes are linked from core Java.
 - `FarmersDelightLearningHooks`: optional mixin bridge for completed cooking-pot and skillet recipes; output XP is credited to a nearby player with cooldown and daily cap.
 - `ZombieAwarenessCompatibility`: reflection-only bridge forwards validated Aftermath noise events to Zombie Awareness' SOUND scent API; it fails closed when the mod or its API is unavailable.
-- `FirstAidService`: rolls configurable bleeding chance for damaging hostile hits, applies timed blood-loss ticks, and handles bandage treatment; Medic characters stop all bleeding with one bandage.
+- `MedicalCompatibilityService`: reports detected First Aid New / Model Injuries providers; the optional First Aid New Mixin bridges completed body-part treatments into Aftermath First Aid skill XP.
 - `NoiseDefinitions`: validates data-driven noise events and horde archetypes on datapack reload.
 - `NoiseService`: applies cooldowns and assigns only already-loaded, tagged mobs to a temporary noise destination, while optionally forwarding the event to Zombie Awareness.
 - `HordeDirector`: adds a movement goal without replacing other AI goals, groups nearby mobs, and enforces a per-dimension path request budget.

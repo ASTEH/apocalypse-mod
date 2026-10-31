@@ -17,8 +17,6 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_HORDE_BEHAVIOR;
     public static final ModConfigSpec.BooleanValue ENABLE_BLOCK_BREAKING;
     public static final ModConfigSpec.BooleanValue ENABLE_DAY_PROGRESSION;
-    public static final ModConfigSpec.BooleanValue ENABLE_BLEEDING;
-    public static final ModConfigSpec.BooleanValue PREFER_EXTERNAL_MEDICAL_SYSTEM;
     public static final ModConfigSpec.BooleanValue ENABLE_MOODLES;
     public static final ModConfigSpec.BooleanValue ENABLE_HOSTILE_SPAWN_FILTER;
     public static final ModConfigSpec.BooleanValue ENABLE_SPAWNER_REMOVAL;
@@ -32,10 +30,6 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.IntValue MAX_NOISE_TARGETS;
     public static final ModConfigSpec.IntValue MAX_PATH_REQUESTS_PER_TICK;
 
-    public static final ModConfigSpec.IntValue BLEEDING_CHANCE_PERCENT;
-    public static final ModConfigSpec.IntValue MAX_BLEEDING_SEVERITY;
-    public static final ModConfigSpec.IntValue BLEEDING_TICK_INTERVAL_TICKS;
-    public static final ModConfigSpec.DoubleValue BLEEDING_DAMAGE_PER_SEVERITY;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -57,10 +51,6 @@ public final class AftermathServerConfig {
                 .define("enableBlockBreaking", false);
         ENABLE_DAY_PROGRESSION = builder.comment("Scale noise detection and group sizes using the saved apocalypse day.")
                 .define("enableDayProgression", true);
-        ENABLE_BLEEDING = builder.comment("Enable Aftermath fallback bleeding when a detailed external medical system is not active.")
-                .define("enableBleeding", true);
-        PREFER_EXTERNAL_MEDICAL_SYSTEM = builder.comment("Prefer First Aid New + Model Injuries for body-part injuries and bleeding when both are installed.")
-                .define("preferExternalMedicalSystem", true);
         ENABLE_MOODLES = builder.comment("Enable server-authoritative tiredness, exertion and panic Moodles.")
                 .define("enableMoodles", true);
         ENABLE_HOSTILE_SPAWN_FILTER = builder.comment("Block unlisted hostile mob spawns using the world_rules/spawn_control.json datapack policy.")
@@ -89,17 +79,6 @@ public final class AftermathServerConfig {
                 .defineInRange("maxNoiseTargetsPerEvent", 32, 1, 128);
         MAX_PATH_REQUESTS_PER_TICK = builder.comment("Global Aftermath path requests allowed per tick in each dimension.")
                 .defineInRange("maxPathRequestsPerTick", 16, 1, 256);
-        builder.pop();
-
-        builder.push("injuries_and_first_aid");
-        BLEEDING_CHANCE_PERCENT = builder.comment("Chance in percent for a hostile hit that deals damage to cause or worsen bleeding.")
-                .defineInRange("bleedingChancePercent", 25, 0, 100);
-        MAX_BLEEDING_SEVERITY = builder.comment("Maximum stacking severity of bleeding.")
-                .defineInRange("maxBleedingSeverity", 3, 1, 10);
-        BLEEDING_TICK_INTERVAL_TICKS = builder.comment("Ticks between bleeding damage ticks (20 ticks = 1 second).")
-                .defineInRange("bleedingDamageIntervalTicks", 40, 10, 1200);
-        BLEEDING_DAMAGE_PER_SEVERITY = builder.comment("Damage dealt per bleeding severity level at each damage tick.")
-                .defineInRange("bleedingDamagePerSeverity", 0.5D, 0.0D, 10.0D);
         builder.pop();
 
         SPEC = builder.build();

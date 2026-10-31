@@ -21,6 +21,10 @@ requiredMods=["create"]
 config="aftermath.farmersdelight.mixins.json"
 requiredMods=["farmersdelight"]
 
+[[mixins]]
+config="aftermath.firstaid.mixins.json"
+requiredMods=["firstaid"]
+
 [[dependencies.${mod_id}]]
 modId="neoforge"
 type="required"

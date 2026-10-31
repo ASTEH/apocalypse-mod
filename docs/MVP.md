@@ -90,19 +90,19 @@
 
 **Acceptance:** firearm kills award XP to the mapped or inferred class; exact mappings override inference; swapping weapons before a bullet hits does not misattribute it; no crash occurs without TaCZ; firing attracts already-loaded zombies; melee proficiency remains unchanged.
 
-## M7 — Injuries and first aid
+## M7 — Medical integration (replaces the retired standalone system)
 
-- [x] Persistent bleeding status with severity and countdown; saved across relogs and cleared on death.
-- [x] Configurable chance of bleeding from a damaging hostile hit and configurable severity/damage cadence.
-- [x] Craftable bandage item and Russian/English translations.
-- [x] Bandage reduces bleeding severity; one bandage stops a mild wound.
-- [x] Medic profession fully treats bleeding with one bandage and starts with three bandages.
-- [x] `/aftermath wounds` displays injury status; `/aftermath status` includes the bleeding toggle.
-- [ ] CI build and clean client/dedicated-server startup.
-- [ ] Manual test: chance 100% causes bleeding, severity stacks only to the configured cap, periodic damage occurs, and bandages stop/reduce bleeding.
-- [ ] Manual test: relog preserves a wound timer; death clears it; Medic bonus works; disabling bleeding prevents damage.
+- [x] First Aid New + Model Injuries selected as the authoritative injury, bleeding and treatment stack.
+- [x] Removed Aftermath's standalone bleeding attachment/timer, bleeding Moodle, bandage item, recipe and configuration.
+- [x] Removed the Aftermath bandage from the Medic profession's starter kit.
+- [x] Added an optional First Aid New treatment-completion bridge that awards First Aid skill XP through the existing anti-farm limits.
+- [x] Preserved panic/stress Moodles on hostile damage and left limb/pain/movement penalties to the medical mods.
+- [ ] CI build and clean dedicated-server startup with and without First Aid New.
+- [ ] In-game test: completed body-part treatment awards First Aid XP; interrupted treatment does not.
+- [ ] In-game test: Medic Triage XP bonus applies and daily/action caps still prevent farming.
+- [ ] In-game test: Model Injuries limb restrictions and Aftermath stress/firearm-spread effects work together without duplicated injury penalties.
 
-**Acceptance:** only hostile damage can trigger bleeding; the server owns all wound state and damage; failed bandage use does not consume an item; injury status persists safely without TaCZ or other optional mods.
+**Acceptance:** Aftermath does not register its own anatomy, wound timer, blood loss or bandage. First Aid New / Model Injuries remain authoritative for injuries; Aftermath adds skill progression and stress/Moodle systems without overriding medical mechanics.
 
 ## User roadmap — Stage 1: Trait expansion
 

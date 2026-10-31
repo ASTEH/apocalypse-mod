@@ -11,7 +11,6 @@ import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.learning.LearningDefinitions;
 import dev.aftermath.learning.LearningService;
 import dev.aftermath.learning.compat.LrTacticalCompatibility;
-import dev.aftermath.medical.FirstAidService;
 import dev.aftermath.medical.MedicalCompatibilityService;
 import dev.aftermath.weapon.FirearmDefinitions;
 import dev.aftermath.weapon.TaczCompatibility;
@@ -69,8 +68,6 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onLivingHeal);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(TraitRuntimeService::onPlayerLogout);
-        NeoForge.EVENT_BUS.addListener(FirstAidService::onLivingDamage);
-        NeoForge.EVENT_BUS.addListener(FirstAidService::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(LearningDefinitions::register);
         NeoForge.EVENT_BUS.addListener(FirearmDefinitions::register);
         NeoForge.EVENT_BUS.addListener(LearningService::onPlayerTick);

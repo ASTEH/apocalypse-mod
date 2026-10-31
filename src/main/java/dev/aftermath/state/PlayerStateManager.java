@@ -8,7 +8,6 @@ import dev.aftermath.character.AftermathAttachments;
 import dev.aftermath.character.CharacterProfile;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.MoodlesSyncPayload;
-import dev.aftermath.medical.BleedingStatus;
 import dev.aftermath.compat.ColdSweatCompatibility;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -135,6 +134,8 @@ public final class PlayerStateManager {
         PlayerStateData before = player.getData(AftermathAttachments.PLAYER_STATES);
         Map<String, Double> values = new LinkedHashMap<>(before.values());
         boolean changed = false;
+        // Remove the retired Aftermath bleeding Moodle value from existing world saves.
+        if (values.remove("aftermath:bleeding") != null) changed = true;
 
         for (PlayerStateDefinition definition : definitions.states().values()) {
             String id = definition.id().toString();
@@ -157,21 +158,7 @@ public final class PlayerStateManager {
             String id = definition.id().toString();
             double current = values.getOrDefault(id, definition.initialValue());
 
-            // Mirror the authoritative bleeding system without maintaining a second bleeding timer.
-            if (id.equals("aftermath:bleeding")) {
-                BleedingStatus bleeding = player.getData(AftermathAttachments.BLEEDING_STATUS);
-                int maximum = Math.max(1, AftermathServerConfig.MAX_BLEEDING_SEVERITY.get());
-                double derived = AftermathServerConfig.ENABLE_BLEEDING.get() && bleeding.isBleeding()
-                        ? 100.0D * bleeding.severity() / maximum : 0.0D;
-                double next = definition.clamp(derived);
-                if (Math.abs(next - current) > 0.000001D) {
-                    values.put(id, next);
-                    changed = true;
-                }
-                continue;
-            }
-
-            // Cold Sweat's BODY temperature is an absolute value, not a delta.
+ is an absolute value, not a delta.
             if (id.equals("aftermath:temperature")) {
                 double bodyTemperature = ColdSweatCompatibility.getBodyTemperature(player);
                 double next = definition.clamp(Double.isFinite(bodyTemperature) ? bodyTemperature : 0.0D);
@@ -244,7 +231,7 @@ public final class PlayerStateManager {
         boolean changed = false;
         for (PlayerStateDefinition definition : definitions.states().values()) {
             String id = definition.id().toString();
-            if (id.equals("aftermath:bleeding") || id.equals("aftermath:temperature")) continue;
+            if (id.equals("aftermath:temperature")) continue;
             double delta = 0.0D;
             for (PlayerStateDefinition.Source source : definition.sources()) {
                 if (source.type().equals("sleeping")) {
@@ -325,6 +312,8 @@ public final class PlayerStateManager {
         PlayerStateData before = player.getData(AftermathAttachments.PLAYER_STATES);
         Map<String, Double> values = new LinkedHashMap<>(before.values());
         boolean changed = false;
+        // Remove the retired Aftermath bleeding Moodle value from existing world saves.
+        if (values.remove("aftermath:bleeding") != null) changed = true;
 
         for (PlayerStateDefinition definition : definitions.states().values()) {
             double current = values.getOrDefault(definition.id().toString(), definition.initialValue());
@@ -382,6 +371,8 @@ public final class PlayerStateManager {
         PlayerStateData before = player.getData(AftermathAttachments.PLAYER_STATES);
         Map<String, Double> values = new LinkedHashMap<>(before.values());
         boolean changed = false;
+        // Remove the retired Aftermath bleeding Moodle value from existing world saves.
+        if (values.remove("aftermath:bleeding") != null) changed = true;
         for (PlayerStateDefinition definition : definitions.states().values()) {
             if (!values.containsKey(definition.id().toString())) {
                 values.put(definition.id().toString(), definition.initialValue());

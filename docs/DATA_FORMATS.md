@@ -83,18 +83,11 @@ Hold the gun and run `/aftermath weapons held` to display the exact TaCZ gun ID 
 
 Weapon experience is stored separately for melee, pistol, shotgun, rifle, and heavy classes.
 
-## Injuries and first aid (M7)
+## Medical integration (M7)
 
-Bleeding is applied only on the logical server when an `Enemy` causes a player to take damage. Its chance, severity cap, damage interval, and damage per severity are server-configurable; no client-side timer determines damage. Injury severity persists across relogs but is intentionally not copied on death.
+Aftermath does not register a local bleeding timer, severity attachment, bandage item, bandage recipe or bleeding Moodle. First Aid New owns body-part health and treatment; Model Injuries extends it with structural injuries, blood loss and recovery. Use `/aftermath medical status` or `/aftermath wounds` to inspect provider detection.
 
-Default server-config values:
-- `features.enableBleeding: true`
-- `injuries_and_first_aid.bleedingChancePercent: 25`
-- `injuries_and_first_aid.maxBleedingSeverity: 3`
-- `injuries_and_first_aid.bleedingDamageIntervalTicks: 40` (2 seconds)
-- `injuries_and_first_aid.bleedingDamagePerSeverity: 0.5`
-
-Craft a bandage from paper, string, and white wool. Right-click it while bleeding to reduce severity by one; at severity 1 it stops the bleeding. The Medic profession can fully treat any bleeding severity with one bandage. If no bleeding is active, the bandage is not consumed. Use `/aftermath wounds` to inspect the current state. The starter kit of a new Medic character includes three bandages.
+The optional `aftermath.firstaid.mixins.json` integration is loaded only when mod ID `firstaid` is present. It observes the First Aid New body-part treatment completion callback and awards the Aftermath `first_aid` skill using the existing daily/action anti-farm controls. The Medic's Triage trait multiplies this XP as usual. Aftermath Moodles still respond to hostile `damage_taken` events; anatomical injury penalties remain owned by First Aid New / Model Injuries.
 
 ## Lesson
 

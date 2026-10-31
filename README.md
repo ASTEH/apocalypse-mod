@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** The core character flow, learning, noise/horde behavior, day progression, firearm proficiency, and M7 bleeding/first aid are implemented. User-roadmap Stage 1 (trait expansion) is in progress on its own branch; this adds JSON-defined traits and server/client hooks without replacing the existing character flow.
+> **Status:** The core character flow, learning, noise/horde behavior, day progression, firearm proficiency, and First Aid New / Model Injuries integration are implemented. User-roadmap Stage 1 (trait expansion) is in progress on its own branch; this adds JSON-defined traits and server/client hooks without replacing the existing character flow.
 
 ## Requirements
 
@@ -32,7 +32,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 - [ ] **M4 — Zombie groups:** configurable members/leaders and one server-side noise event; no artificial spawns.
 - [ ] **M5 — Day progression & performance:** progression stages, goal throttling, bounded searches, optional door interaction, profiling.
 - [x] **M6 — Optional integrations:** TaCZ firearm XP/noise adapter with custom-gunpack ID inference and explicit datapack overrides. Other gun mods remain separate adapters.
-- [x] **M7 — Injuries & first aid:** hostile-hit bleeding, persistent wound severity, bandage treatment, medic profession advantage, configurable balance.
+- [x] **M7 — Medical integration:** First Aid New + Model Injuries provide injuries, bleeding and treatment; Aftermath awards First Aid skill XP for completed First Aid body-part treatments.
 - [ ] **Roadmap Stage 1 — Traits expansion:** 18 new trait definitions, signed point costs, profession requirements, conflicts, server hooks, and isolated client sound/fog effects.
 
 ## Initial data layout

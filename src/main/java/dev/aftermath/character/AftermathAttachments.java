@@ -1,7 +1,6 @@
 package dev.aftermath.character;
 
 import dev.aftermath.AftermathMod;
-import dev.aftermath.medical.BleedingStatus;
 import dev.aftermath.state.PlayerStateData;
 import com.mojang.serialization.Codec;
 import net.neoforged.bus.api.IEventBus;
@@ -54,14 +53,6 @@ public final class AftermathAttachments {
             () -> AttachmentType.builder(PlayerStateData::empty)
                     .serialize(PlayerStateData.CODEC)
                     .copyOnDeath()
-                    .build()
-    );
-
-    /** Injuries persist through relogs, but deliberately do not copy to a new life on death. */
-    public static final Supplier<AttachmentType<BleedingStatus>> BLEEDING_STATUS = TYPES.register(
-            "bleeding_status",
-            () -> AttachmentType.builder(BleedingStatus::empty)
-                    .serialize(BleedingStatus.CODEC)
                     .build()
     );
 

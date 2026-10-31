@@ -1,16 +1,14 @@
 package dev.aftermath.medical;
 
 import dev.aftermath.AftermathMod;
-import dev.aftermath.config.AftermathServerConfig;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
 
 import java.util.Locale;
 
 /**
- * Selects one authoritative blood-loss implementation.
- * First Aid New owns body-part health and treatment; Model Injuries adds detailed
- * structural injuries and its own blood-loss system.
+ * Reports the external medical provider. Aftermath deliberately does not maintain
+ * its own body-part, bleeding, or bandage system.
  */
 public final class MedicalCompatibilityService {
     private static final boolean FIRST_AID_LOADED = ModList.get().isLoaded("firstaid");
@@ -31,33 +29,30 @@ public final class MedicalCompatibilityService {
         return MODEL_INJURIES_LOADED;
     }
 
-    /**
-     * The legacy Aftermath bleeding timer is redundant only when both First Aid and
-     * Model Injuries are present. First Aid alone remains supported with Aftermath fallback.
-     */
-    public static boolean usesExternalMedicalSystem() {
-        return AftermathServerConfig.PREFER_EXTERNAL_MEDICAL_SYSTEM.get()
-                && FIRST_AID_LOADED && MODEL_INJURIES_LOADED;
+    public static String statusId() {
+        if (FIRST_AID_LOADED && MODEL_INJURIES_LOADED) return "firstaid+model_injuries";
+        if (FIRST_AID_LOADED) return "firstaid";
+        if (MODEL_INJURIES_LOADED) return "model_injuries_without_firstaid";
+        return "missing";
     }
 
     public static void logDetectedMedicalMods() {
         if (FIRST_AID_LOADED && MODEL_INJURIES_LOADED) {
-            AftermathMod.LOGGER.info("First Aid New and Model Injuries detected. Their body-part injury and bleeding systems are authoritative; Aftermath fallback bleeding will be skipped.");
+            AftermathMod.LOGGER.info("First Aid New and Model Injuries detected. Their injury and treatment systems are authoritative; Aftermath does not register a parallel bleeding or bandage system.");
         } else if (FIRST_AID_LOADED) {
-            AftermathMod.LOGGER.info("First Aid New detected without Model Injuries. First Aid owns body-part health; Aftermath fallback bleeding remains available.");
+            AftermathMod.LOGGER.info("First Aid New detected without Model Injuries. Body-part health and treatment are provided by First Aid New; advanced structural injuries are unavailable.");
         } else {
-            AftermathMod.LOGGER.info("No First Aid medical system detected. Aftermath standalone first-aid fallback remains available.");
+            AftermathMod.LOGGER.warn("First Aid New was not detected. Aftermath's legacy bleeding and bandage fallback has been removed; install First Aid New (and Model Injuries for detailed structural injuries).");
         }
     }
 
     public static Component buildStatusMessage() {
-        if (usesExternalMedicalSystem()) {
-            return Component.translatable("message.aftermath.medical.status.external");
-        }
-        if (FIRST_AID_LOADED) {
-            return Component.translatable("message.aftermath.medical.status.firstaid");
-        }
-        return Component.translatable("message.aftermath.medical.status.fallback");
+        return Component.translatable(switch (statusId()) {
+            case "firstaid+model_injuries" -> "message.aftermath.medical.status.external";
+            case "firstaid" -> "message.aftermath.medical.status.firstaid";
+            case "model_injuries_without_firstaid" -> "message.aftermath.medical.status.model_injuries_without_firstaid";
+            default -> "message.aftermath.medical.status.missing";
+        });
     }
 
     private static String normalize(String value) {

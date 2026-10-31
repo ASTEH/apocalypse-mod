@@ -1,0 +1,12 @@
+{
+  "required": false,
+  "minVersion": "0.8.5",
+  "package": "dev.aftermath.mixin.firstaid",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "DamageablePartTreatmentMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

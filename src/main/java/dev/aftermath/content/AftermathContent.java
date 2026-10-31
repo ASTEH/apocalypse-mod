@@ -3,7 +3,6 @@ package dev.aftermath.content;
 import dev.aftermath.AftermathMod;
 import dev.aftermath.learning.TrainingManualItem;
 import dev.aftermath.learning.TrainingVhsTapeItem;
-import dev.aftermath.medical.BandageItem;
 import dev.aftermath.learning.TrainingTelevisionBlock;
 import dev.aftermath.learning.TrainingTelevisionBlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -38,10 +37,6 @@ public final class AftermathContent {
     public static final Supplier<BlockEntityType<TrainingTelevisionBlockEntity>> TRAINING_TELEVISION_BLOCK_ENTITY =
             BLOCK_ENTITIES.register("training_television",
                     () -> BlockEntityType.Builder.of(TrainingTelevisionBlockEntity::new, TRAINING_TELEVISION.get()).build(null));
-
-    public static final DeferredItem<BandageItem> BANDAGE = ITEMS.register(
-            "bandage",
-            () -> new BandageItem(new Item.Properties().stacksTo(16)));
 
     public static final DeferredItem<TrainingManualItem> MANUAL_FIRST_AID = ITEMS.register(
             "training_manual_first_aid",

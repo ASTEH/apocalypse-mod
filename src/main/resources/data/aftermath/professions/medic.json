@@ -7,7 +7,10 @@
   "startPoints": 8,
   "allowed_traits": [],
   "grantedTraits": [],
-  "uniqueTraits": ["aftermath:medic_triage", "aftermath:medic_fragile_hands"],
+  "uniqueTraits": [
+    "aftermath:medic_triage",
+    "aftermath:medic_fragile_hands"
+  ],
   "skillBonuses": {
     "first_aid": 2
   },
@@ -19,10 +22,6 @@
     {
       "item": "minecraft:honey_bottle",
       "count": 2
-    },
-    {
-      "item": "aftermath:bandage",
-      "count": 3
     },
     {
       "mod": "lrtactical",
