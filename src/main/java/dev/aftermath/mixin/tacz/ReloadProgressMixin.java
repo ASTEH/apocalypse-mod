@@ -32,7 +32,7 @@ public abstract class ReloadProgressMixin {
 
         String weaponClass = TaczCompatibility.weaponClassForItem(getItemStack());
         double durationMultiplier = WeaponProgressionService.reloadDurationMultiplier(player, weaponClass);
-        if (durationMultiplier <= 1.0001D) return;
+        if (Math.abs(durationMultiplier - 1.0D) <= 0.0001D) return;
 
         // Lower effective elapsed time means the weapon's native reload state machine completes later.
         callback.setReturnValue(Math.max(0L, Math.round(elapsed / durationMultiplier)));
