@@ -136,6 +136,27 @@ This is distinct from the historical M1–M7 milestones above. It extends the ex
 
 **Acceptance:** all active trait definitions load without errors; the UI and server agree on points and compatibility; relog restores selected client-side sound/visual behavior; standalone NeoForge works with optional mods absent.
 
+## User roadmap — Stage 23: Scavenging search
+
+- [x] Retained and extended the existing `ForagingDefinitions` and `ForagingWorldData` preparation instead of replacing it.
+- [x] Added validated datapack loot categories for food, stones, wood, trash, rare finds, skill-6 herbs and skill-7 fruit.
+- [x] Added contextual weight/filter data for wet weather, recent rain, night, cold-biome winter proxy, forest/farm/road/urban surroundings and focused-category odds.
+- [x] Added per-dimension persistence for first-rolled loot and depleted spots with seven in-game-day regrowth and a bounded cache.
+- [x] Added server-authoritative deterministic search around active players; candidates are considered only in already-loaded chunks and no marker entities are created.
+- [x] Added END search toggle, G category cycling, H collection and `/aftermath search`; all keybinds are rebindable.
+- [x] Added a non-blocking radar HUD with a search-radius ring, approach eye markers and item reveal at close range.
+- [x] Added server validation for collection requests and awarded scavenging XP through the existing `LearningService` anti-farm/cap logic.
+- [x] Added the Wild Herbs crafting ingredient and RU/EN labels. It has no medical effects and does not replace the medical mods.
+- [x] Documented controls, datapack schema, config and the current season/biome-context limitations in `docs/FORAGING.md`.
+- [ ] Confirm the Stage23 Java 21 GitHub Actions build.
+- [ ] In-game acceptance: END/G/H, rebinds, movement while HUD active, focus odds, close-range reveal, item collection and malicious/duplicate pickup rejection.
+- [ ] In-game acceptance: skill/profession/trait radius, darkness limit, rain/recent rain, night finds, winter-like biome behavior, farm/road/urban contexts and regrowth after seven in-game days.
+- [ ] In-game acceptance: relog/world restart persistence, multiple searching players, client/server startup without optional mods and no chunk-forcing/performance regressions.
+
+**Known limits:** winter is a biome-temperature proxy rather than a calendar season; there is no optional season-mod adapter. Urban/farm/road recognition currently uses nearby vanilla block patterns. Ground detection is bounded around the player's current floor; it does not survey remote floors or load chunks.
+
+**Acceptance:** only the server reveals and grants finds; clients cannot supply loot; resource points remain stable through focus changes/relog; collection depletes the point; unloaded chunks are never requested; the player can keep moving while searching.
+
 ## Release gate
 
 A stage is not done until CI passes, client and dedicated server launch, clean NeoForge-only startup works and manual acceptance tests pass.
