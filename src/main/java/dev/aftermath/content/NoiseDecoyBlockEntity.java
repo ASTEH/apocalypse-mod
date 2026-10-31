@@ -29,7 +29,8 @@ public final class NoiseDecoyBlockEntity extends BlockEntity {
     public void serverTick() {
         Level currentLevel = getLevel();
         if (!(currentLevel instanceof ServerLevel level) || level.isClientSide || !active
-                || !AftermathServerConfig.ENABLE_NOISE_DECOYS.get()) return;
+                || !AftermathServerConfig.ENABLE_NOISE_DECOYS.get()
+                || !AftermathServerConfig.ENABLE_NOISE_EVENTS.get()) return;
         if (!(getBlockState().getBlock() instanceof NoiseDecoyBlock device)) {
             active = false;
             setChanged();
