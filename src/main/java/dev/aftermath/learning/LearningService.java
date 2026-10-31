@@ -2,6 +2,7 @@ package dev.aftermath.learning;
 
 import dev.aftermath.AftermathMod;
 import dev.aftermath.character.AftermathAttachments;
+import dev.aftermath.character.WeaponProgressionService;
 import dev.aftermath.character.CharacterDefinitions;
 import dev.aftermath.character.CharacterProfile;
 import dev.aftermath.character.TraitRuntimeService;
@@ -623,6 +624,11 @@ public final class LearningService {
     public static int skillLevel(ServerPlayer player, ResourceLocation skillId) {
         LearningDefinitions.SkillDefinition definition = LearningDefinitions.snapshot().skills().get(skillId);
         if (definition == null) return 1;
+        if (definition.progressionSource().equals("weapon")) {
+            int xp = player.getData(AftermathAttachments.WEAPON_PROGRESS)
+                    .experienceFor(definition.progressionKey());
+            return WeaponProgressionService.levelFor(xp);
+        }
         LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
         int experienceLevel = definition.levelFor(progress.experienceFor(skillId.toString()));
         CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);

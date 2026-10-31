@@ -1,21 +1,15 @@
 package dev.aftermath.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import dev.aftermath.network.RequestSkillsSnapshotPayload;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
-import dev.aftermath.network.RequestSkillsSnapshotPayload;
 import org.lwjgl.glfw.GLFW;
-import com.mojang.blaze3d.platform.InputConstants;
 
 /** Client-only, rebindable entry point for the unified survivor skills screen. */
 public final class SkillsClientEvents {

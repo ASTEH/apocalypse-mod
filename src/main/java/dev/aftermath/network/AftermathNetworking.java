@@ -38,8 +38,11 @@ public final class AftermathNetworking {
                 (payload, context) -> context.enqueueWork(() ->
                         invokeClient("handleWeaponProgress", WeaponProgressSyncPayload.class, payload)));
         registrar.playToServer(RequestSkillsSnapshotPayload.TYPE, RequestSkillsSnapshotPayload.STREAM_CODEC,
-                (payload, context) -> context.enqueueWork(() ->
-                        SkillsMenuService.sendSnapshot(context.player())));
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof net.minecraft.server.level.ServerPlayer player) {
+                        SkillsMenuService.sendSnapshot(player);
+                    }
+                }));
         registrar.playToClient(SkillsSnapshotPayload.TYPE, SkillsSnapshotPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() ->
                         invokeClient("handleSkillsSnapshot", SkillsSnapshotPayload.class, payload)));
