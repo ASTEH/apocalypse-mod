@@ -173,13 +173,56 @@ Journal items (HottieZ/HunkZ), stress and boredom mechanics are explicitly exclu
 - [x] Durability remains controlled by the item's original vanilla/modded system; broken items do not grant patch armor, and normal repair of the original item retains patch metadata.
 - [x] No journals, moodles, stress/boredom, injuries, medical treatment or bleeding logic were added.
 - [x] Added `docs/CLOTHING_PATCHES.md` with recipe, controls, storage, durability and acceptance tests.
-- [ ] Confirm Java 21 / NeoForge GitHub Actions build on the Stage25 head.
-- [ ] In-game acceptance: recipe, application, three-patch cap, attribute bonus and multiplayer validation.
-- [ ] In-game acceptance: durability, repair persistence and third-party clothing/armor compatibility.
+- [x] Confirm Java 21 / NeoForge GitHub Actions build on the Stage25 implementation and fix commits.
+- [x] In-game acceptance: basic clothing-patch application verified by maintainer.
+- [ ] Additional in-game acceptance: recipe, three-patch cap, armor attribute, multiplayer, durability, repair persistence and third-party clothing/armor compatibility.
 
 **Known limits:** patch integration can only modify armor attributes that are exposed through the normal item attribute system. Clothing that is equipped or protected entirely through a third-party custom system may not honor this bonus and must be tested individually. Aftermath will not rewrite or replace that mod's armor behavior.
 
 **Acceptance:** one original clothing item can receive at most three persistent patches; each adds +0.5 armor while worn; normal item data and durability stay owned by the original item; patching and item consumption are server-authoritative.
+
+## User roadmap — Stage 26: Parkour, zombie camouflage and noise decoys
+
+### Parkour
+
+- [x] Added a rebindable `V` action under Options → Controls → Aftermath.
+- [x] Client sends only an action request; all destination coordinates and movement decisions are computed on the server.
+- [x] Added collision-sampled vault and mantle paths with a maximum 1.15-block raised landing.
+- [x] Added crouched traversal through openings that fit the crouching player box but not the standing box.
+- [x] Validates every sampled player-sized AABB with the level collision API; checks chunk availability and a sturdy landing surface; no arbitrary destination or client coordinates are accepted.
+- [x] Requires sprinting, grounded movement and a server-side cooldown; excludes vehicles, flying and fluids.
+- [ ] In-game acceptance: vault fences/low obstacles, climb short ledges, pass suitable crouched openings; reject solid walls and unsupported landings.
+
+### Zombie camouflage
+
+- [x] Added a craftable one-use Zombie Camouflage Paste made from vanilla rotten flesh, bone meal and slime ball.
+- [x] Camouflage lasts 3 in-game minutes and is tracked server-side using Overworld game time.
+- [x] Reuses the existing zombie classification and intercepts `LivingChangeTargetEvent`; visible zombies have a 25% chance to detect the masked player beyond 5 blocks, while close-range detection remains normal.
+- [x] Does not silence the player or change NoiseService hearing ranges. Existing hearing and noise attraction continue to work.
+- [x] Camouflage is removed by attacking, receiving damage or emitting an accepted loud noise with an effective radius of at least 28 blocks.
+- [ ] In-game acceptance: test ordinary sight detection at range, guaranteed close detection, and removal from attacks, incoming damage and gunfire.
+
+### Noise decoys
+
+- [x] Added placeable Radio and Alarm Clock blocks with saved block-entity state.
+- [x] Added craftable Noise Decoy Batteries. Each battery provides 3 minutes of operating time; each device stores up to 6 minutes.
+- [x] Empty-hand right-click toggles a charged device on/off; using a battery on it installs charge.
+- [x] Radio periodically emits a radius-72 noise; Alarm Clock emits radius-44 noise.
+- [x] Both devices call the existing `NoiseService.emitNoise` with data-driven noise definitions; existing `HordeDirector` assigns paths to already-loaded, tagged zombies.
+- [x] Noise targets remain capped by the existing limits. No second noise manager, spawn calls or chunk-forcing behavior was added.
+- [x] Added recipes, block/item models, and RU/EN labels/messages.
+- [ ] In-game acceptance: charge, activate, switch off, run until battery depletion, reload after chunk/world save and verify periodic lure behavior.
+- [ ] In-game acceptance: verify radio/alarm attract existing zombies in range without creating new entities, and that disabling noise events stops the lure.
+
+### Stage-wide validation
+
+- [x] Added separate server-config toggles: `enableParkour`, `enableZombieCamouflage`, `enableNoiseDecoys`.
+- [x] Documented controls, recipes, limitations, noise profiles and acceptance tests in `docs/STAGE_26_MOVEMENT_STEALTH_DECOYS.md`.
+- [ ] Confirm Java 21 / NeoForge GitHub Actions build on the final Stage26 head.
+- [ ] Confirm clean client and dedicated-server startup.
+- [ ] Maintainer in-game acceptance for all three systems.
+
+**Acceptance:** movement is computed and collision-validated only by the server; camouflage reduces vision-based target acquisition without suppressing hearing or making the player invisible; devices use the existing NoiseService/HordeDirector pipeline and attract only existing loaded zombies.
 
 ## Release gate
 
