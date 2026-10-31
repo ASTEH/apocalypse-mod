@@ -38,7 +38,7 @@ public final class MedicalCompatibilityService {
 
     public static void logDetectedMedicalMods() {
         if (FIRST_AID_LOADED && MODEL_INJURIES_LOADED) {
-            AftermathMod.LOGGER.info("First Aid New and Model Injuries detected. Model Injuries treatment/medicine success callbacks are connected to Aftermath First Aid XP; both mods own anatomy and medical mechanics.");
+            AftermathMod.LOGGER.info("First Aid New and Model Injuries detected. Aftermath observes successful InjuryState.treat/takeMedicine actions from standard item use, body-diagram care and team care; the external mods remain authoritative for anatomy and medical mechanics.");
         } else if (FIRST_AID_LOADED) {
             AftermathMod.LOGGER.info("First Aid New detected without Model Injuries. Body-part health and treatment are provided by First Aid New; Model Injuries-specific treatment XP hooks are not available.");
         } else {
