@@ -17,7 +17,6 @@ import dev.aftermath.weapon.TaczCompatibility;
 import dev.aftermath.foraging.ForagingDefinitions;
 import dev.aftermath.foraging.ForagingService;
 import dev.aftermath.clothing.ClothingPatchService;
-import dev.aftermath.parkour.ParkourService;
 import dev.aftermath.zombie.ZombieCamouflageService;
 import dev.aftermath.noise.HordeDirector;
 import dev.aftermath.noise.NoiseDefinitions;
@@ -63,7 +62,6 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(ZombieCamouflageService::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(ZombieCamouflageService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(ZombieCamouflageService::onServerStopping);
-        NeoForge.EVENT_BUS.addListener(ParkourService::onServerStopping);
         NeoForge.EVENT_BUS.addListener(WorldSpawnDefinitions::register);
         NeoForge.EVENT_BUS.addListener(MilitarySpawnControlService::onLevelTick);
         NeoForge.EVENT_BUS.addListener(MilitarySpawnControlService::onServerStopping);
