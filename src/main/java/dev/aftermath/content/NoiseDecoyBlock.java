@@ -57,6 +57,7 @@ public final class NoiseDecoyBlock extends Block implements EntityBlock {
             return InteractionResult.PASS;
         }
         if (level.isClientSide) return InteractionResult.SUCCESS;
+        if (!dev.aftermath.config.AftermathServerConfig.ENABLE_NOISE_DECOYS.get()) return InteractionResult.CONSUME;
 
         NoiseDecoyBlockEntity.ToggleResult result = decoy.toggle();
         switch (result) {
