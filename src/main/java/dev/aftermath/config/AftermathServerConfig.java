@@ -21,7 +21,6 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_MOODLES;
     public static final ModConfigSpec.BooleanValue ENABLE_HOSTILE_SPAWN_FILTER;
     public static final ModConfigSpec.BooleanValue ENABLE_SPAWNER_REMOVAL;
-    public static final ModConfigSpec.BooleanValue ENABLE_ZOMBIE_VARIANTS;
 
     public static final ModConfigSpec.IntValue WEAPON_XP_PER_KILL;
     public static final ModConfigSpec.IntValue MAX_XP_PER_VICTIM_PER_MINUTE;
@@ -64,8 +63,6 @@ public final class AftermathServerConfig {
                 .define("enableHostileSpawnFilter", true);
         ENABLE_SPAWNER_REMOVAL = builder.comment("Remove configured vanilla spawner blocks when their chunks finish loading.")
                 .define("enableSpawnerRemoval", true);
-        ENABLE_ZOMBIE_VARIANTS = builder.comment("Enable weighted, datapack-driven zombie stat and sense archetypes.")
-                .define("enableZombieVariants", true);
         builder.pop();
 
         builder.push("weapon_progression");

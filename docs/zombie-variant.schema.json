@@ -2,57 +2,167 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aftermath.example/schemas/zombie-variant.schema.json",
   "title": "Aftermath Zombie Variant",
-  "description": "Runtime definition loaded from data/<namespace>/zombie_variants/<name>.json.",
+  "description": "Data definition for a server-side zombie spawn archetype. This schema is documentation for Stage 2; Stage 1 does not load these files yet.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["target_entity_tag", "weight", "spawn", "attributes"],
+  "required": [
+    "id",
+    "name_key",
+    "spawn",
+    "attributes"
+  ],
   "properties": {
-    "target_entity_tag": {"type": "string", "pattern": "^[a-z0-9_.-]+:[a-z0-9_./-]+$"},
-    "weight": {"type": "integer", "minimum": 1, "maximum": 10000},
+    "id": {
+      "type": "string",
+      "pattern": "^aftermath:[a-z0-9_./-]+$"
+    },
+    "name_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entity_type": {
+      "type": "string",
+      "default": "minecraft:zombie",
+      "pattern": "^[a-z0-9_.-]+:[a-z0-9_./-]+$"
+    },
     "spawn": {
       "type": "object",
       "additionalProperties": false,
+      "required": [
+        "weight",
+        "time_of_day",
+        "group_size"
+      ],
       "properties": {
-        "time_of_day": {"type": "string", "enum": ["any", "day", "night"], "default": "any"},
-        "dimensions": {"type": "array", "items": {"type": "string", "pattern": "^[a-z0-9_.-]+:[a-z0-9_./-]+$"}, "uniqueItems": true},
-        "biomes": {"type": "array", "items": {"type": "string", "pattern": "^[a-z0-9_.-]+:[a-z0-9_./-]+$"}, "uniqueItems": true},
-        "spawn_types": {"type": "array", "items": {"type": "string", "pattern": "^[a-z_]+$"}, "default": ["natural", "chunk_generation"]},
-        "min_light": {"type": "integer", "minimum": 0, "maximum": 15},
-        "max_light": {"type": "integer", "minimum": 0, "maximum": 15}
+        "weight": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "time_of_day": {
+          "type": "string",
+          "enum": [
+            "any",
+            "day",
+            "night"
+          ]
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_.-]+:[a-z0-9_./-]+$"
+          },
+          "uniqueItems": true
+        },
+        "biomes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_.-]+:[a-z0-9_./-]+$"
+          },
+          "uniqueItems": true
+        },
+        "min_light": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "max_light": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "group_size": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "min",
+            "max"
+          ],
+          "properties": {
+            "min": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 32
+            },
+            "max": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 32
+            }
+          }
+        }
       }
     },
     "attributes": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["max_health", "movement_speed", "attack_damage"],
+      "required": [
+        "max_health",
+        "movement_speed",
+        "attack_damage"
+      ],
       "properties": {
-        "max_health": {"$ref": "#/$defs/numericRange"},
-        "movement_speed": {"$ref": "#/$defs/numericRange"},
-        "attack_damage": {"$ref": "#/$defs/numericRange"},
-        "follow_range": {"$ref": "#/$defs/numericRange"},
-        "knockback_resistance": {"$ref": "#/$defs/numericRange"}
+        "max_health": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 2048
+        },
+        "movement_speed": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "attack_damage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2048
+        },
+        "follow_range": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 128
+        },
+        "knockback_resistance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
       }
     },
     "senses": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "vision_range": {"$ref": "#/$defs/numericRange"},
-        "hearing_range": {"$ref": "#/$defs/numericRange"}
-      }
-    }
-  },
-  "$defs": {
-    "numericRange": {
-      "oneOf": [
-        {"type": "number"},
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["min", "max"],
-          "properties": {"min": {"type": "number"}, "max": {"type": "number"}}
+        "vision_range": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 128
+        },
+        "hearing_range": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 128
         }
-      ]
+      }
+    },
+    "abilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "sprint_burst",
+          "door_breaking",
+          "climb_obstacles",
+          "call_horde"
+        ]
+      }
     }
   }
 }

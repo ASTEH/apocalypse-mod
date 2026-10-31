@@ -56,9 +56,10 @@ public final class NoiseService {
         // This is a loaded-entity spatial query and never requests a chunk to be loaded.
         ArrayList<Mob> mobs = new ArrayList<>(level.getEntitiesOfClass(Mob.class, bounds,
                 mob -> mob.getType().is(tag) && mob.isAlive() && !mob.isRemoved() && !mob.isNoAi()));
-        double r2 = (double) radius * radius;
+        final int emittedRadius = radius;
         mobs.removeIf(mob -> {
-            double hearingRadius = Math.min(radius, ZombieVariantService.hearingRange(mob, radius));
+            double hearingRadius = Math.min(emittedRadius,
+                    ZombieVariantService.hearingRange(mob, emittedRadius));
             return mob.position().distanceToSqr(origin) > hearingRadius * hearingRadius;
         });
         mobs.sort(Comparator.comparingDouble(mob -> mob.position().distanceToSqr(origin)));
