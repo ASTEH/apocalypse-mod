@@ -1,0 +1,52 @@
+{
+  "entries": [
+    {
+      "item": "minecraft:sweet_berries",
+      "weight": 6,
+      "min_skill": 7,
+      "min_count": 1,
+      "max_count": 4,
+      "plant": true,
+      "wet_bonus": 2,
+      "biomes": [
+        "forest",
+        "taiga",
+        "grove"
+      ]
+    },
+    {
+      "item": "minecraft:glow_berries",
+      "weight": 2,
+      "min_skill": 8,
+      "min_count": 1,
+      "max_count": 3,
+      "plant": true,
+      "night_only": true,
+      "biomes": [
+        "lush_caves"
+      ]
+    },
+    {
+      "item": "minecraft:apple",
+      "weight": 3,
+      "min_skill": 7,
+      "min_count": 1,
+      "max_count": 2,
+      "plant": true,
+      "biomes": [
+        "forest",
+        "birch",
+        "grove"
+      ]
+    },
+    {
+      "item": "minecraft:melon_slice",
+      "weight": 2,
+      "min_skill": 7,
+      "min_count": 1,
+      "max_count": 4,
+      "plant": true,
+      "requires_farmland": true
+    }
+  ]
+}
