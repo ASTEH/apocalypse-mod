@@ -24,6 +24,7 @@ public final class ZombieVariantService {
 
     public static void onFinalizeSpawn(FinalizeSpawnEvent event) {
         if (!AftermathServerConfig.ENABLE_ZOMBIE_VARIANTS.get()) return;
+        if (event.isCanceled() || event.isSpawnCancelled()) return;
         Mob mob = event.getEntity();
         if (mob.level().isClientSide()) return;
 
