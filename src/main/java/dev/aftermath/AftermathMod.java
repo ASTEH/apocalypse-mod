@@ -27,6 +27,7 @@ import dev.aftermath.zombie.ZombieKillService;
 import dev.aftermath.zombie.ZombieVariantDefinitions;
 import dev.aftermath.zombie.ZombieVariantService;
 import dev.aftermath.zombie.ZombieNightSpawnService;
+import dev.aftermath.zombie.ZombieDoorInteractionService;
 import dev.aftermath.world.MilitarySpawnControlService;
 import dev.aftermath.world.WorldSpawnControlService;
 import dev.aftermath.world.WorldSpawnDefinitions;
@@ -96,6 +97,8 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(NoiseService::onLevelTick);
         NeoForge.EVENT_BUS.addListener(NoiseService::onServerStopping);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onEntityJoinLevel);
+        NeoForge.EVENT_BUS.addListener(ZombieDoorInteractionService::onEntityJoinLevel);
+        NeoForge.EVENT_BUS.addListener(ZombieDoorInteractionService::onServerStopping);
         NeoForge.EVENT_BUS.addListener(TaczCompatibility::onEntityJoinLevel);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onEntityLeaveLevel);
         NeoForge.EVENT_BUS.addListener(HordeDirector::onServerStopping);
