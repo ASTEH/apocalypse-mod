@@ -125,12 +125,16 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 // Temporary reverse-engineering task; remove after a stable integration point is found.
-tasks.register("inspectModelInjuries") {
-    doLast {
-        def jar = configurations.compileClasspath.files.find {
+abstract class InspectModelInjuriesTask extends org.gradle.api.DefaultTask {
+    @org.gradle.api.tasks.Classpath
+    abstract org.gradle.api.file.ConfigurableFileCollection getInspectionClasspath()
+
+    @org.gradle.api.tasks.TaskAction
+    void inspect() {
+        def jar = inspectionClasspath.files.find {
             it.name.toLowerCase().contains("model-injuries")
         }
-        if (jar == null) throw new GradleException("Model Injuries inspection dependency was not resolved.")
+        if (jar == null) throw new org.gradle.api.GradleException("Model Injuries inspection dependency was not resolved.")
         println("MODEL_INJURIES_JAR=" + jar.absolutePath)
         new java.util.jar.JarFile(jar).withCloseable { archive ->
             archive.entries().each { entry ->
@@ -148,6 +152,10 @@ tasks.register("inspectModelInjuries") {
             }
         }
     }
+}
+
+tasks.register("inspectModelInjuries", InspectModelInjuriesTask) {
+    inspectionClasspath.from(configurations.compileClasspath)
 }
 
 tasks.named("build") {
