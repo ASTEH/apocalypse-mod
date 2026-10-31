@@ -16,6 +16,12 @@ public final class NoiseBatteryItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
+        if (!dev.aftermath.config.AftermathServerConfig.ENABLE_NOISE_DECOYS.get()) {
+            if (!level.isClientSide && context.getPlayer() != null) {
+                context.getPlayer().sendSystemMessage(Component.translatable("message.aftermath.decoy.disabled"));
+            }
+            return InteractionResult.CONSUME;
+        }
         if (!(level.getBlockEntity(context.getClickedPos()) instanceof NoiseDecoyBlockEntity decoy)) {
             return super.useOn(context);
         }
