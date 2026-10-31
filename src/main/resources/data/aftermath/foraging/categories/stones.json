@@ -1,0 +1,44 @@
+{
+  "entries": [
+    {
+      "item": "minecraft:flint",
+      "weight": 8,
+      "min_count": 1,
+      "max_count": 3
+    },
+    {
+      "item": "minecraft:cobblestone",
+      "weight": 7,
+      "min_count": 1,
+      "max_count": 4
+    },
+    {
+      "item": "minecraft:gravel",
+      "weight": 6,
+      "min_count": 1,
+      "max_count": 4
+    },
+    {
+      "item": "minecraft:andesite",
+      "weight": 4,
+      "min_count": 1,
+      "max_count": 3,
+      "requires_road": true
+    },
+    {
+      "item": "minecraft:clay_ball",
+      "weight": 2,
+      "min_count": 1,
+      "max_count": 4,
+      "requires_wet": true,
+      "wet_bonus": 4
+    },
+    {
+      "item": "minecraft:stone",
+      "weight": 3,
+      "min_count": 1,
+      "max_count": 2,
+      "requires_road": true
+    }
+  ]
+}
