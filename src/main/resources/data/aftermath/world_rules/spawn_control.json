@@ -4,7 +4,9 @@
     "deny_unlisted_hostiles": true,
     "dimensions": [],
     "allow_hostile_entity_tag": "aftermath:allowed_hostile_spawns",
-    "allow_entity_namespaces": [],
+    "allow_entity_namespaces": [
+      "zombiechaos"
+    ],
     "blocked_entity_types": []
   },
   "spawner_removal": {
