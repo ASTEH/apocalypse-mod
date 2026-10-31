@@ -338,8 +338,8 @@
   "moodle.aftermath.temperature.heatstroke": "Тепловой удар",
   "moodle.aftermath.temperature.heatstroke.description": "Температура тела опасно высокая.",
   "moodle.aftermath.bleeding": "Кровотечение",
-  "message.aftermath.medical.status.external": "Медицина: First Aid New + Model Injuries. Завершённых процедур First Aid, замеченных Aftermath с момента запуска сервера: %1$s.",
-  "message.aftermath.medical.status.firstaid": "Медицина: First Aid New обнаружен. Завершённых процедур First Aid, замеченных Aftermath с момента запуска сервера: %1$s. Model Injuries не найден.",
+  "message.aftermath.medical.status.external": "Медицина: First Aid New + Model Injuries. Завершённых процедур, замеченных Aftermath с запуска сервера: %1$s; процедур, за которые реально начислен опыт: %2$s.",
+  "message.aftermath.medical.status.firstaid": "Медицина: First Aid New обнаружен. Завершённых процедур, замеченных Aftermath с запуска сервера: %1$s; процедур, за которые реально начислен опыт: %2$s. Model Injuries не найден.",
   "message.aftermath.medical.status.model_injuries_without_firstaid": "Обнаружен Model Injuries, но отсутствует обязательный First Aid New. Проверь зависимости модов.",
   "message.aftermath.medical.status.missing": "First Aid New не найден. Aftermath больше не добавляет собственные кровотечение и бинты. Установи First Aid New и Model Injuries для расширенной медицины."
 }

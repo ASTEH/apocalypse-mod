@@ -19,6 +19,7 @@ public final class FirstAidSkillBridge {
     private static final Set<Object> SEEN_CONTEXTS =
             Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));
     private static final AtomicInteger COMPLETED_TREATMENTS = new AtomicInteger();
+    private static final AtomicInteger AWARDED_TREATMENTS = new AtomicInteger();
     private static boolean warnedAboutContext;
 
     private FirstAidSkillBridge() {}
@@ -36,6 +37,7 @@ public final class FirstAidSkillBridge {
 
             int count = COMPLETED_TREATMENTS.incrementAndGet();
             boolean awarded = LearningService.awardFirstAidXp(player);
+            if (awarded) AWARDED_TREATMENTS.incrementAndGet();
             if (count == 1) {
                 AftermathMod.LOGGER.info(
                         "First Aid New treatment callback is active. Completed server-side treatments observed: 1; XP awarded: {}.",
@@ -58,5 +60,9 @@ public final class FirstAidSkillBridge {
 
     public static int completedTreatmentsThisSession() {
         return COMPLETED_TREATMENTS.get();
+    }
+
+    public static int awardedTreatmentsThisSession() {
+        return AWARDED_TREATMENTS.get();
     }
 }

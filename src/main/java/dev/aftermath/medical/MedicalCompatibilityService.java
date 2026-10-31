@@ -53,7 +53,8 @@ public final class MedicalCompatibilityService {
             case "model_injuries_without_firstaid" -> "message.aftermath.medical.status.model_injuries_without_firstaid";
             default -> "message.aftermath.medical.status.missing";
         };
-        return Component.translatable(key, FirstAidSkillBridge.completedTreatmentsThisSession());
+        return Component.translatable(key, FirstAidSkillBridge.completedTreatmentsThisSession(),
+                FirstAidSkillBridge.awardedTreatmentsThisSession());
     }
 
     private static String normalize(String value) {
