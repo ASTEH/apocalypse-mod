@@ -21,7 +21,9 @@
 - `WeaponProgressionService`: XP and level damage bonuses for direct tagged melee hits and verified TaCZ projectile kills, with anti-farm controls.
 - `FirearmDefinitions`: reloads validated external gun-ID-to-class mappings from datapack JSON.
 - `TaczCompatibility`: reflection-only optional adapter for TaCZ server bullets; resolves actual projectile owner and gun ID, and emits shot noise without loading TaCZ types when absent.
-- `LearningDefinitions`: loads and validates lesson and TV JSON definitions.
+- `LearningDefinitions`: loads and validates lesson, TV, book, VHS and skill definitions. Skill metadata and progression sources are data-driven; weapon skills point to their existing weapon-class XP buckets instead of copying their thresholds.
+- `SkillsMenuService`: builds a bounded server-authoritative snapshot by combining persistent `LearningProgress`, profession starting skill levels and `WeaponProgress`; it never mutates progression.
+- `SkillsScreen` / `SkillsClientEvents`: render the unified categorized skills dossier and provide the rebindable client key. The client only requests a snapshot; all XP, levels and thresholds are calculated on the server.
 - `LearningService`: server-timed reading and scheduled TV sessions; persistent skill XP and per-material completion counts. All XP sources share a 120 XP per-skill in-game-day ceiling in addition to action-specific cooldowns and caps. Create and Farmer's Delight machine XP is credited to the nearest active player within 16 blocks.
 - `CreateLearningHooks`: optional mixin bridge for Create 6.0.10 recipe application, basin, millstone, fan item processing, crushing wheels and saw cutting; no Create classes are linked from core Java.
 - `FarmersDelightLearningHooks`: optional mixin bridge for completed cooking-pot and skillet recipes; output XP is credited to a nearby player with cooldown and daily cap.

@@ -106,6 +106,21 @@
 
 **Acceptance:** Aftermath does not register its own anatomy, wound timer, blood loss or bandage. First Aid New / Model Injuries remain authoritative for injuries; Aftermath adds skill progression and stress/Moodle systems without overriding medical mechanics.
 
+## User roadmap — Stage 22: Unified skills menu
+
+- [x] Audited the existing learning and weapon progression sources; retained both persistent data stores and all existing XP award paths.
+- [x] Extended the reloadable skill catalog with display name, description, category and progression-source metadata.
+- [x] Registered all eight existing learning skills and six separate weapon-class specializations in one dynamic catalog.
+- [x] Added a server-authoritative snapshot payload that combines learning XP, profession starting levels and weapon-class XP without trusting client values.
+- [x] Added a Project-Zomboid-inspired screen with category filters, scrollable skill list, current level, XP, progress bars, next-level XP and descriptions.
+- [x] Added the rebindable `K` key under Options → Controls → Aftermath and `/aftermath skills`.
+- [x] Preserved `/aftermath learning`, `/aftermath weapons` and existing diagnostic commands.
+- [x] Added RU/EN labels and descriptions for all 14 entries.
+- [x] Java 21 / NeoForge CI build passes on the Stage22 commit.
+- [ ] In-game acceptance: open via both entry points; verify categories, selection, scrolling, compact GUI scales, localization and progress for learning + each weapon class; verify profession starting levels and XP values match the existing commands.
+
+**Acceptance:** all registered skill definitions appear without hard-coded screen entries; opening the menu requests a fresh server snapshot; the client cannot award or edit XP; existing progression storage and award sources remain unchanged.
+
 ## User roadmap — Stage 1: Trait expansion
 
 This is distinct from the historical M1–M7 milestones above. It extends the existing character flow instead of replacing it.
