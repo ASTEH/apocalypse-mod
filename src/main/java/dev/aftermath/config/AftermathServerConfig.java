@@ -16,6 +16,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_NOISE_EVENTS;
     public static final ModConfigSpec.BooleanValue ENABLE_HORDE_BEHAVIOR;
     public static final ModConfigSpec.BooleanValue ENABLE_BLOCK_BREAKING;
+    public static final ModConfigSpec.BooleanValue ENABLE_ZOMBIE_DOOR_OPENING;
     public static final ModConfigSpec.BooleanValue ENABLE_DAY_PROGRESSION;
     public static final ModConfigSpec.BooleanValue ENABLE_HOSTILE_SPAWN_FILTER;
     public static final ModConfigSpec.BooleanValue ENABLE_SPAWNER_REMOVAL;
@@ -69,6 +70,8 @@ public final class AftermathServerConfig {
                 .define("enableHordeBehavior", false);
         ENABLE_BLOCK_BREAKING = builder.comment("Allow configured zombies to break explicitly allow-listed blocks. Disabled by default.")
                 .define("enableBlockBreaking", false);
+        ENABLE_ZOMBIE_DOOR_OPENING = builder.comment("Allow tagged zombie mobs with ground navigation to open wooden doors. This never breaks doors. Disabled by default.")
+                .define("enableZombieDoorOpening", false);
         ENABLE_DAY_PROGRESSION = builder.comment("Scale noise detection and group sizes using the saved apocalypse day.")
                 .define("enableDayProgression", true);
         ENABLE_HOSTILE_SPAWN_FILTER = builder.comment("Block unlisted hostile mob spawns using the world_rules/spawn_control.json datapack policy.")
