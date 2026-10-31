@@ -302,7 +302,7 @@ public final class ForagingService {
         int skillLevel = scavengingLevel(player);
         double radius = Math.min(AftermathServerConfig.FORAGING_MAX_BASE_RADIUS.get(),
                 AftermathServerConfig.FORAGING_BASE_RADIUS.get()
-                        + Math.max(0, skillLevel - 1) * AftermathServerConfig.FORAGING_RADIUS_PER_SKILL_LEVEL.get());
+                        + Math.max(0, skillLevel) * AftermathServerConfig.FORAGING_RADIUS_PER_SKILL_LEVEL.get());
         if (isScavenger(player)) radius += AftermathServerConfig.FORAGING_PROFESSION_RADIUS_BONUS.get();
         if (hasKeenEye(player)) radius += AftermathServerConfig.FORAGING_TRAIT_RADIUS_BONUS.get();
         return Math.max(3.0D, Math.min(15.0D, radius));
