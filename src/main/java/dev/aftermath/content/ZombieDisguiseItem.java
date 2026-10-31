@@ -20,9 +20,9 @@ public final class ZombieDisguiseItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context,
-                                List<net.minecraft.network.chat.Component> tooltip, TooltipFlag flag) {
+                                List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(net.minecraft.network.chat.Component.translatable("tooltip.aftermath.zombie_disguise"));
+        tooltip.add(Component.translatable("tooltip.aftermath.zombie_disguise"));
     }
 
     @Override
