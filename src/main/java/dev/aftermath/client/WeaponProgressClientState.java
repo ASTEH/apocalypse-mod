@@ -17,28 +17,47 @@ public final class WeaponProgressClientState {
     private static volatile float untrainedHeavyHandlingMultiplier = 1.4F;
 
     public static void apply(WeaponProgressSyncPayload payload) {
-        Map<String, Integer> parsed = new HashMap<>();
-        if (payload.experienceCsv() != null && !payload.experienceCsv().isBlank()) {
-            for (String entry : payload.experienceCsv().split(";")) {
-                String[] pair = entry.split("=", 2);
-                if (pair.length != 2) continue;
-                try {
-                    int xp = Integer.parseInt(pair[1]);
-                    if (xp >= 0) parsed.put(pair[0], xp);
-                } catch (NumberFormatException ignored) {
-                    // Ignore malformed entries; the client cannot mutate the server snapshot.
-                }
+        Map<String, Integer> parsedExperience = new HashMap<>();
+        parsePairs(payload.experienceCsv()).forEach((weaponClass, value) -> {
+            try {
+                int xp = Integer.parseInt(value);
+                if (xp >= 0) parsedExperience.put(weaponClass, xp);
+            } catch (NumberFormatException ignored) {
+                // Ignore malformed entries; the client cannot mutate the server snapshot.
             }
-        }
-        experience = Map.copyOf(parsed);
+        });
+
+        Map<String, Float> parsedMultipliers = new HashMap<>();
+        parsePairs(payload.handlingMultipliersCsv()).forEach((weaponClass, value) -> {
+            try {
+                float multiplier = Float.parseFloat(value);
+                if (Float.isFinite(multiplier)) parsedMultipliers.put(weaponClass, multiplier);
+            } catch (NumberFormatException ignored) {
+                // Retain safe defaults when an optional class multiplier is malformed.
+            }
+        });
+
+        experience = Map.copyOf(parsedExperience);
         progressionEnabled = payload.progressionEnabled();
         untrainedAimTimeMultiplier = Math.max(1.0F, payload.untrainedAimTimeMultiplier());
         untrainedRecoilPitch = Math.max(0.0F, payload.untrainedRecoilPitch());
         untrainedRecoilYaw = Math.max(0.0F, payload.untrainedRecoilYaw());
         untrainedShotgunHandlingMultiplier = clampHandlingMultiplier(
-                payload.untrainedShotgunHandlingMultiplier());
+                parsedMultipliers.getOrDefault("shotgun", 1.25F));
         untrainedHeavyHandlingMultiplier = clampHandlingMultiplier(
-                payload.untrainedHeavyHandlingMultiplier());
+                parsedMultipliers.getOrDefault("heavy", 1.4F));
+    }
+
+    private static Map<String, String> parsePairs(String csv) {
+        Map<String, String> parsed = new HashMap<>();
+        if (csv == null || csv.isBlank()) return parsed;
+        for (String entry : csv.split(";")) {
+            String[] pair = entry.split("=", 2);
+            if (pair.length == 2 && !pair[0].isBlank() && !pair[1].isBlank()) {
+                parsed.put(pair[0], pair[1]);
+            }
+        }
+        return parsed;
     }
 
     public static int levelFor(String weaponClass) {
