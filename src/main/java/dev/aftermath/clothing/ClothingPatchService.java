@@ -20,6 +20,7 @@ import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 
 /**
  * Small, persistent clothing reinforcement layer. The garment remains the original item:
@@ -123,7 +124,7 @@ public final class ClothingPatchService {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null || !customData.contains(ROOT_TAG)) return 0;
         CompoundTag root = customData.copyTag();
-        if (!root.contains(ROOT_TAG, CompoundTag.TAG_COMPOUND)) return 0;
+        if (!root.contains(ROOT_TAG, Tag.TAG_COMPOUND)) return 0;
         return Math.max(0, Math.min(MAX_PATCHES_PER_ITEM,
                 root.getCompound(ROOT_TAG).getInt(PATCH_COUNT_TAG)));
     }
