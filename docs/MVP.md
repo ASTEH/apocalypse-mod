@@ -56,7 +56,9 @@
 - [x] Temporary leader/follower groups, capped by server config and archetype JSON.
 - [x] Movement goal added alongside existing goals; per-entity path cooldown and global path request budget.
 - [x] CI build and clean client/dedicated-server startup.
-- [x] Manual acceptance tests in game.
+- [x] Manual acceptance tests in game for the original noise lure and leader/follower MVP.
+- [x] Optional player-aware ring formation for player-sourced noise; formation radius and group size remain server-bounded.
+- [ ] In-game test: grouped zombies take distinct approach positions around a moving player; disabling/resetting the horde override restores ordinary noise investigation.
 
 **Acceptance:** noise attracts existing zombies; no mobs appear because of noise; no chunk is loaded solely for migration; foreign AI goals remain.
 

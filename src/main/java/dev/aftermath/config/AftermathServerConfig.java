@@ -36,6 +36,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.DoubleValue UNTRAINED_SNIPER_HANDLING_MULTIPLIER;
     public static final ModConfigSpec.IntValue DEFAULT_NOISE_RADIUS;
     public static final ModConfigSpec.IntValue MAX_HORDE_SIZE;
+    public static final ModConfigSpec.DoubleValue HORDE_SURROUND_RADIUS;
     public static final ModConfigSpec.IntValue AI_RECALC_INTERVAL_TICKS;
     public static final ModConfigSpec.IntValue MAX_NOISE_TARGETS;
     public static final ModConfigSpec.IntValue MAX_PATH_REQUESTS_PER_TICK;
@@ -103,6 +104,8 @@ public final class AftermathServerConfig {
                 .defineInRange("defaultNoiseRadius", 64, 0, 512);
         MAX_HORDE_SIZE = builder.comment("Hard safety cap for Aftermath-managed horde members.")
                 .defineInRange("maxHordeSize", 24, 1, 128);
+        HORDE_SURROUND_RADIUS = builder.comment("Base radius, in blocks, used to position grouped zombies around the player who produced a noise event.")
+                .defineInRange("hordeSurroundRadius", 4.0D, 2.0D, 12.0D);
         AI_RECALC_INTERVAL_TICKS = builder.comment("Minimum interval between Aftermath path/target recalculations for an entity.")
                 .defineInRange("aiRecalcIntervalTicks", 40, 5, 1200);
         MAX_NOISE_TARGETS = builder.comment("Maximum already-loaded eligible mobs assigned to one noise event.")
