@@ -17,14 +17,23 @@ Use `/aftermath medical status` (or `/aftermath wounds`) to inspect provider det
 
 The previous First Aid New callback integration did not observe the actual Model Injuries treatment flow and has been removed.
 
-For Model Injuries 0.41.0, Aftermath hooks the real success gates:
+For Model Injuries 0.41.0, Aftermath hooks the authoritative success gates on `dev.modelinjuries.core.InjuryState`:
 
-- `dev.modelinjuries.InjuryEvents.finishTreatment(Player, ItemStack)` calls `InjuryState.treat(Region, Treatment)`. XP is awarded only when that method returns `true`, after Model Injuries has validated the selected region, care permission, held item, treatment time and interaction hand.
-- `dev.modelinjuries.item.MedicineItem.finishUsingItem(...)` calls `InjuryState.takeMedicine(Medicine)`. XP is awarded only when the medicine is accepted; already-active or rejected doses do not grant XP.
+- `InjuryState.treat(Region, Treatment)` awards XP only when it returns `true`.
+- `InjuryState.takeMedicine(Medicine)` awards XP only when it returns `true`.
 
-Each successful procedure grants 10 base First Aid XP, using the existing skill multiplier and Medic Triage trait. A 1-second action cooldown and an 80 XP/day action cap limit farming; the shared 120 XP/day skill cap still applies. The optional Mixin config is loaded only when mod ID `model_injuries` is present. Model Injuries and First Aid New remain optional from Aftermath's perspective; the code uses target strings and reflection rather than compile-time API dependencies.
+These success gates are shared by the supported Model Injuries 0.41.0 paths:
 
-Use `/aftermath medical status` to see successful Model Injuries procedures observed since server start and how many actually granted XP. These diagnostic counters are session-only, not persistent statistics.
+- **Standard self-treatment:** `InjuryEvents.finishTreatment(Player, ItemStack)`, reached when the player finishes using a `TreatmentItem`.
+- **Medicine item use:** `MedicineItem.finishUsingItem(...)`, including its direct self-use path.
+- **Body-diagram care UI:** `DiagramCare.tick(ServerPlayer)` completes the timed care session and calls `RecoverySupplies.apply(...)`, which delegates accepted treatments and medicines to the same `InjuryState` methods.
+- **Team care:** `TeamCare.finish(ServerPlayer, ItemStack)` applies accepted treatments or medicines to another player's injury state.
+
+The acting healer is scoped server-side around each path. The patient does not receive the healer's First Aid XP. Examination-only supplies do not award XP because they do not call either treatment success gate. Rejected, unnecessary, interrupted or already-active treatments/medicines do not award XP.
+
+Each successful procedure grants 10 base First Aid XP, using the existing skill multiplier and Medic Triage trait. A 1-second action cooldown and an 80 XP/day action cap limit farming; the shared 120 XP/day skill cap still applies. The optional Mixin config is loaded only when mod ID `model_injuries` is present. Model Injuries and First Aid New remain optional from Aftermath's perspective; the integration uses target strings and does not add a compile-time dependency on Model Injuries.
+
+Use `/aftermath medical status` to see successful procedures observed since server start and how many actually granted XP. The startup log also reports when each optional treatment-path hook is first entered. These diagnostic counters are session-only, not persistent statistics.
 
 ## Moodles, stress and injury penalties
 
