@@ -173,13 +173,28 @@ Journal items (HottieZ/HunkZ), stress and boredom mechanics are explicitly exclu
 - [x] Durability remains controlled by the item's original vanilla/modded system; broken items do not grant patch armor, and normal repair of the original item retains patch metadata.
 - [x] No journals, moodles, stress/boredom, injuries, medical treatment or bleeding logic were added.
 - [x] Added `docs/CLOTHING_PATCHES.md` with recipe, controls, storage, durability and acceptance tests.
-- [ ] Confirm Java 21 / NeoForge GitHub Actions build on the Stage25 head.
-- [ ] In-game acceptance: recipe, application, three-patch cap, attribute bonus and multiplayer validation.
-- [ ] In-game acceptance: durability, repair persistence and third-party clothing/armor compatibility.
+- [x] Confirm Java 21 / NeoForge GitHub Actions build on the Stage25 implementation and fix commits.
+- [x] In-game acceptance: basic clothing-patch application verified by maintainer.
+- [ ] Additional in-game acceptance: recipe output, three-patch cap, armor attribute, multiplayer, durability, repair persistence and third-party clothing/armor compatibility.
 
 **Known limits:** patch integration can only modify armor attributes that are exposed through the normal item attribute system. Clothing that is equipped or protected entirely through a third-party custom system may not honor this bonus and must be tested individually. Aftermath will not rewrite or replace that mod's armor behavior.
 
 **Acceptance:** one original clothing item can receive at most three persistent patches; each adds +0.5 armor while worn; normal item data and durability stay owned by the original item; patching and item consumption are server-authoritative.
+
+## User roadmap — Stage 26: Zombie wooden-door opening
+
+- [x] Added a server-side config toggle, `enableZombieDoorOpening`, disabled by default.
+- [x] Restricted installation to entity types in `aftermath:horde_members`; no blanket changes to all mobs.
+- [x] Reused vanilla `OpenDoorGoal` and `GroundPathNavigation` door flags; existing AI goals are preserved.
+- [x] Doors are opened, not destroyed. The feature does not invoke block breaking, drops, explosions or `ENABLE_BLOCK_BREAKING`.
+- [x] Added a weakly-referenced install guard and clears it on server stop.
+- [x] Documented the feature and its opt-in configuration in `docs/ZOMBIE_DOORS.md`.
+- [ ] Confirm Java 21 / NeoForge GitHub Actions build on the Stage26 head.
+- [ ] In-game acceptance: tagged zombies open standard wooden doors when pathing through them; doors remain open.
+- [ ] In-game acceptance: iron doors and unrelated modded mobs are unaffected; AI goals and horde movement remain compatible.
+- [ ] In-game acceptance: default-off behavior and dedicated-server startup.
+
+**Acceptance:** when enabled by the server, eligible tagged ground-navigation zombies can open vanilla wooden doors using the vanilla AI goal; the door is not broken and no block item drops. The feature remains disabled by default and does not alter unrelated mobs or clear third-party AI goals.
 
 ## Release gate
 
