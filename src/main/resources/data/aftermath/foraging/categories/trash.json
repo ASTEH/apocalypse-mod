@@ -1,0 +1,51 @@
+{
+  "entries": [
+    {
+      "item": "minecraft:string",
+      "weight": 8,
+      "min_count": 1,
+      "max_count": 3,
+      "requires_urban": true
+    },
+    {
+      "item": "minecraft:paper",
+      "weight": 7,
+      "min_count": 1,
+      "max_count": 4,
+      "requires_urban": true
+    },
+    {
+      "item": "minecraft:glass_bottle",
+      "weight": 5,
+      "min_count": 1,
+      "max_count": 2,
+      "requires_urban": true
+    },
+    {
+      "item": "minecraft:leather",
+      "weight": 4,
+      "min_count": 1,
+      "max_count": 2,
+      "requires_urban": true
+    },
+    {
+      "item": "minecraft:iron_nugget",
+      "weight": 4,
+      "min_count": 1,
+      "max_count": 5,
+      "requires_urban": true
+    },
+    {
+      "item": "minecraft:feather",
+      "weight": 3,
+      "min_count": 1,
+      "max_count": 3
+    },
+    {
+      "item": "minecraft:bone",
+      "weight": 3,
+      "min_count": 1,
+      "max_count": 2
+    }
+  ]
+}
