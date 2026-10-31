@@ -58,3 +58,18 @@ Fire a supported TaCZ weapon while Zombie Awareness is installed. Confirm that t
 - Drive an MTS vehicle and an Immersive Vehicles vehicle for at least 16 blocks during a 200-tick sample window. Confirm Driving XP is awarded with cooldown and daily cap.
 - Read each of the eight skill manuals at its required skill level. Confirm the relevant temporary multiplier and reading interruption behavior.
 - Test scheduled TV playback and all eight VHS tapes: field medicine, cooking basics, farmer's corner, mechanic workshop, range safety, driving basics, urban scavenging and close-quarters survival. Confirm successful playback grants the correct skill XP and VHS consumption behavior.
+
+
+## Stage 16 — firearm handling progression (manual in-game validation)
+
+Use the same rifle and ammo type for each comparison. Record XP and level with the weapon status command; test at levels 0, 1, 2, 5, and 10.
+
+- **Level 0:** confirm additional shot deviation is clearly visible, camera kick is stronger, aiming transition is slower, and reload takes longer than the weapon's normal authored time.
+- **Level 1 / 2 / 5:** confirm spread, camera kick, aim transition, and reload duration improve progressively rather than changing in one large jump.
+- **Level 10:** confirm Aftermath adds no extra spread or camera kick and TaCZ's native weapon accuracy/recoil remain present. Damage bonuses must still begin at level 2, increase at level 5, and reach the existing maximum at level 10.
+- **Eagle Eye:** compare level 0 with and without the trait; the skill-based spread and aim penalties should be reduced, not removed completely.
+- **Quick Reload:** compare reload duration at the same firearm level; the trait should shorten reloads without making level 0 faster than the weapon's baseline.
+- Test both tactical and empty reloads, and test at least one gun with a custom TaCZ reload script. A script that does not use TaCZ's `getReloadTime()` path may not receive the skill modifier.
+- Confirm the server works without TaCZ installed; optional mixins must not load in that environment.
+
+These are test instructions, not a claim that the current branch has been tested in-game.
