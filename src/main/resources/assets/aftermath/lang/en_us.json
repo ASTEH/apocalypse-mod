@@ -88,7 +88,7 @@
   "weapon_class.aftermath.rifle": "Rifles and SMGs",
   "weapon_class.aftermath.heavy": "Heavy weapons",
   "message.aftermath.weapon_class_status": "%1$s: Lv. %2$s, %3$s XP",
-  "message.aftermath.weapons_status": "Weapon proficiency — %1$s; %2$s; %3$s; %4$s; %5$s.",
+  "message.aftermath.weapons_status": "Weapon proficiency — %1$s; %2$s; %3$s; %4$s; %5$s; %6$s.",
   "message.aftermath.weapon_held.none": "No TaCZ gun recognized in your main hand. Hold a TaCZ gun and try again.",
   "message.aftermath.weapon_held.info": "TaCZ gun ID: %1$s. Class: %2$s (%3$s).",
   "message.aftermath.weapon_held.mapped": "explicit datapack mapping",
@@ -278,5 +278,7 @@
   "message.aftermath.medical.status.external": "Medical: First Aid New + Model Injuries. Successful Model Injuries procedures observed by Aftermath since server start: %1$s; procedures that granted XP: %2$s.",
   "message.aftermath.medical.status.firstaid": "Medical: First Aid New detected, Model Injuries missing. Model Injuries procedure XP integration is inactive.",
   "message.aftermath.medical.status.model_injuries_without_firstaid": "Model Injuries was detected without its required First Aid New dependency. Check the mod installation.",
-  "message.aftermath.medical.status.missing": "First Aid New was not detected. Aftermath does not add its own bleeding or bandages; medical gameplay and Model Injuries procedure XP integration are unavailable."
+  "message.aftermath.medical.status.missing": "First Aid New was not detected. Aftermath does not add its own bleeding or bandages; medical gameplay and Model Injuries procedure XP integration are unavailable.",
+  "weapon_class.aftermath.sniper": "Sniper rifles",
+  "message.aftermath.weapon_held.diagnostics": "TaCZ gun ID: %1$s\nClass: %2$s (%3$s)\nLevel: %4$s | XP: %5$s | XP to next level: %6$s\nDamage bonus: +%7$s%%\nSpread penalty: %8$s\nAim time: ×%9$s\nReload duration: ×%10$s\nAdditional recoil: pitch %11$s°, yaw ±%12$s°."
 }
