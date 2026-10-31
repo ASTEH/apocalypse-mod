@@ -7,7 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.chunk.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
@@ -45,7 +45,7 @@ public final class WorldSpawnControlService {
         if (!policy.shouldRemoveSpawners(level.dimension().location())) return;
 
         ChunkPos chunkPos = chunk.getPos();
-        level.getServer().tell(() -> removeSpawnerBlocks(level, chunkPos));
+        level.getServer().submitAsync(() -> removeSpawnerBlocks(level, chunkPos));
     }
 
     private static void removeSpawnerBlocks(ServerLevel level, ChunkPos chunkPos) {
