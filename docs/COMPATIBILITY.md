@@ -17,6 +17,8 @@ The core requires only Minecraft/NeoForge. TaCZ compatibility is isolated and us
 | ModernFix / Ferrite Core / EntityCulling / ImmediatelyFast / Sodium | No required integration; profile server AI separately from client rendering | Core works without optimizers. |
 | Sound Physics Remastered / AmbientSounds | Deafness cancels every sound whose SoundSource is not MUSIC (including modded ambience, UI, mobs and weapons), independent of sound ID; hearing traits scale relevant SoundInstances while delegating sound ID, source, coordinates and resolution. Short-sightedness changes standard viewport fog distances without a custom shader. | With Deaf, all non-MUSIC categories are muted even for unknown sound IDs; AmbientSounds and Sound Physics remain optional and no mixin is installed. Iris-specific shaders are not modified. |
 
+| Military NPC mods (Russian/US units) | Optional spawn-frequency policy matches configured entity registry IDs, mod namespaces, or entity-ID path keywords. Rare global spawn chance can be overridden around configured military-base coordinate zones. | No hard dependency. Exact mod-specific entity IDs still need to be added after verifying the installed unit mods; existing zombie variants are excluded from the military filter. |
+
 ## Mod-list review
 
 - `Ragdollified` appears twice. If these are the same JAR/version, remove one copy; `Ragdollified Reactions` is a separate add-on and should be version-matched.
