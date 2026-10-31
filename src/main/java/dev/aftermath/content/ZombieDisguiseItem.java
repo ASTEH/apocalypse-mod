@@ -8,12 +8,21 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import java.util.List;
 import net.minecraft.world.level.Level;
 
 /** One-use organic camouflage; it reduces target acquisition but never grants invisibility. */
 public final class ZombieDisguiseItem extends Item {
     public ZombieDisguiseItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context,
+                                List<net.minecraft.network.chat.Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltip, flag);
+        tooltip.add(net.minecraft.network.chat.Component.translatable("tooltip.aftermath.zombie_disguise"));
     }
 
     @Override
