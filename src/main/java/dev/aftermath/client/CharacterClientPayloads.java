@@ -5,6 +5,7 @@ import dev.aftermath.network.CharacterSelectionResultPayload;
 import dev.aftermath.network.MoodlesSyncPayload;
 import dev.aftermath.network.TraitStatePayload;
 import dev.aftermath.network.ZombieKillCountPayload;
+import dev.aftermath.network.WeaponProgressSyncPayload;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -22,6 +23,10 @@ public final class CharacterClientPayloads {
 
     public static void handleZombieKillCount(ZombieKillCountPayload payload) {
         ZombieKillHud.setCount(payload.count());
+    }
+
+    public static void handleWeaponProgress(WeaponProgressSyncPayload payload) {
+        WeaponProgressClientState.apply(payload);
     }
 
     public static void handleMoodles(MoodlesSyncPayload payload) {
