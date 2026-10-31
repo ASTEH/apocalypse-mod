@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "III",
+    "RCR",
+    "III"
+  ],
+  "key": {
+    "I": { "item": "minecraft:iron_nugget" },
+    "R": { "item": "minecraft:redstone" },
+    "C": { "item": "minecraft:clock" }
+  },
+  "result": {
+    "id": "aftermath:alarm_clock_decoy",
+    "count": 1
+  }
+}
