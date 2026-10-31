@@ -347,5 +347,12 @@
   "message.aftermath.foraging.stopped": "You stop searching.",
   "message.aftermath.foraging.nothing_close": "There is no revealed find within reach.",
   "message.aftermath.foraging.collected": "Found: %1$s ×%2$s",
-  "item.aftermath.wild_herbs": "Wild Herbs"
+  "item.aftermath.wild_herbs": "Wild Herbs",
+  "item.aftermath.clothing_patch": "Clothing Patch",
+  "tooltip.aftermath.clothing_patch.item": "Right-click a wearable armor item in your inventory while holding this patch.",
+  "tooltip.aftermath.clothing_patch.count": "Clothing patches: %1$s/%2$s",
+  "tooltip.aftermath.clothing_patch.protection": "Additional armor: +%1$s",
+  "tooltip.aftermath.clothing_patch.durability": "Garment durability: %1$s/%2$s",
+  "message.aftermath.clothing_patches.applied": "Reinforced clothing: %1$s/%2$s patches applied.",
+  "message.aftermath.clothing_patches.maxed": "This garment already has the maximum of %1$s patches."
 }
