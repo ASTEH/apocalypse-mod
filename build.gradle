@@ -136,6 +136,7 @@ abstract class InspectModelInjuriesTask extends org.gradle.api.DefaultTask {
         }
         if (jar == null) throw new org.gradle.api.GradleException("Model Injuries inspection dependency was not resolved.")
         println("MODEL_INJURIES_JAR=" + jar.absolutePath)
+        def classpath = inspectionClasspath.files.collect { it.absolutePath }.join(java.io.File.pathSeparator)
         new java.util.jar.JarFile(jar).withCloseable { archive ->
             archive.entries().each { entry ->
                 if (entry.name.endsWith(".class") &&
@@ -150,6 +151,26 @@ abstract class InspectModelInjuriesTask extends org.gradle.api.DefaultTask {
                     }
                 }
             }
+        }
+        [
+            "dev.modelinjuries.InjuryEvents",
+            "dev.modelinjuries.InjuryData",
+            "dev.modelinjuries.core.Injury",
+            "dev.modelinjuries.core.InjuryState",
+            "dev.modelinjuries.core.TreatmentFeedback",
+            "dev.modelinjuries.item.TreatmentItem",
+            "dev.modelinjuries.item.MedicineItem",
+            "dev.modelinjuries.mixin.FirstAidMedicineMixin",
+            "dev.modelinjuries.mixin.FirstAidInteractionMixin",
+            "dev.modelinjuries.mixin.FirstAidContactMixin"
+        ].each { className ->
+            println("===== MODEL_JAVAP " + className + " =====")
+            def process = new ProcessBuilder(
+                    new java.io.File(System.getProperty("java.home"), "bin/javap").absolutePath,
+                    "-p", "-c", "-classpath", classpath, className)
+                    .redirectErrorStream(true).start()
+            println(process.inputStream.getText("UTF-8"))
+            if (process.waitFor() != 0) println("JAVAP_EXIT=" + process.exitValue())
         }
     }
 }
