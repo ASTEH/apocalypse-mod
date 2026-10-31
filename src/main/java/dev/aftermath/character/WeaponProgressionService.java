@@ -33,7 +33,7 @@ import java.util.UUID;
 public final class WeaponProgressionService {
     private static final TagKey<Item> MELEE_WEAPONS = TagKey.create(
             Registries.ITEM, ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "weapon_classes/melee"));
-    private static final List<String> WEAPON_CLASSES = List.of("melee", "pistol", "shotgun", "rifle", "heavy");
+    private static final List<String> WEAPON_CLASSES = List.of("melee", "pistol", "shotgun", "rifle", "sniper", "heavy");
     private static final long VICTIM_REPEAT_WINDOW_TICKS = 20L * 60L;
     private static final Map<UUID, RewardStamp> RECENTLY_REWARDED_VICTIMS = new HashMap<>();
 
@@ -144,6 +144,7 @@ public final class WeaponProgressionService {
         return switch (weaponClass == null ? "" : weaponClass) {
             case "shotgun" -> AftermathServerConfig.UNTRAINED_SHOTGUN_HANDLING_MULTIPLIER.get();
             case "heavy" -> AftermathServerConfig.UNTRAINED_HEAVY_HANDLING_MULTIPLIER.get();
+            case "sniper" -> AftermathServerConfig.UNTRAINED_SNIPER_HANDLING_MULTIPLIER.get();
             default -> 1.0D;
         };
     }
@@ -212,7 +213,8 @@ public final class WeaponProgressionService {
                 AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_PITCH.get().floatValue(),
                 AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_YAW.get().floatValue(),
                 "shotgun=" + AftermathServerConfig.UNTRAINED_SHOTGUN_HANDLING_MULTIPLIER.get()
-                        + ";heavy=" + AftermathServerConfig.UNTRAINED_HEAVY_HANDLING_MULTIPLIER.get()));
+                        + ";heavy=" + AftermathServerConfig.UNTRAINED_HEAVY_HANDLING_MULTIPLIER.get()
+                        + ";sniper=" + AftermathServerConfig.UNTRAINED_SNIPER_HANDLING_MULTIPLIER.get()));
     }
 
     public static Component buildStatusMessage(ServerPlayer player) {
@@ -223,8 +225,45 @@ public final class WeaponProgressionService {
                     Component.translatable("weapon_class.aftermath." + weaponClass),
                     levelFor(xp), xp);
         }).toArray(Component[]::new);
-        return Component.translatable("message.aftermath.weapons_status",
-                statuses[0], statuses[1], statuses[2], statuses[3], statuses[4]);
+        return Component.translatable("message.aftermath.weapons_status", (Object[]) statuses);
+    }
+
+    /**
+     * Builds an in-game diagnostic for the held TaCZ gun. This intentionally reports the
+     * server-computed numbers used by the progression service, not client-side guesses.
+     */
+    public static Component buildHeldDiagnosticsMessage(ServerPlayer player, ResourceLocation gunId,
+                                                         String weaponClass, boolean explicitlyMapped) {
+        WeaponProgress progress = player.getData(AftermathAttachments.WEAPON_PROGRESS);
+        int xp = progress.experienceFor(weaponClass);
+        int level = levelFor(xp);
+        int xpToNextLevel = level >= 10 ? 0 : Math.max(0, WeaponProgress.thresholdForLevel(level + 1) - xp);
+        double classMultiplier = handlingClassMultiplier(weaponClass);
+        double remainingPenalty = handlingPenaltyForLevel(level) * classMultiplier;
+        double aimMultiplier = aimTimeMultiplier(player, weaponClass);
+        double reloadMultiplier = reloadDurationMultiplier(player, weaponClass);
+        double spread = spreadPenalty(player, weaponClass);
+        double damageBonusPercent = level * 1.0D;
+        double recoilPitch = AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_PITCH.get() * remainingPenalty;
+        double recoilYaw = AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_YAW.get() * remainingPenalty;
+
+        return Component.translatable("message.aftermath.weapon_held.diagnostics",
+                gunId.toString(),
+                Component.translatable("weapon_class.aftermath." + weaponClass),
+                Component.translatable(explicitlyMapped
+                        ? "message.aftermath.weapon_held.mapped"
+                        : "message.aftermath.weapon_held.inferred"),
+                level, xp, xpToNextLevel,
+                formatDiagnosticNumber(damageBonusPercent),
+                formatDiagnosticNumber(spread),
+                formatDiagnosticNumber(aimMultiplier),
+                formatDiagnosticNumber(reloadMultiplier),
+                formatDiagnosticNumber(recoilPitch),
+                formatDiagnosticNumber(recoilYaw));
+    }
+
+    private static String formatDiagnosticNumber(double value) {
+        return String.format(java.util.Locale.ROOT, "%.2f", value);
     }
 
     private static void cleanOldVictims(long now, ResourceLocation dimension) {
