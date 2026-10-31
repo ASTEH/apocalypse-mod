@@ -346,5 +346,6 @@
   "message.aftermath.foraging.started": "Ты начинаешь осматривать окрестности.",
   "message.aftermath.foraging.stopped": "Ты прекращаешь поиск.",
   "message.aftermath.foraging.nothing_close": "Рядом нет обнаруженной находки, которую можно подобрать.",
-  "message.aftermath.foraging.collected": "Найдено: %1$s ×%2$s"
+  "message.aftermath.foraging.collected": "Найдено: %1$s ×%2$s",
+  "item.aftermath.wild_herbs": "Дикие травы"
 }
