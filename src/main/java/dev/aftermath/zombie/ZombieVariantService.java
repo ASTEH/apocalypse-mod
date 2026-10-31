@@ -13,7 +13,6 @@ import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /** Applies one weighted archetype to each eligible newly-spawned zombie. */
 public final class ZombieVariantService {
@@ -40,8 +39,7 @@ public final class ZombieVariantService {
         BlockPos pos = mob.blockPosition();
         ResourceLocation biome = mob.level().getBiome(pos).unwrapKey().map(key -> key.location()).orElse(null);
         int light = mob.level().getMaxLocalRawBrightness(pos);
-        long dayTime = Math.floorMod(mob.level().getDayTime(), 24000L);
-        boolean night = dayTime >= 13000L && dayTime < 23000L;
+        boolean night = ZombieSpawnTime.isNight(mob.level());
         String spawnType = event.getSpawnType().name().toLowerCase(Locale.ROOT);
 
         for (ZombieVariantDefinitions.Variant variant : ZombieVariantDefinitions.snapshot().variants()) {
