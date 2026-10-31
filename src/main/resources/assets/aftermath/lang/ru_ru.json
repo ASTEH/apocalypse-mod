@@ -354,5 +354,22 @@
   "tooltip.aftermath.clothing_patch.protection": "Дополнительная броня: +%1$s",
   "tooltip.aftermath.clothing_patch.durability": "Прочность одежды: %1$s/%2$s",
   "message.aftermath.clothing_patches.applied": "Одежда усилена: установлено заплаток %1$s/%2$s.",
-  "message.aftermath.clothing_patches.maxed": "На этой вещи уже установлено максимальное количество заплаток: %1$s."
+  "message.aftermath.clothing_patches.maxed": "На этой вещи уже установлено максимальное количество заплаток: %1$s.",
+  "item.aftermath.radio_decoy": "Переносное радио",
+  "item.aftermath.alarm_clock_decoy": "Будильник",
+  "item.aftermath.noise_battery": "Батарея шумовой приманки",
+  "item.aftermath.zombie_disguise": "Паста для маскировки под зомби",
+  "key.aftermath.parkour": "Паркур / перепрыгнуть / залезть",
+  "tooltip.aftermath.zombie_disguise": "На 3 минуты снижает вероятность обнаружения зомби зрением. Вблизи и по шуму тебя всё ещё могут обнаружить.",
+  "message.aftermath.camouflage.already_active": "Маскировка под зомби уже действует.",
+  "message.aftermath.camouflage.started": "Ты замаскировал свой запах и внешний вид на %1$s сек.",
+  "message.aftermath.camouflage.expired": "Маскировка под зомби закончилась.",
+  "message.aftermath.camouflage.broken_attack": "Атака выдала твоё местоположение. Маскировка сорвана.",
+  "message.aftermath.camouflage.broken_damage": "Полученный удар испортил маскировку.",
+  "message.aftermath.camouflage.broken_noise": "Громкий шум выдал твоё местоположение. Маскировка сорвана.",
+  "message.aftermath.decoy.started": "Устройство включилось и начало издавать шум.",
+  "message.aftermath.decoy.stopped": "Устройство выключено.",
+  "message.aftermath.decoy.empty": "У устройства нет заряда. Сначала установи батарею шумовой приманки.",
+  "message.aftermath.decoy.battery_full": "Батарея устройства уже полностью заряжена.",
+  "message.aftermath.decoy.battery_added": "Батарея установлена: +%1$s мин. работы."
 }
