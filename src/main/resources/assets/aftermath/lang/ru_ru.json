@@ -359,7 +359,6 @@
   "item.aftermath.alarm_clock_decoy": "Будильник",
   "item.aftermath.noise_battery": "Батарея шумовой приманки",
   "item.aftermath.zombie_disguise": "Паста для маскировки под зомби",
-  "key.aftermath.parkour": "Паркур / перепрыгнуть / залезть",
   "tooltip.aftermath.zombie_disguise": "На 3 минуты снижает вероятность обнаружения зомби зрением. Вблизи и по шуму тебя всё ещё могут обнаружить.",
   "message.aftermath.camouflage.already_active": "Маскировка под зомби уже действует.",
   "message.aftermath.camouflage.started": "Ты замаскировал свой запах и внешний вид на %1$s сек.",
