@@ -158,7 +158,7 @@ public final class PlayerStateManager {
             String id = definition.id().toString();
             double current = values.getOrDefault(id, definition.initialValue());
 
- is an absolute value, not a delta.
+            // Cold Sweat's BODY temperature is an absolute value, not a delta.
             if (id.equals("aftermath:temperature")) {
                 double bodyTemperature = ColdSweatCompatibility.getBodyTemperature(player);
                 double next = definition.clamp(Double.isFinite(bodyTemperature) ? bodyTemperature : 0.0D);
