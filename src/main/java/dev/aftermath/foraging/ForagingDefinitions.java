@@ -47,7 +47,7 @@ public final class ForagingDefinitions extends SimplePreparableReloadListener<Fo
             String prefix = "foraging/categories/";
             if (!path.startsWith(prefix)) return;
             String categoryId = path.substring(prefix.length(), path.length() - 5);
-            if (!categoryId.matches("[a-z0-9_-]{1,32}")) return;
+            if (!categoryId.matches("[a-z0-9_-]{1,32}") || categories.size() >= 32) return;
             try (Reader reader = entry.getValue().openAsReader()) {
                 JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
                 JsonArray array = requiredArray(json, "entries");
@@ -116,7 +116,9 @@ public final class ForagingDefinitions extends SimplePreparableReloadListener<Fo
                 .orElse("");
         int focusBonus = (int) Math.round(Math.max(1.0D, Math.min(5.0D, focusMultiplier)) * 100.0D);
 
-        for (Category category : current.categories().values()) {
+        for (String categoryId : current.categoryIds()) {
+            Category category = current.categories().get(categoryId);
+            if (category == null) continue;
             for (Entry entry : category.entries()) {
                 if (skillLevel < entry.minSkill()) continue;
                 if (entry.requiresWet() && !wet) continue;
