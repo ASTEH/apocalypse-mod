@@ -25,6 +25,11 @@ repositories {
         name = 'SpongePowered'
         url = 'https://repo.spongepowered.org/repository/maven-public/'
     }
+    maven {
+        name = 'CurseMaven'
+        url = 'https://cursemaven.com/'
+        content { includeGroup 'curse.maven' }
+    }
 }
 
 neoForge {
@@ -79,6 +84,8 @@ configurations {
 dependencies {
     // NeoForge provides Mixin at runtime; this is compile-time API only.
     compileOnly 'org.spongepowered:mixin:0.8.7'
+    // Temporary build-only inspection of the exact Model Injuries 1.21.1 release.
+    compileOnly 'curse.maven:model-injuries-1737763:9131688'
 }
 
 def generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
@@ -115,6 +122,36 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+// Temporary reverse-engineering task; remove after a stable integration point is found.
+tasks.register("inspectModelInjuries") {
+    doLast {
+        def jar = configurations.compileClasspath.files.find {
+            it.name.toLowerCase().contains("model-injuries")
+        }
+        if (jar == null) throw new GradleException("Model Injuries inspection dependency was not resolved.")
+        println("MODEL_INJURIES_JAR=" + jar.absolutePath)
+        new java.util.jar.JarFile(jar).withCloseable { archive ->
+            archive.entries().each { entry ->
+                if (entry.name.endsWith(".class") &&
+                        entry.name.toLowerCase() =~ /(injury|treatment|heal|medical|blood|medicine|wound|organ|fracture)/) {
+                    println("MODEL_CLASS=" + entry.name.replace("/", ".").replace(".class", ""))
+                }
+                if (entry.name == "META-INF/neoforge.mods.toml" ||
+                        entry.name.toLowerCase().contains("mixins") && entry.name.endsWith(".json")) {
+                    println("MODEL_RESOURCE=" + entry.name)
+                    if (entry.name.endsWith(".json") || entry.name.endsWith(".toml")) {
+                        println(new String(archive.getInputStream(entry).bytes, java.nio.charset.StandardCharsets.UTF_8))
+                    }
+                }
+            }
+        }
+    }
+}
+
+tasks.named("build") {
+    dependsOn("inspectModelInjuries")
 }
 
 idea {
