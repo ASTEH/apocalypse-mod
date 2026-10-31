@@ -22,7 +22,7 @@ Both ingredients are vanilla Minecraft items. No extra gameplay mod or external 
 
 The interaction is server-authoritative. It only handles right-click stacking onto a wearable equipment item; normal inventory interactions with other items remain vanilla.
 
-The handler reads the cursor through the event's carried-slot accessor and the target through the clicked slot. This avoids a known NeoForge 1.21.1 ItemStackedOnOtherEvent argument-order issue, where the two stack fields may be reversed.
+The handler reads the cursor through the event's carried-slot accessor and the target through the clicked slot. This avoids relying on the event's stack-argument fields and keeps the interaction tied to the actual inventory slot and cursor contents across NeoForge 1.21.1 builds.
 
 The initial cap is **3 patches per garment**. The cap is stored on the garment and cannot be bypassed by repeatedly using patches or by relogging.
 
