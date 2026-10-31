@@ -18,6 +18,7 @@ public final class AftermathServerEvents {
         CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
         PacketDistributor.sendToPlayer(player, new TraitStatePayload(String.join(",", profile.traitIds())));
         ZombieKillService.sync(player);
+        WeaponProgressionService.syncToClient(player);
         PlayerStateManager.initializeAndSync(player);
         if (profile.created() || !AftermathServerConfig.ENABLE_CHARACTER_CREATION.get()) return;
 
