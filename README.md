@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** Stage22 unified skills menu and Stage23 scavenging search are complete and verified by the maintainer. Stage24 body-condition panel is intentionally skipped because an installed mod already provides it. Stage25 clothing-patch application is verified by the maintainer and its Java 21 / NeoForge CI passes. Stage26's internal parkour prototype has been removed in favor of the external ParCool! mod for NeoForge 1.21.1. Aftermath retains zombie camouflage and rechargeable noise decoys on branch `stage-26-parkour-camouflage-noise-decoys`; CI and in-game acceptance are pending.
+> **Status:** Stage22 unified skills menu and Stage23 scavenging search are complete and verified by the maintainer. Stage24 body-condition panel is intentionally skipped because an installed mod already provides it. Stage25 clothing-patch application is verified by the maintainer and its Java 21 / NeoForge CI passes. Stage26's internal parkour prototype has been removed in favor of external ParCool! 1.21.1-4.0.1.6 (NeoForge) plus Curios API 9.5.1+1.21.1. Aftermath retains zombie camouflage and rechargeable noise decoys on branch `stage-26-parkour-camouflage-noise-decoys`; final Java 21 / NeoForge CI passes, while in-game acceptance is pending.
 
 ## Requirements
 
