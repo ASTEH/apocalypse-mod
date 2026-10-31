@@ -1,0 +1,44 @@
+{
+  "entries": [
+    {
+      "item": "minecraft:compass",
+      "weight": 2,
+      "min_count": 1,
+      "max_count": 1,
+      "min_skill": 4,
+      "requires_urban": true
+    },
+    {
+      "item": "minecraft:clock",
+      "weight": 1,
+      "min_count": 1,
+      "max_count": 1,
+      "min_skill": 5,
+      "requires_urban": true
+    },
+    {
+      "item": "minecraft:iron_ingot",
+      "weight": 2,
+      "min_count": 1,
+      "max_count": 2,
+      "min_skill": 4,
+      "requires_urban": true
+    },
+    {
+      "item": "minecraft:torch",
+      "weight": 4,
+      "min_count": 2,
+      "max_count": 6,
+      "min_skill": 3,
+      "requires_road": true
+    },
+    {
+      "item": "minecraft:gold_nugget",
+      "weight": 1,
+      "min_count": 1,
+      "max_count": 2,
+      "min_skill": 6,
+      "requires_urban": true
+    }
+  ]
+}
