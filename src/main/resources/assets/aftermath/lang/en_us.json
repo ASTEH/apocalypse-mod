@@ -346,5 +346,6 @@
   "message.aftermath.foraging.started": "You begin searching the surroundings.",
   "message.aftermath.foraging.stopped": "You stop searching.",
   "message.aftermath.foraging.nothing_close": "There is no revealed find within reach.",
-  "message.aftermath.foraging.collected": "Found: %1$s ×%2$s"
+  "message.aftermath.foraging.collected": "Found: %1$s ×%2$s",
+  "item.aftermath.wild_herbs": "Wild Herbs"
 }
