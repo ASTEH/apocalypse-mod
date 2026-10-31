@@ -84,6 +84,7 @@ public final class AftermathMod {
         LrTacticalCompatibility.register();
         NeoForge.EVENT_BUS.addListener(LearningService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(ForagingDefinitions::register);
+        NeoForge.EVENT_BUS.addListener(ForagingService::onLevelTick);
         NeoForge.EVENT_BUS.addListener(ForagingService::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(ForagingService::onPlayerLogout);
         NeoForge.EVENT_BUS.addListener(ForagingService::onServerStopping);
