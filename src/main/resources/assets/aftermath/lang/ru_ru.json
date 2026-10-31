@@ -354,5 +354,10 @@
   "moodle.aftermath.bleeding.heavy": "Сильное кровотечение",
   "moodle.aftermath.bleeding.heavy.description": "Потеря крови опасна. Срочно обработайте рану.",
   "moodle.aftermath.bleeding.critical": "Критическое кровотечение",
-  "moodle.aftermath.bleeding.critical.description": "Ваша жизнь в опасности. Немедленно остановите кровь."
+  "moodle.aftermath.bleeding.critical.description": "Ваша жизнь в опасности. Немедленно остановите кровь.",
+  "message.aftermath.medical.external_active": "Медицинскую систему обслуживают First Aid New и Model Injuries. Нажми I, чтобы осмотреть тело и выбрать лечение.",
+  "message.aftermath.medical.use_external_screen": "Используй медицинский интерфейс First Aid (I). Бинт Aftermath работает только в автономном режиме.",
+  "message.aftermath.medical.status.external": "Медицинский режим: First Aid New + Model Injuries. Старое кровотечение Aftermath отключено, чтобы не дублировать потерю крови.",
+  "message.aftermath.medical.status.firstaid": "Медицинский режим: First Aid New обнаружен. Здоровье частей тела и лечение выполняет First Aid; резервное кровотечение Aftermath доступно.",
+  "message.aftermath.medical.status.fallback": "Медицинский режим: автономный Aftermath. Используется собственная упрощённая система кровотечения и бинтов."
 }

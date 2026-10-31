@@ -18,6 +18,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_BLOCK_BREAKING;
     public static final ModConfigSpec.BooleanValue ENABLE_DAY_PROGRESSION;
     public static final ModConfigSpec.BooleanValue ENABLE_BLEEDING;
+    public static final ModConfigSpec.BooleanValue PREFER_EXTERNAL_MEDICAL_SYSTEM;
     public static final ModConfigSpec.BooleanValue ENABLE_MOODLES;
     public static final ModConfigSpec.BooleanValue ENABLE_HOSTILE_SPAWN_FILTER;
     public static final ModConfigSpec.BooleanValue ENABLE_SPAWNER_REMOVAL;
@@ -56,8 +57,10 @@ public final class AftermathServerConfig {
                 .define("enableBlockBreaking", false);
         ENABLE_DAY_PROGRESSION = builder.comment("Scale noise detection and group sizes using the saved apocalypse day.")
                 .define("enableDayProgression", true);
-        ENABLE_BLEEDING = builder.comment("Enable bleeding caused by hostile attacks and treatment with bandages.")
+        ENABLE_BLEEDING = builder.comment("Enable Aftermath fallback bleeding when a detailed external medical system is not active.")
                 .define("enableBleeding", true);
+        PREFER_EXTERNAL_MEDICAL_SYSTEM = builder.comment("Prefer First Aid New + Model Injuries for body-part injuries and bleeding when both are installed.")
+                .define("preferExternalMedicalSystem", true);
         ENABLE_MOODLES = builder.comment("Enable server-authoritative tiredness, exertion and panic Moodles.")
                 .define("enableMoodles", true);
         ENABLE_HOSTILE_SPAWN_FILTER = builder.comment("Block unlisted hostile mob spawns using the world_rules/spawn_control.json datapack policy.")

@@ -354,5 +354,10 @@
   "moodle.aftermath.bleeding.heavy": "Heavy bleeding",
   "moodle.aftermath.bleeding.heavy.description": "Blood loss is serious. Treat the wound immediately.",
   "moodle.aftermath.bleeding.critical": "Critical bleeding",
-  "moodle.aftermath.bleeding.critical.description": "You are in danger. Stop the bleeding now."
+  "moodle.aftermath.bleeding.critical.description": "You are in danger. Stop the bleeding now.",
+  "message.aftermath.medical.external_active": "Medical treatment is handled by First Aid New and Model Injuries. Press I to inspect your body and choose a treatment.",
+  "message.aftermath.medical.use_external_screen": "Use the First Aid medical screen (I). The Aftermath bandage works only in standalone mode.",
+  "message.aftermath.medical.status.external": "Medical mode: First Aid New + Model Injuries. Legacy Aftermath bleeding is disabled to prevent duplicate blood loss.",
+  "message.aftermath.medical.status.firstaid": "Medical mode: First Aid New detected. First Aid owns body-part health and treatment; Aftermath fallback bleeding remains available.",
+  "message.aftermath.medical.status.fallback": "Medical mode: standalone Aftermath. Its simple bleeding and bandage fallback is active."
 }

@@ -12,6 +12,7 @@ import dev.aftermath.learning.LearningDefinitions;
 import dev.aftermath.learning.LearningService;
 import dev.aftermath.learning.compat.LrTacticalCompatibility;
 import dev.aftermath.medical.FirstAidService;
+import dev.aftermath.medical.MedicalCompatibilityService;
 import dev.aftermath.weapon.FirearmDefinitions;
 import dev.aftermath.weapon.TaczCompatibility;
 import dev.aftermath.noise.HordeDirector;
@@ -44,6 +45,7 @@ public final class AftermathMod {
 
     public AftermathMod(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.SERVER, AftermathServerConfig.SPEC);
+        MedicalCompatibilityService.logDetectedMedicalMods();
         AftermathAttachments.register(modEventBus);
         AftermathContent.register(modEventBus);
         modEventBus.addListener(AftermathNetworking::registerPayloads);

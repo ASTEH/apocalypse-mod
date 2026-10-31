@@ -18,6 +18,7 @@ public final class FirstAidService {
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
         if (!(event.getEntity() instanceof ServerPlayer player)
                 || !AftermathServerConfig.ENABLE_BLEEDING.get()
+                || MedicalCompatibilityService.usesExternalMedicalSystem()
                 || event.getNewDamage() <= 0.0F
                 || !(event.getSource().getEntity() instanceof Enemy)) {
             return;
@@ -45,12 +46,16 @@ public final class FirstAidService {
     }
 
     public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)
-                || !AftermathServerConfig.ENABLE_BLEEDING.get()) {
-            return;
-        }
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
         BleedingStatus status = player.getData(AftermathAttachments.BLEEDING_STATUS);
+        if (MedicalCompatibilityService.usesExternalMedicalSystem()) {
+            if (status.isBleeding()) {
+                player.setData(AftermathAttachments.BLEEDING_STATUS, BleedingStatus.empty());
+            }
+            return;
+        }
+        if (!AftermathServerConfig.ENABLE_BLEEDING.get()) return;
         if (!status.isBleeding()) return;
 
         if (status.ticksUntilDamage() > 1) {
@@ -74,6 +79,10 @@ public final class FirstAidService {
 
     /** @return true only when a bandage was actually used to treat an injury. */
     public static boolean applyBandage(ServerPlayer player) {
+        if (MedicalCompatibilityService.usesExternalMedicalSystem()) {
+            message(player, "message.aftermath.medical.use_external_screen");
+            return false;
+        }
         if (!AftermathServerConfig.ENABLE_BLEEDING.get()) {
             message(player, "message.aftermath.bleeding.disabled");
             return false;
@@ -110,7 +119,15 @@ public final class FirstAidService {
         return true;
     }
 
+    public static boolean isAftermathBleedingActive() {
+        return AftermathServerConfig.ENABLE_BLEEDING.get()
+                && !MedicalCompatibilityService.usesExternalMedicalSystem();
+    }
+
     public static Component buildStatusMessage(ServerPlayer player) {
+        if (MedicalCompatibilityService.usesExternalMedicalSystem()) {
+            return Component.translatable("message.aftermath.medical.external_active");
+        }
         if (!AftermathServerConfig.ENABLE_BLEEDING.get()) {
             return Component.translatable("message.aftermath.bleeding.disabled");
         }

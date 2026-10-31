@@ -5,6 +5,7 @@ import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.character.WeaponProgressionService;
 import dev.aftermath.learning.LearningService;
 import dev.aftermath.medical.FirstAidService;
+import dev.aftermath.medical.MedicalCompatibilityService;
 import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.day.WorldProgressData;
 import dev.aftermath.noise.HordeDirector;
@@ -33,7 +34,7 @@ public final class AftermathCommands {
                                             + ", noise=" + AftermathServerConfig.ENABLE_NOISE_EVENTS.get()
                                             + ", hordeAI=" + HordeDirector.isHordeBehaviorEnabled()
                                             + ", dayProgression=" + AftermathServerConfig.ENABLE_DAY_PROGRESSION.get()
-                                            + ", bleeding=" + AftermathServerConfig.ENABLE_BLEEDING.get()),
+                                            + ", bleeding=" + FirstAidService.isAftermathBleedingActive()),
                                     false);
                             return 1;
                         }))
@@ -88,6 +89,12 @@ public final class AftermathCommands {
                                     () -> FirstAidService.buildStatusMessage(player), false);
                             return 1;
                         }))
+                        .then(Commands.literal("medical")
+                                .then(Commands.literal("status").executes(context -> {
+                                    context.getSource().sendSuccess(
+                                            MedicalCompatibilityService::buildStatusMessage, false);
+                                    return 1;
+                                })))
                         .then(Commands.literal("day")
                                 .then(Commands.literal("status").executes(context -> {
                                     var server = context.getSource().getServer();
