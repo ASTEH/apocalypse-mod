@@ -19,7 +19,11 @@
     "us_army",
     "usmc",
     "rifleman",
-    "mercenary"
+    "mercenary",
+    "russia",
+    "rus",
+    "ussr",
+    "red_army"
   ],
   "spawn_types": [
     "natural",
