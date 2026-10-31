@@ -4,8 +4,11 @@
   "package": "dev.aftermath.mixin.modelinjuries",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "DiagramCareMixin",
+    "InjuryStateTreatmentMixin",
     "InjuryTreatmentMixin",
-    "MedicineItemTreatmentMixin"
+    "MedicineItemTreatmentMixin",
+    "TeamCareMixin"
   ],
   "injectors": {
     "defaultRequire": 1
