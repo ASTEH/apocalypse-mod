@@ -417,8 +417,8 @@ public final class LearningService {
     }
 
     /** Called by successful treatment actions; failed uses must not award XP. */
-    public static void awardFirstAidXp(ServerPlayer player) {
-        awardSkillXp(player, id("first_aid"), 10, "successful_first_aid", 100L, 50);
+    public static boolean awardFirstAidXp(ServerPlayer player) {
+        return awardSkillXp(player, id("first_aid"), 10, "successful_first_aid", 100L, 50);
     }
 
     /** Called only after a verified hostile kill with a supported firearm. */
@@ -573,15 +573,15 @@ public final class LearningService {
         awardSkillXp(learner, skillId, baseXp, actionId, cooldownTicks, dailyCap);
     }
 
-    public static void awardSkillXp(ServerPlayer player, ResourceLocation skillId, int baseXp,
-                                    String actionId, long cooldownTicks, int dailyCap) {
+    public static boolean awardSkillXp(ServerPlayer player, ResourceLocation skillId, int baseXp,
+                                        String actionId, long cooldownTicks, int dailyCap) {
         if (!AftermathServerConfig.ENABLE_LEARNING.get() || baseXp <= 0
-                || LearningDefinitions.snapshot().skills().get(skillId) == null) return;
+                || LearningDefinitions.snapshot().skills().get(skillId) == null) return false;
 
         long now = player.getServer().overworld().getGameTime();
         LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
         long last = progress.actionLastUsedAt(actionId);
-        if (last > 0L && now >= last && now - last < cooldownTicks) return;
+        if (last > 0L && now >= last && now - last < cooldownTicks) return false;
 
         long day = Math.floorDiv(now, DAY_TICKS);
         String dailyKey = day + ":" + actionId;
@@ -589,11 +589,11 @@ public final class LearningService {
         int remainingActionDaily = Math.max(0, dailyCap - progress.actionDailyXp(dailyKey));
         int remainingSkillDaily = Math.max(0,
                 SKILL_DAILY_XP_CAP - progress.actionDailyXp(skillDailyKey));
-        if (remainingActionDaily <= 0 || remainingSkillDaily <= 0) return;
+        if (remainingActionDaily <= 0 || remainingSkillDaily <= 0) return false;
 
         int requested = Math.max(1, (int) Math.round(baseXp * learningMultiplier(player, skillId, now)));
         int gained = Math.min(requested, Math.min(remainingActionDaily, remainingSkillDaily));
-        if (gained <= 0) return;
+        if (gained <= 0) return false;
         LearningProgress updated = progress.addActionExperience(
                 skillId.toString(), gained, actionId, now, dailyKey, skillDailyKey);
         player.setData(AftermathAttachments.LEARNING_PROGRESS, updated);
@@ -602,6 +602,7 @@ public final class LearningService {
         message(player, "message.aftermath.learning.skill_xp",
                 Component.translatable(skill.nameKey()), gained,
                 updated.experienceFor(skillId.toString()), skillLevel(player, skillId));
+        return true;
     }
 
     public static void onLivingDamage(LivingDamageEvent.Pre event) {

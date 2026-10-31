@@ -15,9 +15,9 @@ Use `/aftermath medical status` (or `/aftermath wounds`) to inspect provider det
 
 ## First Aid skill integration
 
-When First Aid New is loaded, an optional Mixin observes the completed callback in its public `ItemHealing` treatment flow. After the original callback runs, Aftermath awards First Aid skill XP through the same capped progression service used by other skills. The regular skill XP multiplier and the Medic's Triage trait continue to apply. Interrupted treatments do not trigger the completion callback and do not grant XP.
+When First Aid New is loaded, an optional Mixin injects directly into the public `ItemHealing.onTreatmentCompleted(PartHealingContext)` callback. A second fallback observes the call from `DamageablePart.tick` for third-party treatment items that override that callback. Both paths share a weak-context deduplication guard, so a completed treatment can grant XP only once. The regular skill XP multiplier and the Medic's Triage trait continue to apply. Interrupted treatments do not trigger the completion callback and do not grant XP.
 
-This bridge is optional and loaded only when the `firstaid` mod ID is present. Aftermath does not compile against First Aid New's implementation packages and uses reflection only at the optional integration boundary.
+Use `/aftermath medical status` to see how many server-side treatment callbacks Aftermath observed since the last server start. This is a diagnostic counter, not a persistent statistic. The optional mixins load only when mod ID `firstaid` is present; Aftermath does not compile against First Aid New's classes.
 
 ## Moodles, stress and injury penalties
 

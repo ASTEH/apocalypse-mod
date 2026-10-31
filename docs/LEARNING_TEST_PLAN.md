@@ -37,7 +37,7 @@ With an active learner within 16 blocks, process valid recipes through a mechani
 
 ## First Aid New and LRTactical
 
-- Complete a First Aid New body-part treatment. Confirm the original treatment callback runs and Aftermath First Aid XP is awarded once after completion.
+- Complete a First Aid New body-part treatment. Confirm the original treatment callback runs and Aftermath First Aid XP is awarded once after completion. Run `/aftermath medical status` and confirm the callback counter increases by one.
 - Interrupt a selected treatment before completion. Confirm no Aftermath First Aid XP is awarded.
 - Repeat with the Medic's Triage trait and confirm its 25% skill XP multiplier still applies under the shared daily/action caps.
 - Use a LRTactical consumable whose configured data heals or removes a negative effect. Confirm First Aid XP is awarded after its server-side consumable event.

@@ -47,12 +47,13 @@ public final class MedicalCompatibilityService {
     }
 
     public static Component buildStatusMessage() {
-        return Component.translatable(switch (statusId()) {
+        String key = switch (statusId()) {
             case "firstaid+model_injuries" -> "message.aftermath.medical.status.external";
             case "firstaid" -> "message.aftermath.medical.status.firstaid";
             case "model_injuries_without_firstaid" -> "message.aftermath.medical.status.model_injuries_without_firstaid";
             default -> "message.aftermath.medical.status.missing";
-        });
+        };
+        return Component.translatable(key, FirstAidSkillBridge.completedTreatmentsThisSession());
     }
 
     private static String normalize(String value) {
