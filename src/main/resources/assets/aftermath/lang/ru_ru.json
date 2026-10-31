@@ -371,5 +371,6 @@
   "message.aftermath.decoy.stopped": "Устройство выключено.",
   "message.aftermath.decoy.empty": "У устройства нет заряда. Сначала установи батарею шумовой приманки.",
   "message.aftermath.decoy.battery_full": "Батарея устройства уже полностью заряжена.",
-  "message.aftermath.decoy.battery_added": "Батарея установлена: +%1$s мин. работы."
+  "message.aftermath.decoy.battery_added": "Батарея установлена: +%1$s мин. работы.",
+  "message.aftermath.decoy.disabled": "Шумовые приманки отключены на сервере."
 }
