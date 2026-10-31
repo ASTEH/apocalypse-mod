@@ -23,7 +23,8 @@ import java.util.Set;
  */
 public final class FirearmDefinitions extends SimplePreparableReloadListener<FirearmDefinitions.Snapshot> {
     public static final FirearmDefinitions INSTANCE = new FirearmDefinitions();
-    private static final Set<String> ALLOWED_CLASSES = Set.of("pistol", "shotgun", "rifle", "heavy");
+    private static final Set<String> ALLOWED_CLASSES = Set.of(
+            "pistol", "shotgun", "rifle", "sniper", "heavy");
     private static volatile Snapshot current = Snapshot.empty();
 
     private FirearmDefinitions() {}
@@ -95,6 +96,13 @@ public final class FirearmDefinitions extends SimplePreparableReloadListener<Fir
                 .toLowerCase(Locale.ROOT)
                 .replaceAll("[^a-z0-9]+", "_");
 
+        // Check precision/anti-materiel rifles before the broader heavy-weapon and rifle groups.
+        if (containsAny(id, "sniper", "sniper_rifle", "bolt_action", "anti_materiel",
+                "anti_material", "awp", "m700", "m107", "m95", "kar98", "kar_98",
+                "springfield", "mosin", "intervention", "barrett", "remington_700",
+                "svd", "dragunov", "l96", "lonetrail", "spr15hb", "mk14", "50_bmg")) {
+            return "sniper";
+        }
         if (containsAny(id, "minigun", "gatling", "machine_gun", "machinegun",
                 "light_machine_gun", "heavy", "m249", "m240", "m60", "m2_browning",
                 "m134", "rpk", "rpg", "rocket_launcher", "grenade_launcher", "flamethrower",
