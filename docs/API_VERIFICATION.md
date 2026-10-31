@@ -19,3 +19,15 @@ Verify these against the exact NeoForge 21.1.264 MDK sources before implementing
 - **Time:** use Minecraft server level/world time, never client wall-clock time.
 
 Core gameplay has no Create dependency. Create-specific mixins are declared with `requiredMods=["create"]` and are loaded only when Create is installed.
+
+
+## TaCZ firearm handling progression (Stage 16)
+
+Verified against the public `MUKSC/TACZ-1.21.1` NeoForge 1.21.1 source branch:
+
+- `com.tacz.guns.item.ModernKineticGunScriptAPI#getReloadTime()` returns elapsed milliseconds from the server's reload timestamp. Aftermath scales that elapsed value, so TaCZ Lua reload scripts that use this API advance more slowly for untrained players. Scripts that bypass this API and calculate elapsed time themselves are not guaranteed to receive the penalty.
+- `com.tacz.guns.entity.shooter.LivingEntityAim#tickAimingProgress()` and client-side `com.tacz.guns.client.gameplay.LocalPlayerAim#getAlphaProgress(...)` are the aim-transition paths. Aftermath scales progression on both sides, with the client using a server-synchronized weapon XP snapshot.
+- `com.tacz.guns.client.gameplay.LocalPlayerShoot#shoot()` reports the local trigger result. Aftermath adds a small camera kick after a successful trigger action; TaCZ's weapon-authored recoil animations remain intact.
+- TaCZ kinetic bullets are already identified through the server projectile entity and its public `getGunId()` method. Aftermath adds a proficiency-dependent velocity deviation at projectile creation; the gun's authored baseline spread is not rewritten.
+
+The inspected public TaCZ API does not expose a general per-player setter for the weapon-authored recoil curve, a weapon sway parameter, or a universal ready/switch speed modifier. Those are not modified by this stage. Reload scripts that bypass `getReloadTime()` are also outside the verified reload hook.
