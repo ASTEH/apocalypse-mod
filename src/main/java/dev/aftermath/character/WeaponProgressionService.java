@@ -210,8 +210,8 @@ public final class WeaponProgressionService {
                 AftermathServerConfig.UNTRAINED_FIREARM_AIM_TIME.get().floatValue(),
                 AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_PITCH.get().floatValue(),
                 AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_YAW.get().floatValue(),
-                AftermathServerConfig.UNTRAINED_SHOTGUN_HANDLING_MULTIPLIER.get().floatValue(),
-                AftermathServerConfig.UNTRAINED_HEAVY_HANDLING_MULTIPLIER.get().floatValue()));
+                "shotgun=" + AftermathServerConfig.UNTRAINED_SHOTGUN_HANDLING_MULTIPLIER.get()
+                        + ";heavy=" + AftermathServerConfig.UNTRAINED_HEAVY_HANDLING_MULTIPLIER.get()));
     }
 
     public static Component buildStatusMessage(ServerPlayer player) {
