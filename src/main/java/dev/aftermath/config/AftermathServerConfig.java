@@ -40,6 +40,15 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.IntValue AI_RECALC_INTERVAL_TICKS;
     public static final ModConfigSpec.IntValue MAX_NOISE_TARGETS;
     public static final ModConfigSpec.IntValue MAX_PATH_REQUESTS_PER_TICK;
+    public static final ModConfigSpec.BooleanValue ENABLE_FORAGING;
+    public static final ModConfigSpec.DoubleValue FORAGING_BASE_RADIUS;
+    public static final ModConfigSpec.DoubleValue FORAGING_RADIUS_PER_SKILL_LEVEL;
+    public static final ModConfigSpec.DoubleValue FORAGING_MAX_BASE_RADIUS;
+    public static final ModConfigSpec.DoubleValue FORAGING_PROFESSION_RADIUS_BONUS;
+    public static final ModConfigSpec.DoubleValue FORAGING_TRAIT_RADIUS_BONUS;
+    public static final ModConfigSpec.DoubleValue FORAGING_SPOT_CHANCE;
+    public static final ModConfigSpec.DoubleValue FORAGING_FOCUS_WEIGHT_MULTIPLIER;
+    public static final ModConfigSpec.IntValue FORAGING_SCAN_INTERVAL_TICKS;
 
 
     static {
@@ -74,6 +83,8 @@ public final class AftermathServerConfig {
                 .define("enableMilitarySpawnControl", true);
         MILITARY_EVENT_CHANCE_MULTIPLIER = builder.comment("Fraction of TaCZ: Simple Enemy base chances retained by military_patrol, far_combat, and cave_extraction. 0.15 means 15% of their normal configured chance.")
                 .defineInRange("militaryEventChanceMultiplier", 0.15D, 0.0D, 1.0D);
+        ENABLE_FORAGING = builder.comment("Enable the Project Zomboid-inspired scavenging search mode.")
+                .define("enableForaging", true);
         builder.pop();
 
         builder.push("weapon_progression");
@@ -112,6 +123,25 @@ public final class AftermathServerConfig {
                 .defineInRange("maxNoiseTargetsPerEvent", 32, 1, 128);
         MAX_PATH_REQUESTS_PER_TICK = builder.comment("Global Aftermath path requests allowed per tick in each dimension.")
                 .defineInRange("maxPathRequestsPerTick", 16, 1, 256);
+        builder.pop();
+
+        builder.push("foraging");
+        FORAGING_BASE_RADIUS = builder.comment("Minimum scavenging search radius before skill progression.")
+                .defineInRange("baseRadius", 3.0D, 3.0D, 10.0D);
+        FORAGING_RADIUS_PER_SKILL_LEVEL = builder.comment("Additional search radius per scavenging skill level.")
+                .defineInRange("radiusPerSkillLevel", 0.7D, 0.0D, 1.5D);
+        FORAGING_MAX_BASE_RADIUS = builder.comment("Maximum skill-derived radius before profession and trait bonuses.")
+                .defineInRange("maxBaseRadius", 10.0D, 3.0D, 10.0D);
+        FORAGING_PROFESSION_RADIUS_BONUS = builder.comment("Extra radius for the Scavenger profession.")
+                .defineInRange("professionRadiusBonus", 2.0D, 0.0D, 5.0D);
+        FORAGING_TRAIT_RADIUS_BONUS = builder.comment("Extra radius for the Keen Eye scavenger trait.")
+                .defineInRange("traitRadiusBonus", 2.0D, 0.0D, 5.0D);
+        FORAGING_SPOT_CHANCE = builder.comment("Chance that a five-block search cell contains one natural forage point.")
+                .defineInRange("spotChance", 0.32D, 0.01D, 1.0D);
+        FORAGING_FOCUS_WEIGHT_MULTIPLIER = builder.comment("Loot weight multiplier for the selected search category; other categories remain possible.")
+                .defineInRange("focusWeightMultiplier", 1.8D, 1.0D, 5.0D);
+        FORAGING_SCAN_INTERVAL_TICKS = builder.comment("Minimum player tick interval between search area refreshes.")
+                .defineInRange("scanIntervalTicks", 10, 5, 100);
         builder.pop();
 
         SPEC = builder.build();
