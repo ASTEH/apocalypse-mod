@@ -1,0 +1,17 @@
+{
+  "required": false,
+  "minVersion": "0.8.5",
+  "package": "dev.aftermath.mixin.tacz",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ReloadProgressMixin",
+    "LivingEntityAimMixin"
+  ],
+  "client": [
+    "LocalPlayerAimMixin",
+    "LocalPlayerShootMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
