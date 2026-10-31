@@ -10,20 +10,19 @@ import net.minecraft.resources.ResourceLocation;
 /** Server-authoritative firearm XP and client handling feedback settings. */
 public record WeaponProgressSyncPayload(String experienceCsv, boolean progressionEnabled,
                                         float untrainedAimTimeMultiplier, float untrainedRecoilPitch,
-                                        float untrainedRecoilYaw, float untrainedShotgunHandlingMultiplier,
-                                        float untrainedHeavyHandlingMultiplier)
+                                        float untrainedRecoilYaw, String handlingMultipliersCsv)
         implements CustomPacketPayload {
     public static final Type<WeaponProgressSyncPayload> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "weapon_progress_sync"));
 
+    // StreamCodec.composite supports up to six fields in this Minecraft version.
     public static final StreamCodec<ByteBuf, WeaponProgressSyncPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, WeaponProgressSyncPayload::experienceCsv,
             ByteBufCodecs.BOOL, WeaponProgressSyncPayload::progressionEnabled,
             ByteBufCodecs.FLOAT, WeaponProgressSyncPayload::untrainedAimTimeMultiplier,
             ByteBufCodecs.FLOAT, WeaponProgressSyncPayload::untrainedRecoilPitch,
             ByteBufCodecs.FLOAT, WeaponProgressSyncPayload::untrainedRecoilYaw,
-            ByteBufCodecs.FLOAT, WeaponProgressSyncPayload::untrainedShotgunHandlingMultiplier,
-            ByteBufCodecs.FLOAT, WeaponProgressSyncPayload::untrainedHeavyHandlingMultiplier,
+            ByteBufCodecs.STRING_UTF8, WeaponProgressSyncPayload::handlingMultipliersCsv,
             WeaponProgressSyncPayload::new
     );
 
