@@ -2,7 +2,6 @@ package dev.aftermath.weapon;
 
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.noise.NoiseService;
-import dev.aftermath.state.PlayerStateManager;
 import dev.aftermath.character.WeaponProgressionService;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -78,11 +77,9 @@ public final class TaczCompatibility {
      * report noise; a 20-tick per-player cooldown in NoiseService prevents shotgun volleys from
      * producing duplicate noise scans.
      */
-    private static void applyPanicSpread(Projectile projectile, ServerPlayer shooter) {
+    private static void applySkillSpread(Projectile projectile, ServerPlayer shooter) {
         String weaponClass = FirearmDefinitions.classForGun(gunId(projectile));
-        double panicSpread = PlayerStateManager.effect(shooter, "firearm_spread_additive", 0.0D);
-        double skillSpread = WeaponProgressionService.spreadPenalty(shooter, weaponClass);
-        double spread = panicSpread + skillSpread;
+        double spread = WeaponProgressionService.spreadPenalty(shooter, weaponClass);
         if (spread <= 0.0D) return;
 
         Vec3 velocity = projectile.getDeltaMovement();
@@ -108,9 +105,8 @@ public final class TaczCompatibility {
         if (!(event.getEntity() instanceof Projectile projectile)
                 || !(projectile.getOwner() instanceof ServerPlayer shooter)) return;
 
-        // Moodles and firearm proficiency affect shot stability on the authoritative server.
-        applyPanicSpread(projectile, shooter);
-        PlayerStateManager.triggerEvent(shooter, "gunshot");
+        // Firearm proficiency affects shot stability on the authoritative server.
+        applySkillSpread(projectile, shooter);
         if (AftermathServerConfig.ENABLE_NOISE_EVENTS.get()) {
             NoiseService.emitNoise(level, new Vec3(shooter.getX(), shooter.getY(), shooter.getZ()),
                     NoiseService.gunshotEventId(), shooter.getUUID());
