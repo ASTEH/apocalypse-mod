@@ -32,7 +32,7 @@ public final class ParkourService {
         if (!AftermathServerConfig.ENABLE_PARKOUR.get()) return;
         if (!player.isAlive() || player.isPassenger() || player.isFallFlying()
                 || player.isInWaterOrBubble() || player.isInLava()
-                || player.isSpectator() || !player.onGround() || !player.isSprinting()) {
+                || player.isSpectator() || !player.onGround()) {
             return;
         }
 
@@ -47,9 +47,13 @@ public final class ParkourService {
         if (horizontal.lengthSqr() < MIN_HORIZONTAL_SPEED_SQR) return;
         Vec3 direction = horizontal.normalize();
 
-        // A low opening can be crossed while crouching; all other moves require the
-        // standing collision box. The player's current pose is always used by the server.
-        if (player.isCrouching() && tryCrawlThroughOpening(player, level, direction)) return;
+        // Crouching and sprinting are mutually exclusive in vanilla. Crouched movement
+        // therefore has its own eligibility path; vaults and mantles still require sprint.
+        if (player.isCrouching()) {
+            tryCrawlThroughOpening(player, level, direction);
+            return;
+        }
+        if (!player.isSprinting()) return;
         tryVaultOrMantle(player, level, direction);
     }
 
