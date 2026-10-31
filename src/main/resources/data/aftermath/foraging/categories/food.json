@@ -1,0 +1,63 @@
+{
+  "entries": [
+    {
+      "item": "minecraft:apple",
+      "weight": 9,
+      "min_count": 1,
+      "max_count": 2,
+      "biomes": [
+        "forest",
+        "taiga",
+        "grove",
+        "jungle",
+        "birch"
+      ]
+    },
+    {
+      "item": "minecraft:bread",
+      "weight": 5,
+      "min_count": 1,
+      "max_count": 3,
+      "requires_urban": true
+    },
+    {
+      "item": "minecraft:carrot",
+      "weight": 5,
+      "min_count": 1,
+      "max_count": 3,
+      "requires_farmland": true
+    },
+    {
+      "item": "minecraft:potato",
+      "weight": 5,
+      "min_count": 1,
+      "max_count": 3,
+      "requires_farmland": true
+    },
+    {
+      "item": "minecraft:sweet_berries",
+      "weight": 6,
+      "min_count": 1,
+      "max_count": 4,
+      "biomes": [
+        "forest",
+        "taiga",
+        "grove"
+      ]
+    },
+    {
+      "item": "minecraft:baked_potato",
+      "weight": 2,
+      "min_count": 1,
+      "max_count": 2,
+      "requires_urban": true
+    },
+    {
+      "item": "minecraft:melon_slice",
+      "weight": 3,
+      "min_count": 1,
+      "max_count": 4,
+      "requires_farmland": true
+    }
+  ]
+}
