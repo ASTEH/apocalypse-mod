@@ -28,7 +28,8 @@ public abstract class LocalPlayerAimMixin {
         int level = WeaponProgressClientState.levelFor(weaponClass);
         boolean eagleEye = TraitClientState.has("eagle_eye");
         double multiplier = WeaponProgressionService.aimTimeMultiplier(
-                level, eagleEye, WeaponProgressClientState.untrainedAimTimeMultiplier());
+                level, eagleEye, WeaponProgressClientState.untrainedAimTimeMultiplier(),
+                WeaponProgressClientState.handlingClassMultiplier(weaponClass));
         callback.setReturnValue((float) (callback.getReturnValue() / multiplier));
     }
 }
