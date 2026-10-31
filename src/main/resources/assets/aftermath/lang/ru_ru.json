@@ -349,7 +349,7 @@
   "message.aftermath.foraging.collected": "Найдено: %1$s ×%2$s",
   "item.aftermath.wild_herbs": "Дикие травы",
   "item.aftermath.clothing_patch": "Заплатка для одежды",
-  "tooltip.aftermath.clothing_patch.item": "Нажми ПКМ по надеваемой броне в инвентаре, держа эту заплатку.",
+  "tooltip.aftermath.clothing_patch.item": "ЛКМ или ПКМ по надеваемой броне в инвентаре, держа эту заплатку.",
   "tooltip.aftermath.clothing_patch.count": "Заплатки: %1$s/%2$s",
   "tooltip.aftermath.clothing_patch.protection": "Дополнительная броня: +%1$s",
   "tooltip.aftermath.clothing_patch.durability": "Прочность одежды: %1$s/%2$s",
