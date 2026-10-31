@@ -1,6 +1,5 @@
 package dev.aftermath.zombie;
 
-import dev.aftermath.AftermathMod;
 import dev.aftermath.noise.ZombieEntityClassifier;
 import dev.aftermath.config.AftermathServerConfig;
 import net.minecraft.nbt.Tag;
@@ -112,6 +111,11 @@ public final class ZombieCamouflageService {
             default -> "message.aftermath.camouflage.expired";
         };
         player.sendSystemMessage(net.minecraft.network.chat.Component.translatable(key));
+    }
+
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        UUID playerId = event.getEntity().getUUID();
+        NEXT_ATTEMPT.keySet().removeIf(key -> key.playerId().equals(playerId));
     }
 
     public static void onServerStopping(ServerStoppingEvent event) {
