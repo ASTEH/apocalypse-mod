@@ -9,6 +9,7 @@ import java.util.Map;
 /** Read-only client snapshot of server-owned firearm progression. */
 public final class WeaponProgressClientState {
     private static volatile Map<String, Integer> experience = Map.of();
+    private static volatile boolean progressionEnabled = true;
     private static volatile float untrainedAimTimeMultiplier = 1.4F;
     private static volatile float untrainedRecoilPitch = 1.25F;
     private static volatile float untrainedRecoilYaw = 0.45F;
@@ -28,13 +29,14 @@ public final class WeaponProgressClientState {
             }
         }
         experience = Map.copyOf(parsed);
+        progressionEnabled = payload.progressionEnabled();
         untrainedAimTimeMultiplier = Math.max(1.0F, payload.untrainedAimTimeMultiplier());
         untrainedRecoilPitch = Math.max(0.0F, payload.untrainedRecoilPitch());
         untrainedRecoilYaw = Math.max(0.0F, payload.untrainedRecoilYaw());
     }
 
     public static int levelFor(String weaponClass) {
-        if (weaponClass == null) return 10;
+        if (!progressionEnabled || weaponClass == null) return 10;
         return WeaponProgressionService.levelFor(experience.getOrDefault(weaponClass, 0));
     }
 
