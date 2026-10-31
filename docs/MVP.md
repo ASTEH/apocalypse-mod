@@ -158,7 +158,7 @@ This is distinct from the historical M1–M7 milestones above. It extends the ex
 
 ## User roadmap — Stage 24: Body condition panel
 
-<skipped> Intentionally skipped in Aftermath. The maintainer confirmed that another installed mod already provides the body-condition panel, so Aftermath will not create a duplicate anatomy/medical UI or another integration for the same display.
+**Skipped — not implemented in Aftermath.** The maintainer confirmed that another installed mod already provides the body-condition panel, so Aftermath will not create a duplicate anatomy/medical UI or another integration for the same display.
 
 ## User roadmap — Stage 25: Clothing patches
 
