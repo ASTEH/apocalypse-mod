@@ -17,7 +17,6 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_HORDE_BEHAVIOR;
     public static final ModConfigSpec.BooleanValue ENABLE_BLOCK_BREAKING;
     public static final ModConfigSpec.BooleanValue ENABLE_DAY_PROGRESSION;
-    public static final ModConfigSpec.BooleanValue ENABLE_MOODLES;
     public static final ModConfigSpec.BooleanValue ENABLE_HOSTILE_SPAWN_FILTER;
     public static final ModConfigSpec.BooleanValue ENABLE_SPAWNER_REMOVAL;
     public static final ModConfigSpec.BooleanValue ENABLE_ZOMBIE_VARIANTS;
@@ -56,8 +55,6 @@ public final class AftermathServerConfig {
                 .define("enableBlockBreaking", false);
         ENABLE_DAY_PROGRESSION = builder.comment("Scale noise detection and group sizes using the saved apocalypse day.")
                 .define("enableDayProgression", true);
-        ENABLE_MOODLES = builder.comment("Enable server-authoritative tiredness, exertion and panic Moodles.")
-                .define("enableMoodles", true);
         ENABLE_HOSTILE_SPAWN_FILTER = builder.comment("Block unlisted hostile mob spawns using the world_rules/spawn_control.json datapack policy.")
                 .define("enableHostileSpawnFilter", true);
         ENABLE_SPAWNER_REMOVAL = builder.comment("Remove configured vanilla spawner blocks when their chunks finish loading.")
