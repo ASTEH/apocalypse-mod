@@ -2,7 +2,6 @@ package dev.aftermath.client;
 
 import dev.aftermath.network.CharacterScreenPayload;
 import dev.aftermath.network.CharacterSelectionResultPayload;
-import dev.aftermath.network.MoodlesSyncPayload;
 import dev.aftermath.network.TraitStatePayload;
 import dev.aftermath.network.ZombieKillCountPayload;
 import dev.aftermath.network.WeaponProgressSyncPayload;
@@ -27,10 +26,6 @@ public final class CharacterClientPayloads {
 
     public static void handleWeaponProgress(WeaponProgressSyncPayload payload) {
         WeaponProgressClientState.apply(payload);
-    }
-
-    public static void handleMoodles(MoodlesSyncPayload payload) {
-        MoodlesHud.setEntriesJson(payload.entriesJson());
     }
 
     public static void handleResult(CharacterSelectionResultPayload payload) {
