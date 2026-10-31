@@ -89,6 +89,34 @@ public final class AftermathContent {
     public static final DeferredItem<Item> CLOTHING_PATCH = ITEMS.register(
             "clothing_patch", () -> new Item(new Item.Properties().stacksTo(16)));
 
+    public static final DeferredBlock<NoiseDecoyBlock> RADIO_DECOY = BLOCKS.registerBlock(
+            "radio_decoy",
+            properties -> new NoiseDecoyBlock(properties,
+                    ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "radio_decoy"), 60),
+            BlockBehaviour.Properties.of().strength(1.2F).sound(SoundType.METAL).noOcclusion());
+
+    public static final DeferredBlock<NoiseDecoyBlock> ALARM_CLOCK_DECOY = BLOCKS.registerBlock(
+            "alarm_clock_decoy",
+            properties -> new NoiseDecoyBlock(properties,
+                    ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "alarm_clock_decoy"), 40),
+            BlockBehaviour.Properties.of().strength(0.8F).sound(SoundType.METAL).noOcclusion());
+
+    public static final DeferredItem<BlockItem> RADIO_DECOY_ITEM =
+            ITEMS.registerSimpleBlockItem(RADIO_DECOY, new Item.Properties());
+    public static final DeferredItem<BlockItem> ALARM_CLOCK_DECOY_ITEM =
+            ITEMS.registerSimpleBlockItem(ALARM_CLOCK_DECOY, new Item.Properties());
+
+    public static final Supplier<BlockEntityType<NoiseDecoyBlockEntity>> NOISE_DECOY_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("noise_decoy",
+                    () -> BlockEntityType.Builder.of(NoiseDecoyBlockEntity::new,
+                            RADIO_DECOY.get(), ALARM_CLOCK_DECOY.get()).build(null));
+
+    public static final DeferredItem<NoiseBatteryItem> NOISE_BATTERY = ITEMS.register(
+            "noise_battery", () -> new NoiseBatteryItem(new Item.Properties().stacksTo(16)));
+
+    public static final DeferredItem<ZombieDisguiseItem> ZOMBIE_DISGUISE = ITEMS.register(
+            "zombie_disguise", () -> new ZombieDisguiseItem(new Item.Properties().stacksTo(16)));
+
     public static void register(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
