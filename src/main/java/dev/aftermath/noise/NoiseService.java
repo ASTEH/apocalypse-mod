@@ -4,6 +4,7 @@ import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.day.WorldProgressData;
 import dev.aftermath.zombie.ZombieVariantService;
+import dev.aftermath.zombie.ZombieCamouflageService;
 import dev.aftermath.noise.compat.ZombieAwarenessCompatibility;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -46,6 +47,7 @@ public final class NoiseService {
                 ? dayStage.detectionMultiplier() : 1.0D;
         int radius = (int) Math.ceil(baseRadius * detectionMultiplier);
         radius = Math.max(0, Math.min(512, radius));
+        ZombieCamouflageService.onStrongNoise(level, sourceId, radius);
         int stageGroupLimit = AftermathServerConfig.ENABLE_DAY_PROGRESSION.get()
                 ? dayStage.groupSize() : AftermathServerConfig.MAX_HORDE_SIZE.get();
         if (radius == 0) return new NoiseResult(Status.EMITTED, 0, 0);
