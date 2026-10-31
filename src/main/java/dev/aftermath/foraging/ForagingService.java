@@ -20,7 +20,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -232,11 +231,8 @@ public final class ForagingService {
 
                 BlockPos probe = new BlockPos(x, player.getBlockY(), z);
                 if (!level.hasChunkAt(probe)) continue;
-                int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-                if (Math.abs(y - player.getBlockY()) > 4
-                        || y <= level.getMinBuildHeight() || y >= level.getMaxBuildHeight()) continue;
-                BlockPos pos = new BlockPos(x, y, z);
-                if (!level.getFluidState(pos).isEmpty() || level.getBlockState(pos.below()).isAir()) continue;
+                BlockPos pos = findGroundPosition(level, x, player.getBlockY(), z);
+                if (pos == null) continue;
                 if (worldData.isDepleted(pos, now)) continue;
 
                 ForagingWorldData.StoredFind stored = worldData.findAt(pos);
@@ -269,6 +265,21 @@ public final class ForagingService {
         visible.sort(Comparator.comparingDouble(VisibleFind::distance));
         SERVER_FINDS.put(playerId, validated);
         sendSnapshot(player, focus, radius, visible);
+    }
+
+    /** Finds an air block over a floor near the player's current Y, including caves and interiors. */
+    private static BlockPos findGroundPosition(ServerLevel level, int x, int playerY, int z) {
+        for (int offset = 3; offset >= -6; offset--) {
+            int y = playerY + offset;
+            if (y <= level.getMinBuildHeight() || y >= level.getMaxBuildHeight()) continue;
+            BlockPos candidate = new BlockPos(x, y, z);
+            BlockPos ground = candidate.below();
+            if (!level.hasChunkAt(candidate) || !level.hasChunkAt(ground)) continue;
+            if (!level.getBlockState(candidate).isAir() || !level.getFluidState(candidate).isEmpty()) continue;
+            if (level.getBlockState(ground).isAir() || !level.getFluidState(ground).isEmpty()) continue;
+            return candidate;
+        }
+        return null;
     }
 
     private static int scavengingLevel(ServerPlayer player) {
