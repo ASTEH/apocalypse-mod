@@ -148,7 +148,7 @@ This is distinct from the historical M1–M7 milestones above. It extends the ex
 - [x] Added server validation for collection requests and awarded scavenging XP through the existing `LearningService` anti-farm/cap logic.
 - [x] Added the Wild Herbs crafting ingredient and RU/EN labels. It has no medical effects and does not replace the medical mods.
 - [x] Documented controls, datapack schema, config and the current season/biome-context limitations in `docs/FORAGING.md`.
-- [ ] Confirm the Stage23 Java 21 GitHub Actions build.
+- [x] Java 21 / NeoForge GitHub Actions build passes on the Stage23 implementation commit.
 - [ ] In-game acceptance: END/G/H, rebinds, movement while HUD active, focus odds, close-range reveal, item collection and malicious/duplicate pickup rejection.
 - [ ] In-game acceptance: skill/profession/trait radius, darkness limit, rain/recent rain, night finds, winter-like biome behavior, farm/road/urban contexts and regrowth after seven in-game days.
 - [ ] In-game acceptance: relog/world restart persistence, multiple searching players, client/server startup without optional mods and no chunk-forcing/performance regressions.
