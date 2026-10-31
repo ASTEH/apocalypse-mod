@@ -71,6 +71,10 @@ public final class ClothingPatchService {
         EquipmentSlot equipmentSlot = player.getEquipmentSlotForItem(garment);
         if (equipmentSlot == null || !equipmentSlot.isArmor()) return;
 
+        // Creative inventory stacking is client-only in this event. Leave it to vanilla
+        // rather than consume a patch locally without a matching server-side update.
+        if (player.getAbilities().instabuild) return;
+
         // This is our interaction, not a normal stack operation.
         event.setCanceled(true);
         if (player.level().isClientSide()) return;
@@ -82,11 +86,9 @@ public final class ClothingPatchService {
             return;
         }
 
-        if (!player.getAbilities().instabuild) {
-            ItemStack remaining = carried.copy();
-            remaining.shrink(1);
-            if (!event.getCarriedSlotAccess().set(remaining)) return;
-        }
+        ItemStack remaining = carried.copy();
+        remaining.shrink(1);
+        if (!event.getCarriedSlotAccess().set(remaining)) return;
 
         int updated = current + 1;
         setPatchCount(garment, updated);
