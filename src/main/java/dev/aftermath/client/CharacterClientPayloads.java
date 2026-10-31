@@ -6,6 +6,7 @@ import dev.aftermath.network.TraitStatePayload;
 import dev.aftermath.network.ZombieKillCountPayload;
 import dev.aftermath.network.WeaponProgressSyncPayload;
 import dev.aftermath.network.SkillsSnapshotPayload;
+import dev.aftermath.network.ForagingSnapshotPayload;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -34,6 +35,10 @@ public final class CharacterClientPayloads {
         if (minecraft.player != null) {
             minecraft.setScreen(SkillsScreen.fromSnapshot(payload.snapshotJson()));
         }
+    }
+
+    public static void handleForagingSnapshot(ForagingSnapshotPayload payload) {
+        ForagingClientState.handleSnapshot(payload.snapshotJson());
     }
 
     public static void handleResult(CharacterSelectionResultPayload payload) {
