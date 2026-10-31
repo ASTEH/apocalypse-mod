@@ -9,8 +9,8 @@ same spawn. Ranges are rolled separately for each spawned entity.
 
 | Profile | Weight | Spawn condition | Gameplay |
 |---|---:|---|---|
-| Slow | 75 | Day or night | Slow movement, above-average durability and shorter detection |
-| Fast | 20 | Day or night | High movement speed, less health, longer sight/hearing and more damage |
+| Slow | 75 | Night (Overworld natural spawns) | Slow movement, above-average durability and shorter detection |
+| Fast | 20 | Night (Overworld natural spawns) | High movement speed, less health, longer sight/hearing and more damage |
 | Volatile | 5 | Night | Fast, durable and high damage; longest sight/hearing |
 | Brute | 3 | Night | Very durable, slow, high damage and strong knockback resistance |
 
