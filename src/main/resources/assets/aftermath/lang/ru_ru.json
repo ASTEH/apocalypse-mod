@@ -347,5 +347,12 @@
   "message.aftermath.foraging.stopped": "Ты прекращаешь поиск.",
   "message.aftermath.foraging.nothing_close": "Рядом нет обнаруженной находки, которую можно подобрать.",
   "message.aftermath.foraging.collected": "Найдено: %1$s ×%2$s",
-  "item.aftermath.wild_herbs": "Дикие травы"
+  "item.aftermath.wild_herbs": "Дикие травы",
+  "item.aftermath.clothing_patch": "Заплатка для одежды",
+  "tooltip.aftermath.clothing_patch.item": "Нажми ПКМ по надеваемой броне в инвентаре, держа эту заплатку.",
+  "tooltip.aftermath.clothing_patch.count": "Заплатки: %1$s/%2$s",
+  "tooltip.aftermath.clothing_patch.protection": "Дополнительная броня: +%1$s",
+  "tooltip.aftermath.clothing_patch.durability": "Прочность одежды: %1$s/%2$s",
+  "message.aftermath.clothing_patches.applied": "Одежда усилена: установлено заплаток %1$s/%2$s.",
+  "message.aftermath.clothing_patches.maxed": "На этой вещи уже установлено максимальное количество заплаток: %1$s."
 }
