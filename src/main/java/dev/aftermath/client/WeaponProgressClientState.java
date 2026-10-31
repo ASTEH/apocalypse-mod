@@ -15,6 +15,7 @@ public final class WeaponProgressClientState {
     private static volatile float untrainedRecoilYaw = 0.8F;
     private static volatile float untrainedShotgunHandlingMultiplier = 1.25F;
     private static volatile float untrainedHeavyHandlingMultiplier = 1.4F;
+    private static volatile float untrainedSniperHandlingMultiplier = 1.2F;
 
     public static void apply(WeaponProgressSyncPayload payload) {
         Map<String, Integer> parsedExperience = new HashMap<>();
@@ -46,6 +47,8 @@ public final class WeaponProgressClientState {
                 parsedMultipliers.getOrDefault("shotgun", 1.25F));
         untrainedHeavyHandlingMultiplier = clampHandlingMultiplier(
                 parsedMultipliers.getOrDefault("heavy", 1.4F));
+        untrainedSniperHandlingMultiplier = clampHandlingMultiplier(
+                parsedMultipliers.getOrDefault("sniper", 1.2F));
     }
 
     private static Map<String, String> parsePairs(String csv) {
@@ -80,6 +83,7 @@ public final class WeaponProgressClientState {
     public static float handlingClassMultiplier(String weaponClass) {
         if ("shotgun".equals(weaponClass)) return untrainedShotgunHandlingMultiplier;
         if ("heavy".equals(weaponClass)) return untrainedHeavyHandlingMultiplier;
+        if ("sniper".equals(weaponClass)) return untrainedSniperHandlingMultiplier;
         return 1.0F;
     }
 
