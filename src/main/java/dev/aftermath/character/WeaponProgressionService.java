@@ -16,7 +16,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -98,7 +97,7 @@ public final class WeaponProgressionService {
      */
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
         if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()) return;
-        if (!(event.getEntity() instanceof Enemy)) return;
+        if (!(event.getEntity() instanceof Mob mob) || !ZombieEntityClassifier.isZombieLikeKillTarget(mob)) return;
         DamageSource source = event.getSource();
         if (!(source.getEntity() instanceof ServerPlayer attacker)) return;
         String weaponClass = resolveWeaponClass(attacker, source);
