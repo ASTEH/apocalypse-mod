@@ -2,6 +2,7 @@ package dev.aftermath.zombie;
 
 import dev.aftermath.AftermathMod;
 import dev.aftermath.noise.ZombieEntityClassifier;
+import dev.aftermath.config.AftermathServerConfig;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,6 +34,7 @@ public final class ZombieCamouflageService {
     private ZombieCamouflageService() {}
 
     public static void activate(ServerPlayer player) {
+        if (!AftermathServerConfig.ENABLE_ZOMBIE_CAMOUFLAGE.get()) return;
         long now = overworldTime(player);
         player.getPersistentData().putLong(UNTIL_TAG, now + DURATION_TICKS);
         clearDistantTargets(player);
@@ -41,6 +43,7 @@ public final class ZombieCamouflageService {
     }
 
     public static boolean isActive(ServerPlayer player) {
+        if (!AftermathServerConfig.ENABLE_ZOMBIE_CAMOUFLAGE.get()) return false;
         if (!player.getPersistentData().contains(UNTIL_TAG, Tag.TAG_LONG)) return false;
         return overworldTime(player) < player.getPersistentData().getLong(UNTIL_TAG);
     }
