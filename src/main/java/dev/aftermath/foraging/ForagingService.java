@@ -250,7 +250,7 @@ public final class ForagingService {
                             level, pos, skillLevel, wet, night, winter,
                             nearFarm, nearRoad, nearUrban, focus,
                             focusMultiplier * professionLootBonus, lootRandom);
-                    if (choice == null) continue;
+                    if (choice == null || BuiltInRegistries.ITEM.get(choice.itemId()) == Items.AIR) continue;
                     stored = worldData.rememberFind(pos, choice.itemId(), choice.count(), now);
                     if (stored == null) continue;
                 }
@@ -304,7 +304,8 @@ public final class ForagingService {
     private static boolean isNearFarmland(ServerLevel level, BlockPos pos) {
         for (int dx = -2; dx <= 2; dx += 2) {
             for (int dz = -2; dz <= 2; dz += 2) {
-                if (level.getBlockState(pos.offset(dx, -1, dz)).is(Blocks.FARMLAND)) return true;
+                BlockPos sample = pos.offset(dx, -1, dz);
+                if (level.hasChunkAt(sample) && level.getBlockState(sample).is(Blocks.FARMLAND)) return true;
             }
         }
         return false;
@@ -313,7 +314,9 @@ public final class ForagingService {
     private static boolean isNearRoad(ServerLevel level, BlockPos pos) {
         for (int dx = -2; dx <= 2; dx += 2) {
             for (int dz = -2; dz <= 2; dz += 2) {
-                var state = level.getBlockState(pos.offset(dx, -1, dz));
+                BlockPos sample = pos.offset(dx, -1, dz);
+                if (!level.hasChunkAt(sample)) continue;
+                var state = level.getBlockState(sample);
                 if (state.is(Blocks.GRAVEL) || state.is(Blocks.COBBLESTONE)
                         || state.is(Blocks.STONE_BRICKS) || state.is(Blocks.POLISHED_ANDESITE)
                         || state.is(Blocks.GRAY_CONCRETE) || state.is(Blocks.BLACK_CONCRETE)
@@ -327,9 +330,11 @@ public final class ForagingService {
         int buildingBlocks = 0;
         for (int dx = -2; dx <= 2; dx += 2) {
             for (int dz = -2; dz <= 2; dz += 2) {
-                var ground = level.getBlockState(pos.offset(dx, -1, dz));
-                var nearby = level.getBlockState(pos.offset(dx, 0, dz));
-                if (isBuiltMaterial(ground) || isBuiltMaterial(nearby)) buildingBlocks++;
+                BlockPos groundPos = pos.offset(dx, -1, dz);
+                BlockPos nearbyPos = pos.offset(dx, 0, dz);
+                boolean built = level.hasChunkAt(groundPos) && isBuiltMaterial(level.getBlockState(groundPos));
+                built |= level.hasChunkAt(nearbyPos) && isBuiltMaterial(level.getBlockState(nearbyPos));
+                if (built) buildingBlocks++;
             }
         }
         return buildingBlocks >= 3;
