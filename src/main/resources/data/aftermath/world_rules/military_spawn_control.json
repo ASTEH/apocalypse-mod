@@ -1,0 +1,38 @@
+{
+  "enabled": true,
+  "dimensions": [
+    "minecraft:overworld"
+  ],
+  "entity_types": [],
+  "entity_namespaces": [],
+  "path_keywords": [
+    "soldier",
+    "military",
+    "army",
+    "infantry",
+    "trooper",
+    "marine",
+    "russian",
+    "soviet",
+    "american",
+    "usa",
+    "us_army",
+    "usmc",
+    "rifleman",
+    "mercenary"
+  ],
+  "spawn_types": [
+    "natural",
+    "chunk_generation",
+    "patrol",
+    "structure",
+    "event",
+    "triggered",
+    "mob_summoned",
+    "spawner",
+    "reinforcement"
+  ],
+  "default_spawn_chance": 0.08,
+  "outside_zone_spawn_chance": 0.01,
+  "zones": []
+}
