@@ -1,0 +1,9 @@
+{
+  "type": "noise",
+  "noise_radius": 44,
+  "lure_duration_ticks": 120,
+  "cooldown_ticks": 20,
+  "target_tag": "aftermath:horde_members",
+  "affects_loaded_entities_only": true,
+  "max_affected_entities": 24
+}
