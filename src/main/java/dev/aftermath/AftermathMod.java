@@ -51,7 +51,7 @@ public final class AftermathMod {
         AftermathAttachments.register(modEventBus);
         AftermathContent.register(modEventBus);
         modEventBus.addListener(AftermathNetworking::registerPayloads);
-        modEventBus.addListener(ClothingPatchService::onItemAttributeModifier);
+        NeoForge.EVENT_BUS.addListener(ClothingPatchService::onItemAttributeModifier);
         NeoForge.EVENT_BUS.addListener(AftermathCommands::registerCommands);
         NeoForge.EVENT_BUS.addListener(ClothingPatchService::onItemStackedOnOther);
         NeoForge.EVENT_BUS.addListener(ClothingPatchService::onItemTooltip);
