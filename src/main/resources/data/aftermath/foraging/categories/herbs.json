@@ -1,6 +1,23 @@
 {
   "entries": [
     {
+      "item": "aftermath:wild_herbs",
+      "weight": 5,
+      "min_skill": 6,
+      "min_count": 1,
+      "max_count": 2,
+      "plant": true,
+      "requires_wet": true,
+      "wet_bonus": 4,
+      "biomes": [
+        "forest",
+        "taiga",
+        "grove",
+        "swamp",
+        "meadow"
+      ]
+    },
+    {
       "item": "minecraft:brown_mushroom",
       "weight": 5,
       "min_skill": 6,
