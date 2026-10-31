@@ -21,6 +21,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_SPAWNER_REMOVAL;
     public static final ModConfigSpec.BooleanValue ENABLE_ZOMBIE_VARIANTS;
     public static final ModConfigSpec.BooleanValue ENABLE_MILITARY_SPAWN_CONTROL;
+    public static final ModConfigSpec.DoubleValue MILITARY_EVENT_CHANCE_MULTIPLIER;
 
     public static final ModConfigSpec.IntValue WEAPON_XP_PER_KILL;
     public static final ModConfigSpec.IntValue MAX_XP_PER_VICTIM_PER_MINUTE;
@@ -65,8 +66,10 @@ public final class AftermathServerConfig {
                 .define("enableSpawnerRemoval", true);
         ENABLE_ZOMBIE_VARIANTS = builder.comment("Enable weighted, datapack-driven zombie stat and sense archetypes.")
                 .define("enableZombieVariants", true);
-        ENABLE_MILITARY_SPAWN_CONTROL = builder.comment("Reduce the spawn frequency of selected military NPCs using world_rules/military_spawn_control.json.")
+        ENABLE_MILITARY_SPAWN_CONTROL = builder.comment("Reduce the frequency of TaCZ: Simple Enemy dynamic military events when that optional mod is installed.")
                 .define("enableMilitarySpawnControl", true);
+        MILITARY_EVENT_CHANCE_MULTIPLIER = builder.comment("Fraction of TaCZ: Simple Enemy base chances retained by military_patrol, far_combat, and cave_extraction. 0.15 means 15% of their normal configured chance.")
+                .defineInRange("militaryEventChanceMultiplier", 0.15D, 0.0D, 1.0D);
         builder.pop();
 
         builder.push("weapon_progression");
