@@ -81,6 +81,10 @@ public final class AftermathContent {
     public static final DeferredItem<TrainingVhsTapeItem> VHS_TAPE = ITEMS.register(
             "vhs_tape", () -> new TrainingVhsTapeItem(new Item.Properties().stacksTo(1)));
 
+    /** A basic forage ingredient only; it does not apply medical effects or replace the medical mods. */
+    public static final DeferredItem<Item> WILD_HERBS = ITEMS.register(
+            "wild_herbs", () -> new Item(new Item.Properties().stacksTo(16)));
+
     public static void register(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
