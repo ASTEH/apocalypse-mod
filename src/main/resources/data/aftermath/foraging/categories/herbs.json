@@ -1,0 +1,79 @@
+{
+  "entries": [
+    {
+      "item": "minecraft:brown_mushroom",
+      "weight": 5,
+      "min_skill": 6,
+      "min_count": 1,
+      "max_count": 3,
+      "plant": true,
+      "requires_wet": true,
+      "wet_bonus": 4,
+      "biomes": [
+        "forest",
+        "taiga",
+        "grove",
+        "swamp",
+        "mushroom"
+      ]
+    },
+    {
+      "item": "minecraft:red_mushroom",
+      "weight": 4,
+      "min_skill": 6,
+      "min_count": 1,
+      "max_count": 2,
+      "plant": true,
+      "requires_wet": true,
+      "wet_bonus": 4,
+      "biomes": [
+        "forest",
+        "taiga",
+        "grove",
+        "swamp",
+        "mushroom"
+      ]
+    },
+    {
+      "item": "minecraft:dandelion",
+      "weight": 5,
+      "min_skill": 6,
+      "min_count": 1,
+      "max_count": 2,
+      "plant": true,
+      "wet_bonus": 2,
+      "biomes": [
+        "forest",
+        "plains",
+        "meadow",
+        "grove"
+      ]
+    },
+    {
+      "item": "minecraft:allium",
+      "weight": 2,
+      "min_skill": 7,
+      "min_count": 1,
+      "max_count": 1,
+      "plant": true,
+      "biomes": [
+        "flower",
+        "forest",
+        "meadow"
+      ]
+    },
+    {
+      "item": "minecraft:cornflower",
+      "weight": 2,
+      "min_skill": 7,
+      "min_count": 1,
+      "max_count": 1,
+      "plant": true,
+      "biomes": [
+        "flower",
+        "plains",
+        "meadow"
+      ]
+    }
+  ]
+}
