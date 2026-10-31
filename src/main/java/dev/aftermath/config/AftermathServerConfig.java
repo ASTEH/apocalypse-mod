@@ -4,7 +4,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
  * Server-authoritative settings. Gameplay options stay in the server config.
- * Defaults are conservative until each associated feature is implemented and tested.
+ * Firearm handling defaults are intentionally noticeable at level 0 and become fully trained at level 10.
  */
 public final class AftermathServerConfig {
     public static final ModConfigSpec SPEC;
@@ -28,6 +28,8 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_AIM_TIME;
     public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_RECOIL_PITCH;
     public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_RECOIL_YAW;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_SHOTGUN_HANDLING_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue UNTRAINED_HEAVY_HANDLING_MULTIPLIER;
     public static final ModConfigSpec.IntValue DEFAULT_NOISE_RADIUS;
     public static final ModConfigSpec.IntValue MAX_HORDE_SIZE;
     public static final ModConfigSpec.IntValue AI_RECALC_INTERVAL_TICKS;
@@ -64,20 +66,24 @@ public final class AftermathServerConfig {
         builder.pop();
 
         builder.push("weapon_progression");
-        WEAPON_XP_PER_KILL = builder.comment("Base weapon XP for an eligible kill.")
+        WEAPON_XP_PER_KILL = builder.comment("Weapon XP per eligible kill. With 10 XP per kill, the 6000 XP level-10 threshold requires about 600 kills per weapon class.")
                 .defineInRange("weaponXpPerKill", 10, 0, 10000);
-        MAX_XP_PER_VICTIM_PER_MINUTE = builder.comment("Anti-farm limit: maximum XP from repeated kills of the same victim identity in a rolling minute.")
+        MAX_XP_PER_VICTIM_PER_MINUTE = builder.comment("Safety cap on XP awarded for one victim. Keep this at or above weaponXpPerKill for the normal 600-kill progression.")
                 .defineInRange("maxXpPerVictimPerMinute", 10, 0, 10000);
-        UNTRAINED_FIREARM_SPREAD = builder.comment("Additional TaCZ projectile spread at firearm level 0. Reaches zero at level 10.")
-                .defineInRange("untrainedFirearmSpread", 0.45D, 0.0D, 5.0D);
-        UNTRAINED_FIREARM_RELOAD_DURATION = builder.comment("Reload duration multiplier at firearm level 0. Reaches 1.0 at level 10; Quick Reload is applied afterward.")
-                .defineInRange("untrainedFirearmReloadDuration", 1.5D, 1.0D, 3.0D);
-        UNTRAINED_FIREARM_AIM_TIME = builder.comment("Aim transition time multiplier at firearm level 0. Reaches 1.0 at level 10.")
-                .defineInRange("untrainedFirearmAimTime", 1.4D, 1.0D, 3.0D);
-        UNTRAINED_FIREARM_RECOIL_PITCH = builder.comment("Additional client camera kick in degrees per successful TaCZ trigger at firearm level 0.")
-                .defineInRange("untrainedFirearmRecoilPitch", 1.25D, 0.0D, 10.0D);
-        UNTRAINED_FIREARM_RECOIL_YAW = builder.comment("Maximum random horizontal camera kick in degrees per successful TaCZ trigger at firearm level 0.")
-                .defineInRange("untrainedFirearmRecoilYaw", 0.45D, 0.0D, 10.0D);
+        UNTRAINED_FIREARM_SPREAD = builder.comment("Additional TaCZ projectile spread at firearm level 0, before weapon-class scaling. Reaches zero at level 10.")
+                .defineInRange("untrainedFirearmSpread", 0.65D, 0.0D, 5.0D);
+        UNTRAINED_FIREARM_RELOAD_DURATION = builder.comment("Reload duration multiplier at firearm level 0, before weapon-class scaling. Reaches 1.0 at level 10; Quick Reload is applied afterward.")
+                .defineInRange("untrainedFirearmReloadDuration", 1.75D, 1.0D, 3.0D);
+        UNTRAINED_FIREARM_AIM_TIME = builder.comment("Aim transition time multiplier at firearm level 0, before weapon-class scaling. Reaches 1.0 at level 10.")
+                .defineInRange("untrainedFirearmAimTime", 1.65D, 1.0D, 3.0D);
+        UNTRAINED_FIREARM_RECOIL_PITCH = builder.comment("Additional client camera pitch kick in degrees per successful TaCZ trigger at firearm level 0.")
+                .defineInRange("untrainedFirearmRecoilPitch", 2.0D, 0.0D, 10.0D);
+        UNTRAINED_FIREARM_RECOIL_YAW = builder.comment("Maximum additional random horizontal camera kick in degrees per successful TaCZ trigger at firearm level 0.")
+                .defineInRange("untrainedFirearmRecoilYaw", 0.8D, 0.0D, 10.0D);
+        UNTRAINED_SHOTGUN_HANDLING_MULTIPLIER = builder.comment("Extra untrained handling penalty for shotguns. Affects spread, reload time, aiming and camera recoil; fades out by level 10.")
+                .defineInRange("untrainedShotgunHandlingMultiplier", 1.25D, 1.0D, 3.0D);
+        UNTRAINED_HEAVY_HANDLING_MULTIPLIER = builder.comment("Extra untrained handling penalty for heavy weapons. Affects spread, reload time, aiming and camera recoil; fades out by level 10.")
+                .defineInRange("untrainedHeavyHandlingMultiplier", 1.40D, 1.0D, 3.0D);
         builder.pop();
 
         builder.push("noise_and_hordes");
