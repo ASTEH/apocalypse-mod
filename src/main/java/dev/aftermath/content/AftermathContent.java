@@ -85,6 +85,10 @@ public final class AftermathContent {
     public static final DeferredItem<Item> WILD_HERBS = ITEMS.register(
             "wild_herbs", () -> new Item(new Item.Properties().stacksTo(16)));
 
+    /** A one-use garment reinforcement kit made from vanilla wool and string. */
+    public static final DeferredItem<Item> CLOTHING_PATCH = ITEMS.register(
+            "clothing_patch", () -> new Item(new Item.Properties().stacksTo(16)));
+
     public static void register(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
