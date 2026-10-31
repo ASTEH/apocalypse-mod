@@ -11,12 +11,12 @@ public record WeaponProgress(Map<String, Integer> experience, int schemaVersion)
     private static final int CURRENT_SCHEMA_VERSION = 1;
     private static final int MAX_SAVED_XP = 2_000_000_000;
 
-    /** Level thresholds used before the 600-kill progression rebalance. */
+    /** Level thresholds used before the 205-kill progression rebalance. */
     private static final int[] LEGACY_LEVEL_THRESHOLDS = {
             0, 25, 50, 125, 250, 425, 650, 925, 1250, 1625, 2050
     };
 
-    /** 10 XP per kill means level 10 is reached after approximately 600 eligible kills. */
+    /** 10 XP per zombie kill means level 10 is reached after approximately 650 eligible kills. */
     private static final int[] LEVEL_THRESHOLDS = {
             0, 300, 700, 1200, 1800, 2500, 3300, 4200, 5100, 5800, 6500
     };
