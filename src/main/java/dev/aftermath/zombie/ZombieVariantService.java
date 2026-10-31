@@ -13,6 +13,7 @@ import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /** Applies one weighted archetype to each eligible newly-spawned zombie. */
 public final class ZombieVariantService {
