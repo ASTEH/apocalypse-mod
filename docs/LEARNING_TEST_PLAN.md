@@ -37,10 +37,13 @@ With an active learner within 16 blocks, process valid recipes through a mechani
 
 ## Model Injuries and LRTactical
 
-- Complete a valid Model Injuries TreatmentItem procedure on a selected body region. Confirm XP is awarded only if Model Injuries accepts the treatment; an invalid treatment must not grant XP.
-- Complete a valid Model Injuries MedicineItem use. Confirm the medicine is accepted and XP is awarded once.
-- Try an already-active/rejected medicine. Confirm it grants no XP.
-- Confirm one successful procedure produces one XP award, never two, and the status callback/XP counters each increase by one.
+- Complete a valid self-treatment with a Model Injuries TreatmentItem through the standard item-use path. Confirm XP is awarded only when InjuryState.treat(...) returns true.
+- Open the Model Injuries body-diagram UI, select an injured region and use a valid treatment supply. Confirm the timed DiagramCare flow grants exactly one XP award to the healer.
+- Repeat through the body-diagram UI with a valid medicine supply. Confirm the successful InjuryState.takeMedicine(...) call grants exactly one award.
+- Try an examination-only supply, an unnecessary treatment and a rejected/already-active medicine. Confirm none grants XP.
+- Use TeamCare to treat another player. Confirm XP goes to the healer, not the patient, and is awarded once.
+- Confirm startup logs show the optional standard-treatment, medicine-item, body-diagram and team-care hooks when those paths are entered.
+- Confirm `/aftermath medical status` reports one observed procedure and one XP-awarded procedure after one successful treatment (assuming cooldown and daily caps have room).
 - Repeat with the Medic's Triage trait and confirm its 25% skill XP multiplier still applies under the 80 XP action cap and shared 120 XP skill cap.
 - Use a LRTactical consumable whose configured data heals or removes a negative effect. Confirm First Aid XP is awarded after its server-side consumable event.
 - Test a non-medical LRTactical consumable to confirm it grants no First Aid XP.
