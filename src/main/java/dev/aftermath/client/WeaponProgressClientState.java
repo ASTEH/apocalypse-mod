@@ -10,9 +10,11 @@ import java.util.Map;
 public final class WeaponProgressClientState {
     private static volatile Map<String, Integer> experience = Map.of();
     private static volatile boolean progressionEnabled = true;
-    private static volatile float untrainedAimTimeMultiplier = 1.4F;
-    private static volatile float untrainedRecoilPitch = 1.25F;
-    private static volatile float untrainedRecoilYaw = 0.45F;
+    private static volatile float untrainedAimTimeMultiplier = 1.65F;
+    private static volatile float untrainedRecoilPitch = 2.0F;
+    private static volatile float untrainedRecoilYaw = 0.8F;
+    private static volatile float untrainedShotgunHandlingMultiplier = 1.25F;
+    private static volatile float untrainedHeavyHandlingMultiplier = 1.4F;
 
     public static void apply(WeaponProgressSyncPayload payload) {
         Map<String, Integer> parsed = new HashMap<>();
@@ -33,6 +35,10 @@ public final class WeaponProgressClientState {
         untrainedAimTimeMultiplier = Math.max(1.0F, payload.untrainedAimTimeMultiplier());
         untrainedRecoilPitch = Math.max(0.0F, payload.untrainedRecoilPitch());
         untrainedRecoilYaw = Math.max(0.0F, payload.untrainedRecoilYaw());
+        untrainedShotgunHandlingMultiplier = clampHandlingMultiplier(
+                payload.untrainedShotgunHandlingMultiplier());
+        untrainedHeavyHandlingMultiplier = clampHandlingMultiplier(
+                payload.untrainedHeavyHandlingMultiplier());
     }
 
     public static int levelFor(String weaponClass) {
@@ -50,6 +56,16 @@ public final class WeaponProgressClientState {
 
     public static float untrainedRecoilYaw() {
         return untrainedRecoilYaw;
+    }
+
+    public static float handlingClassMultiplier(String weaponClass) {
+        if ("shotgun".equals(weaponClass)) return untrainedShotgunHandlingMultiplier;
+        if ("heavy".equals(weaponClass)) return untrainedHeavyHandlingMultiplier;
+        return 1.0F;
+    }
+
+    private static float clampHandlingMultiplier(float multiplier) {
+        return Math.max(1.0F, Math.min(3.0F, multiplier));
     }
 
     private WeaponProgressClientState() {}
