@@ -181,17 +181,9 @@ Journal items (HottieZ/HunkZ), stress and boredom mechanics are explicitly exclu
 
 **Acceptance:** one original clothing item can receive at most three persistent patches; each adds +0.5 armor while worn; normal item data and durability stay owned by the original item; patching and item consumption are server-authoritative.
 
-## User roadmap — Stage 26: Parkour, zombie camouflage and noise decoys
+## User roadmap — Stage 26: Zombie camouflage and noise decoys
 
-### Parkour
-
-- [x] Added a rebindable `V` action under Options → Controls → Aftermath.
-- [x] Client sends only an action request; all destination coordinates and movement decisions are computed on the server.
-- [x] Added collision-sampled vault and mantle paths with a maximum 1.15-block raised landing.
-- [x] Added crouched traversal through openings that fit the crouching player box but not the standing box.
-- [x] Validates every sampled player-sized AABB with the level collision API; checks chunk availability and a sturdy landing surface; no arbitrary destination or client coordinates are accepted.
-- [x] Requires sprinting, grounded movement and a server-side cooldown; excludes vehicles, flying and fluids.
-- [ ] In-game acceptance: vault fences/low obstacles, climb short ledges, pass suitable crouched openings; reject solid walls and unsupported landings.
+Parkour is provided by the standalone **ParCool!** mod rather than reimplemented in Aftermath. The internal prototype, keybind, networking payload and server config were removed. For the current Minecraft 1.21.1 NeoForge pack, use [ParCool! 1.21.1-4.0.1.6](https://www.curseforge.com/minecraft/mc-mods/parcool/files/9205907) plus [Curios API 9.5.1+1.21.1](https://www.curseforge.com/minecraft/mc-mods/curios/files/all); both are installed on client and server. ParCool's skill tree can be disabled with `enable_skill_tree = false`, and individual movement actions can be configured. This is a modpack dependency, not an Aftermath dependency.
 
 ### Zombie camouflage
 
@@ -216,13 +208,14 @@ Journal items (HottieZ/HunkZ), stress and boredom mechanics are explicitly exclu
 
 ### Stage-wide validation
 
-- [x] Added separate server-config toggles: `enableParkour`, `enableZombieCamouflage`, `enableNoiseDecoys`.
-- [x] Documented controls, recipes, limitations, noise profiles and acceptance tests in `docs/STAGE_26_MOVEMENT_STEALTH_DECOYS.md`.
+- [x] Removed the in-mod parkour prototype, keybind, network payload, service, and server config toggle; movement is delegated to ParCool!.
+- [x] Added independent server-config toggles: `enableZombieCamouflage`, `enableNoiseDecoys`.
+- [x] Documented crafting, interaction, limitations, noise profiles and acceptance tests in `docs/STAGE_26_MOVEMENT_STEALTH_DECOYS.md`.
 - [ ] Confirm Java 21 / NeoForge GitHub Actions build on the final Stage26 head.
 - [ ] Confirm clean client and dedicated-server startup.
-- [ ] Maintainer in-game acceptance for all three systems.
+- [ ] Maintainer in-game acceptance for camouflage and both decoys.
 
-**Acceptance:** movement is computed and collision-validated only by the server; camouflage reduces vision-based target acquisition without suppressing hearing or making the player invisible; devices use the existing NoiseService/HordeDirector pipeline and attract only existing loaded zombies.
+**Acceptance:** ParCool! handles player parkour outside Aftermath; camouflage reduces vision-based target acquisition without suppressing hearing or making the player invisible; decoys use the existing NoiseService/HordeDirector pipeline and attract only existing loaded zombies.
 
 ## Release gate
 
