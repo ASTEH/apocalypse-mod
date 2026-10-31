@@ -259,7 +259,8 @@ public final class ForagingService {
                     if (stored == null) continue;
                 }
 
-                double distance = Math.sqrt(distanceSquared);
+                double verticalDistance = (pos.getY() + 0.5D) - player.getY();
+                double distance = Math.sqrt(distanceSquared + verticalDistance * verticalDistance);
                 boolean revealed = distance <= REVEAL_DISTANCE;
                 VisibleFind find = new VisibleFind(pos.asLong(), pos.getX(), pos.getY(), pos.getZ(),
                         distance, revealed, stored.itemId(), stored.count(), level.dimension().location());
