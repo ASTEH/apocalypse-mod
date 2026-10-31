@@ -52,6 +52,9 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(WorldSpawnDefinitions::register);
         NeoForge.EVENT_BUS.addListener(MilitarySpawnDefinitions::register);
         NeoForge.EVENT_BUS.addListener(MilitarySpawnControlService::onMobPositionCheck);
+        NeoForge.EVENT_BUS.addListener(MilitarySpawnControlService::onFinalizeSpawn);
+        NeoForge.EVENT_BUS.addListener(MilitarySpawnControlService::onEntityJoinLevel);
+        NeoForge.EVENT_BUS.addListener(MilitarySpawnControlService::onServerStopping);
         NeoForge.EVENT_BUS.addListener(WorldSpawnControlService::onMobPositionCheck);
         NeoForge.EVENT_BUS.addListener(WorldSpawnControlService::onChunkLoad);
         NeoForge.EVENT_BUS.addListener(ZombieVariantDefinitions::register);
