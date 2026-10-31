@@ -8,7 +8,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 /** Server-authoritative firearm XP and client handling feedback settings. */
-public record WeaponProgressSyncPayload(String experienceCsv, float untrainedAimTimeMultiplier,
+public record WeaponProgressSyncPayload(String experienceCsv, boolean progressionEnabled, float untrainedAimTimeMultiplier,
                                         float untrainedRecoilPitch, float untrainedRecoilYaw)
         implements CustomPacketPayload {
     public static final Type<WeaponProgressSyncPayload> TYPE = new Type<>(
@@ -16,6 +16,7 @@ public record WeaponProgressSyncPayload(String experienceCsv, float untrainedAim
 
     public static final StreamCodec<ByteBuf, WeaponProgressSyncPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, WeaponProgressSyncPayload::experienceCsv,
+            ByteBufCodecs.BOOL, WeaponProgressSyncPayload::progressionEnabled,
             ByteBufCodecs.FLOAT, WeaponProgressSyncPayload::untrainedAimTimeMultiplier,
             ByteBufCodecs.FLOAT, WeaponProgressSyncPayload::untrainedRecoilPitch,
             ByteBufCodecs.FLOAT, WeaponProgressSyncPayload::untrainedRecoilYaw,
