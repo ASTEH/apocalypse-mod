@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** Stage22 unified skills menu and Stage23 scavenging search are complete and verified by the maintainer. Stage24 body-condition panel is intentionally skipped because an installed mod already provides it. Stage25 clothing patches are implemented on branch `stage-25-clothing-patches`; Java 21 / NeoForge CI and in-game acceptance are pending.
+> **Status:** Stage22 unified skills menu and Stage23 scavenging search are complete and verified by the maintainer. Stage24 body-condition panel is intentionally skipped because an installed mod already provides it. Stage25 clothing-patch application is verified by the maintainer and its Java 21 / NeoForge CI passes. Stage26 parkour, zombie camouflage and rechargeable noise decoys are implemented on branch `stage-26-parkour-camouflage-noise-decoys`; CI and in-game acceptance are pending.
 
 ## Requirements
 
@@ -49,7 +49,7 @@ Custom definitions use the `data/aftermath/` namespace (not hard-coded Java IDs)
 - `day_progression/*.json`
 - `foraging/categories/*.json`
 
-Stage25 documentation: [clothing patches](docs/CLOTHING_PATCHES.md). The Stage24 body-condition panel is intentionally left to the installed medical UI mod.
+Stage25 documentation: [clothing patches](docs/CLOTHING_PATCHES.md). Stage26 documentation: [parkour, zombie camouflage and noise decoys](docs/STAGE_26_MOVEMENT_STEALTH_DECOYS.md). The Stage24 body-condition panel is intentionally left to the installed medical UI mod.
 - `tags/item/weapon_classes/*.json`
 - `tags/entity_type/horde_members.json`
 
