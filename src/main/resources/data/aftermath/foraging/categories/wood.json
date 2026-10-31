@@ -1,0 +1,62 @@
+{
+  "entries": [
+    {
+      "item": "minecraft:stick",
+      "weight": 10,
+      "min_count": 2,
+      "max_count": 6,
+      "biomes": [
+        "forest",
+        "taiga",
+        "grove",
+        "jungle",
+        "birch",
+        "savanna"
+      ]
+    },
+    {
+      "item": "minecraft:oak_sapling",
+      "weight": 4,
+      "min_count": 1,
+      "max_count": 2,
+      "plant": true,
+      "biomes": [
+        "forest",
+        "birch"
+      ]
+    },
+    {
+      "item": "minecraft:spruce_sapling",
+      "weight": 4,
+      "min_count": 1,
+      "max_count": 2,
+      "plant": true,
+      "biomes": [
+        "taiga",
+        "grove"
+      ]
+    },
+    {
+      "item": "minecraft:dead_bush",
+      "weight": 4,
+      "min_count": 1,
+      "max_count": 2,
+      "plant": true,
+      "biomes": [
+        "desert",
+        "badlands",
+        "savanna"
+      ]
+    },
+    {
+      "item": "minecraft:oak_log",
+      "weight": 2,
+      "min_count": 1,
+      "max_count": 2,
+      "biomes": [
+        "forest",
+        "birch"
+      ]
+    }
+  ]
+}
