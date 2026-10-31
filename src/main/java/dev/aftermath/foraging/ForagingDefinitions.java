@@ -18,9 +18,9 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 /** Reloadable, validated resource tables for the search mode. */
 public final class ForagingDefinitions extends SimplePreparableReloadListener<ForagingDefinitions.Snapshot> {
@@ -62,15 +62,19 @@ public final class ForagingDefinitions extends SimplePreparableReloadListener<Fo
                     if (itemId == null) throw new IllegalArgumentException("invalid item ID");
                     int weight = boundedInt(item, "weight", 1, 10_000);
                     int minSkill = intOrDefault(item, "min_skill", 1, 1, 10);
-                    int minCount = intOrDefault(item, "min_count", 1, 1, 16);
-                    int maxCount = intOrDefault(item, "max_count", minCount, minCount, 16);
+                    int minCount = intOrDefault(item, "min_count", 1, 1, 64);
+                    int maxCount = intOrDefault(item, "max_count", minCount, minCount, 64);
                     List<String> biomes = stringList(item, "biomes", 16);
                     entries.add(new Entry(itemId, weight, minSkill, minCount, maxCount, biomes,
                             boolOrDefault(item, "requires_wet", false),
                             boolOrDefault(item, "night_only", false),
                             boolOrDefault(item, "winter_only", false),
                             boolOrDefault(item, "plant", false),
-                            boundedIntOrDefault(item, "winter_bonus", 1, 1, 20)));
+                            boolOrDefault(item, "requires_farmland", false),
+                            boolOrDefault(item, "requires_road", false),
+                            boolOrDefault(item, "requires_urban", false),
+                            boundedIntOrDefault(item, "winter_bonus", 1, 1, 20),
+                            boundedIntOrDefault(item, "wet_bonus", 1, 1, 10)));
                 }
                 categories.put(categoryId, new Category(categoryId, List.copyOf(entries)));
             } catch (Exception exception) {
@@ -93,14 +97,25 @@ public final class ForagingDefinitions extends SimplePreparableReloadListener<Fo
                 prepared.categories().values().stream().mapToInt(c -> c.entries().size()).sum());
     }
 
-    /** Selects a stable loot result for a world position; focus affects discovery, not loot identity. */
+    /** Compatibility overload retained for integrations that do not supply contextual search data. */
     public static LootChoice chooseLoot(ServerLevel level, BlockPos pos, int skillLevel,
                                         boolean wet, boolean night, boolean winter, RandomSource random) {
+        return chooseLoot(level, pos, skillLevel, wet, night, winter,
+                false, false, false, "", 1.0D, random);
+    }
+
+    /** Context and focus alter weighted odds; the focused category is never guaranteed. */
+    public static LootChoice chooseLoot(ServerLevel level, BlockPos pos, int skillLevel,
+                                        boolean wet, boolean night, boolean winter,
+                                        boolean nearFarmland, boolean nearRoad, boolean nearUrban,
+                                        String focus, double focusMultiplier, RandomSource random) {
         List<WeightedEntry> candidates = new ArrayList<>();
         int totalWeight = 0;
         String biome = level.getBiome(pos).unwrapKey()
                 .map(key -> key.location().getPath().toLowerCase(java.util.Locale.ROOT))
                 .orElse("");
+        int focusBonus = (int) Math.round(Math.max(1.0D, Math.min(5.0D, focusMultiplier)) * 100.0D);
+
         for (Category category : current.categories().values()) {
             for (Entry entry : category.entries()) {
                 if (skillLevel < entry.minSkill()) continue;
@@ -108,13 +123,19 @@ public final class ForagingDefinitions extends SimplePreparableReloadListener<Fo
                 if (entry.nightOnly() && !night) continue;
                 if (entry.winterOnly() && !winter) continue;
                 if (winter && entry.plant() && !entry.winterOnly()) continue;
+                if (entry.requiresFarmland() && !nearFarmland) continue;
+                if (entry.requiresRoad() && !nearRoad) continue;
+                if (entry.requiresUrban() && !nearUrban) continue;
                 if (!entry.biomes().isEmpty()
                         && entry.biomes().stream().noneMatch(biome::contains)) continue;
 
-                int weight = entry.weight();
-                if (winter) weight = Math.min(100_000, weight * entry.winterBonus());
-                totalWeight += weight;
-                candidates.add(new WeightedEntry(category.id(), entry, weight));
+                long weight = entry.weight();
+                if (winter) weight *= entry.winterBonus();
+                if (wet) weight *= entry.wetBonus();
+                if (!focus.isBlank() && category.id().equals(focus)) weight = weight * focusBonus / 100L;
+                int safeWeight = (int) Math.min(100_000L, Math.max(1L, weight));
+                totalWeight = Math.min(Integer.MAX_VALUE / 2, totalWeight + safeWeight);
+                candidates.add(new WeightedEntry(category.id(), entry, safeWeight));
             }
         }
         if (totalWeight <= 0 || candidates.isEmpty()) return null;
@@ -151,7 +172,8 @@ public final class ForagingDefinitions extends SimplePreparableReloadListener<Fo
 
     public record Entry(ResourceLocation itemId, int weight, int minSkill, int minCount, int maxCount,
                         List<String> biomes, boolean requiresWet, boolean nightOnly,
-                        boolean winterOnly, boolean plant, int winterBonus) {
+                        boolean winterOnly, boolean plant, boolean requiresFarmland,
+                        boolean requiresRoad, boolean requiresUrban, int winterBonus, int wetBonus) {
         public Entry { biomes = List.copyOf(biomes); }
     }
 
@@ -198,7 +220,7 @@ public final class ForagingDefinitions extends SimplePreparableReloadListener<Fo
         if (!json.get(key).isJsonPrimitive() || !json.getAsJsonPrimitive(key).isBoolean()) {
             throw new IllegalArgumentException(key + " must be boolean");
         }
-        return json.get(key).getAsBoolean();
+        return json.getAsJsonPrimitive(key).getAsBoolean();
     }
 
     private static List<String> stringList(JsonObject json, String key, int maxEntries) {
