@@ -62,7 +62,7 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(ZombieCamouflageService::onPlayerDamage);
         NeoForge.EVENT_BUS.addListener(ZombieCamouflageService::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(ZombieCamouflageService::onServerStopping);
-        NeoForge.EVENT_BUS.addListener(ParkourService::clear);
+        NeoForge.EVENT_BUS.addListener(ParkourService::onServerStopping);
         NeoForge.EVENT_BUS.addListener(WorldSpawnDefinitions::register);
         NeoForge.EVENT_BUS.addListener(MilitarySpawnControlService::onLevelTick);
         NeoForge.EVENT_BUS.addListener(MilitarySpawnControlService::onServerStopping);
