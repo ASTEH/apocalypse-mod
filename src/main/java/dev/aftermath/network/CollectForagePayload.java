@@ -12,7 +12,7 @@ public record CollectForagePayload(long packedPosition) implements CustomPacketP
     public static final Type<CollectForagePayload> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "collect_forage"));
     public static final StreamCodec<ByteBuf, CollectForagePayload> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.LONG, CollectForagePayload::packedPosition,
+            ByteBufCodecs.VAR_LONG, CollectForagePayload::packedPosition,
             CollectForagePayload::new);
 
     @Override
