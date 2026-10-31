@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Adds a small camera kick once per successful trigger action.
+ * Adds a visible control penalty once per successful trigger action.
  * TaCZ retains each weapon's authored recoil animation; this is an additional novice-control penalty.
  */
 @Mixin(targets = "com.tacz.guns.client.gameplay.LocalPlayerShoot", remap = false)
@@ -29,8 +29,9 @@ public abstract class LocalPlayerShootMixin {
         String weaponClass = TaczCompatibility.weaponClassForItem(player.getMainHandItem());
         if (weaponClass == null) return;
 
+        double classMultiplier = WeaponProgressClientState.handlingClassMultiplier(weaponClass);
         double penalty = WeaponProgressionService.handlingPenaltyForLevel(
-                WeaponProgressClientState.levelFor(weaponClass));
+                WeaponProgressClientState.levelFor(weaponClass)) * classMultiplier;
         if (penalty <= 0.0D) return;
 
         float pitchKick = (float) (WeaponProgressClientState.untrainedRecoilPitch() * penalty);
