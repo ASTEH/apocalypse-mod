@@ -1,7 +1,6 @@
 package dev.aftermath.world;
 
 import dev.aftermath.config.AftermathServerConfig;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Mob;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 
