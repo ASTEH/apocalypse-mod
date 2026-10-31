@@ -17,10 +17,11 @@ Both ingredients are vanilla Minecraft items. No extra gameplay mod or external 
 
 1. Open any inventory screen.
 2. Pick up a Clothing Patch with the mouse cursor.
-3. Right-click a wearable armor/clothing item in an inventory slot.
-4. The patch is consumed and the garment's patch count increases by one.
+3. Left-click or right-click a wearable armor/clothing item in an inventory slot.
+4. In Survival, one patch is consumed. In Creative, the patch item is not consumed.
+5. The garment's patch count increases by one.
 
-The interaction is server-authoritative. It only handles right-click stacking onto a wearable equipment item; normal inventory interactions with other items remain vanilla.
+The interaction is server-authoritative. It handles either mouse button when a patch is on the cursor and a wearable item is the clicked target; normal inventory interactions with other items remain vanilla. Creative inventory use is sent to the server through a dedicated payload because the inventory stacking event is client-only in Creative.
 
 The handler reads the cursor through the event's carried-slot accessor and the target through the clicked slot. This avoids relying on the event's stack-argument fields and keeps the interaction tied to the actual inventory slot and cursor contents across NeoForge 1.21.1 builds.
 
@@ -53,7 +54,7 @@ The bonus is additive to the item's existing armor attribute. It does not increa
 ## Acceptance tests still requiring an in-game run
 
 1. Craft the patch kit from wool + string and verify the output count is 2.
-2. Right-click a vanilla helmet, chestplate, leggings and boots in the inventory with a patch kit on the cursor; verify one patch is consumed and the item's tooltip updates.
+2. In Survival, left-click and right-click a vanilla helmet, chestplate, leggings and boots in the inventory with a patch on the cursor; verify one patch is consumed and the item's tooltip updates. In Creative, verify either click updates the item without consuming the patch.
 3. Verify the armor attribute bonus is +0.5 per patch and stops at three patches (+1.5).
 4. Attempt a fourth patch; verify it is not consumed and the cap message is shown.
 5. Verify the original item, enchantments, custom name, dye, other custom data and remaining durability are preserved.
