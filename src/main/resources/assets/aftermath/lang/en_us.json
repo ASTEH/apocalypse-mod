@@ -349,7 +349,7 @@
   "message.aftermath.foraging.collected": "Found: %1$s ×%2$s",
   "item.aftermath.wild_herbs": "Wild Herbs",
   "item.aftermath.clothing_patch": "Clothing Patch",
-  "tooltip.aftermath.clothing_patch.item": "Right-click a wearable armor item in your inventory while holding this patch.",
+  "tooltip.aftermath.clothing_patch.item": "Click (left or right) on wearable armor in your inventory while holding this patch.",
   "tooltip.aftermath.clothing_patch.count": "Clothing patches: %1$s/%2$s",
   "tooltip.aftermath.clothing_patch.protection": "Additional armor: +%1$s",
   "tooltip.aftermath.clothing_patch.durability": "Garment durability: %1$s/%2$s",
