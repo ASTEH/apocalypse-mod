@@ -1,0 +1,21 @@
+{
+  "target_entity_tag": "aftermath:zombie_variant_targets",
+  "weight": 5,
+  "spawn": {
+    "time_of_day": "night",
+    "dimensions": ["minecraft:overworld"],
+    "spawn_types": ["natural", "chunk_generation"],
+    "min_light": 0,
+    "max_light": 15
+  },
+  "attributes": {
+    "max_health": {"min": 32.0, "max": 42.0},
+    "movement_speed": {"min": 0.33, "max": 0.4},
+    "attack_damage": {"min": 5.0, "max": 7.0},
+    "knockback_resistance": {"min": 0.15, "max": 0.3}
+  },
+  "senses": {
+    "vision_range": {"min": 36.0, "max": 44.0},
+    "hearing_range": {"min": 40.0, "max": 56.0}
+  }
+}

@@ -3,6 +3,7 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.day.DayProgressionDefinitions;
 import dev.aftermath.day.WorldProgressData;
+import dev.aftermath.zombie.ZombieVariantService;
 import dev.aftermath.noise.compat.ZombieAwarenessCompatibility;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -56,7 +57,10 @@ public final class NoiseService {
         ArrayList<Mob> mobs = new ArrayList<>(level.getEntitiesOfClass(Mob.class, bounds,
                 mob -> mob.getType().is(tag) && mob.isAlive() && !mob.isRemoved() && !mob.isNoAi()));
         double r2 = (double) radius * radius;
-        mobs.removeIf(mob -> mob.position().distanceToSqr(origin) > r2);
+        mobs.removeIf(mob -> {
+            double hearingRadius = Math.min(radius, ZombieVariantService.hearingRange(mob, radius));
+            return mob.position().distanceToSqr(origin) > hearingRadius * hearingRadius;
+        });
         mobs.sort(Comparator.comparingDouble(mob -> mob.position().distanceToSqr(origin)));
         int maxTargets = Math.min(def.maxAffectedEntities(), AftermathServerConfig.MAX_NOISE_TARGETS.get());
         if (mobs.size() > maxTargets) mobs.subList(maxTargets, mobs.size()).clear();
