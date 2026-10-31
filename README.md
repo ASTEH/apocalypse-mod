@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** Stage22 unified skills menu is complete. Stage23 scavenging search is implemented on branch `stage-23-scavenging-search`; the Java 21 / NeoForge GitHub Actions build passes. Manual in-game acceptance tests remain.
+> **Status:** Stage22 unified skills menu and Stage23 scavenging search are complete and verified by the maintainer. Stage24 body-condition panel is intentionally skipped because an installed mod already provides it. Stage25 clothing patches are implemented on branch `stage-25-clothing-patches`; Java 21 / NeoForge CI and in-game acceptance are pending.
 
 ## Requirements
 
@@ -48,6 +48,8 @@ Custom definitions use the `data/aftermath/` namespace (not hard-coded Java IDs)
 - `zombie_archetypes/*.json`
 - `day_progression/*.json`
 - `foraging/categories/*.json`
+
+Stage25 documentation: [clothing patches](docs/CLOTHING_PATCHES.md). The Stage24 body-condition panel is intentionally left to the installed medical UI mod.
 - `tags/item/weapon_classes/*.json`
 - `tags/entity_type/horde_members.json`
 
