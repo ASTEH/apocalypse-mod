@@ -282,7 +282,7 @@ public final class ForagingService {
             BlockPos candidate = new BlockPos(x, y, z);
             BlockPos ground = candidate.below();
             if (!level.hasChunkAt(candidate) || !level.hasChunkAt(ground)) continue;
-            if (!level.getBlockState(candidate).isAir() || !level.getFluidState(candidate).isEmpty()) continue;
+            if (!level.getBlockState(candidate).canBeReplaced() || !level.getFluidState(candidate).isEmpty()) continue;
             if (level.getBlockState(ground).isAir() || !level.getFluidState(ground).isEmpty()) continue;
             return candidate;
         }
