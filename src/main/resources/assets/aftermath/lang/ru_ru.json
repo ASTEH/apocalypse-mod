@@ -88,7 +88,7 @@
   "weapon_class.aftermath.rifle": "Винтовки и автоматы",
   "weapon_class.aftermath.heavy": "Тяжёлое оружие",
   "message.aftermath.weapon_class_status": "%1$s: ур. %2$s, %3$s XP",
-  "message.aftermath.weapons_status": "Навыки оружия — %1$s; %2$s; %3$s; %4$s; %5$s.",
+  "message.aftermath.weapons_status": "Навыки оружия — %1$s; %2$s; %3$s; %4$s; %5$s; %6$s.",
   "message.aftermath.weapon_held.none": "В главной руке не распознано оружие TaCZ. Возьми оружие TaCZ и повтори команду.",
   "message.aftermath.weapon_held.info": "ID оружия TaCZ: %1$s. Класс: %2$s (%3$s).",
   "message.aftermath.weapon_held.mapped": "точное сопоставление из datapack",
@@ -278,5 +278,7 @@
   "message.aftermath.medical.status.external": "Медицина: First Aid New + Model Injuries. Успешных процедур Model Injuries, замеченных Aftermath с запуска сервера: %1$s; за которые начислен опыт: %2$s.",
   "message.aftermath.medical.status.firstaid": "Медицина: First Aid New обнаружен, Model Injuries не найден. Интеграция опыта за процедуры Model Injuries не активна.",
   "message.aftermath.medical.status.model_injuries_without_firstaid": "Обнаружен Model Injuries, но отсутствует обязательный First Aid New. Проверь зависимости модов.",
-  "message.aftermath.medical.status.missing": "First Aid New не найден. Aftermath не добавляет собственные кровотечение и бинты; медицинская система и начисление опыта за процедуры Model Injuries недоступны."
+  "message.aftermath.medical.status.missing": "First Aid New не найден. Aftermath не добавляет собственные кровотечение и бинты; медицинская система и начисление опыта за процедуры Model Injuries недоступны.",
+  "weapon_class.aftermath.sniper": "Снайперские винтовки",
+  "message.aftermath.weapon_held.diagnostics": "ID оружия TaCZ: %1$s\nКласс: %2$s (%3$s)\nУровень: %4$s | XP: %5$s | до следующего уровня: %6$s XP\nБонус урона: +%7$s%%\nШтраф разброса: %8$s\nВремя прицеливания: ×%9$s\nПерезарядка: ×%10$s\nДополнительная отдача: вверх %11$s°, в стороны ±%12$s°."
 }
