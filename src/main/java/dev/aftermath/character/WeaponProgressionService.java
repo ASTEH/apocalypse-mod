@@ -4,6 +4,9 @@ import dev.aftermath.AftermathMod;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.weapon.TaczCompatibility;
 import dev.aftermath.learning.LearningService;
+import dev.aftermath.network.WeaponProgressSyncPayload;
+import net.neoforged.neoforge.network.PacketDistributor;
+import java.util.stream.Collectors;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -29,7 +32,7 @@ import java.util.UUID;
 public final class WeaponProgressionService {
     private static final TagKey<Item> MELEE_WEAPONS = TagKey.create(
             Registries.ITEM, ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "weapon_classes/melee"));
-    private static final int[] LEVEL_THRESHOLDS = {0, 0, 50, 125, 250, 425, 650, 925, 1250, 1625, 2050};
+    private static final int[] LEVEL_THRESHOLDS = {0, 25, 50, 125, 250, 425, 650, 925, 1250, 1625, 2050};
     private static final List<String> WEAPON_CLASSES = List.of("melee", "pistol", "shotgun", "rifle", "heavy");
     private static final long VICTIM_REPEAT_WINDOW_TICKS = 20L * 60L;
     private static final Map<UUID, RewardStamp> RECENTLY_REWARDED_VICTIMS = new HashMap<>();
@@ -71,6 +74,7 @@ public final class WeaponProgressionService {
         int oldLevel = levelFor(oldXp);
         WeaponProgress after = before.addExperience(weaponClass, gainedXp);
         killer.setData(AftermathAttachments.WEAPON_PROGRESS, after);
+        syncToClient(killer);
 
         int newXp = after.experienceFor(weaponClass);
         int newLevel = levelFor(newXp);
@@ -112,14 +116,79 @@ public final class WeaponProgressionService {
         return TaczCompatibility.weaponClassForBullet(source.getDirectEntity(), attacker);
     }
 
+    /** Level 0 is untrained. Existing damage milestones remain at 50 / 425 / 2050 XP for levels 2 / 5 / 10. */
     public static int levelFor(int experience) {
         int xp = Math.max(0, experience);
-        int level = 1;
-        for (int candidate = 2; candidate <= 10; candidate++) {
+        int level = 0;
+        for (int candidate = 1; candidate <= 10; candidate++) {
             if (xp >= LEVEL_THRESHOLDS[candidate]) level = candidate;
             else break;
         }
         return level;
+    }
+
+    public static double handlingPenaltyForLevel(int level) {
+        return 1.0D - Math.max(0, Math.min(10, level)) / 10.0D;
+    }
+
+    public static int levelFor(ServerPlayer player, String weaponClass) {
+        if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
+                || weaponClass == null || !WEAPON_CLASSES.contains(weaponClass)) return 10;
+        return levelFor(player.getData(AftermathAttachments.WEAPON_PROGRESS).experienceFor(weaponClass));
+    }
+
+    public static double spreadPenalty(ServerPlayer player, String weaponClass) {
+        if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
+                || weaponClass == null || !WEAPON_CLASSES.contains(weaponClass)) return 0.0D;
+        double penalty = AftermathServerConfig.UNTRAINED_FIREARM_SPREAD.get()
+                * handlingPenaltyForLevel(levelFor(player, weaponClass));
+        if (TraitRuntimeService.hasHook(player, "eagle_eye")) {
+            penalty *= Math.max(0.0D, Math.min(1.0D,
+                    TraitRuntimeService.hookValue(player, "eagle_eye", 1.0D)));
+        }
+        return Math.max(0.0D, penalty);
+    }
+
+    public static double reloadDurationMultiplier(ServerPlayer player, String weaponClass) {
+        if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
+                || weaponClass == null || !WEAPON_CLASSES.contains(weaponClass)) return 1.0D;
+        double penalty = handlingPenaltyForLevel(levelFor(player, weaponClass));
+        double multiplier = 1.0D + penalty
+                * (AftermathServerConfig.UNTRAINED_FIREARM_RELOAD_DURATION.get() - 1.0D);
+        if (TraitRuntimeService.hasHook(player, "quick_reload")) {
+            multiplier *= Math.max(0.5D, Math.min(1.0D,
+                    TraitRuntimeService.hookValue(player, "quick_reload", 1.0D)));
+        }
+        return Math.max(0.5D, Math.min(3.0D, multiplier));
+    }
+
+    public static double aimTimeMultiplier(ServerPlayer player, String weaponClass) {
+        if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
+                || weaponClass == null || !WEAPON_CLASSES.contains(weaponClass)) return 1.0D;
+        double penalty = handlingPenaltyForLevel(levelFor(player, weaponClass));
+        if (TraitRuntimeService.hasHook(player, "eagle_eye")) {
+            penalty *= Math.max(0.0D, Math.min(1.0D,
+                    TraitRuntimeService.hookValue(player, "eagle_eye", 1.0D)));
+        }
+        return 1.0D + penalty * (AftermathServerConfig.UNTRAINED_FIREARM_AIM_TIME.get() - 1.0D);
+    }
+
+    /** Same formula on the client, using the server-synchronized trait and progression snapshot. */
+    public static double aimTimeMultiplier(int level, boolean eagleEye, double untrainedMultiplier) {
+        double penalty = handlingPenaltyForLevel(level);
+        if (eagleEye) penalty *= 0.8D;
+        return 1.0D + penalty * (Math.max(1.0D, untrainedMultiplier) - 1.0D);
+    }
+
+    public static void syncToClient(ServerPlayer player) {
+        WeaponProgress progress = player.getData(AftermathAttachments.WEAPON_PROGRESS);
+        String csv = WEAPON_CLASSES.stream()
+                .map(weaponClass -> weaponClass + "=" + progress.experienceFor(weaponClass))
+                .collect(Collectors.joining(";"));
+        PacketDistributor.sendToPlayer(player, new WeaponProgressSyncPayload(csv,
+                AftermathServerConfig.UNTRAINED_FIREARM_AIM_TIME.get().floatValue(),
+                AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_PITCH.get().floatValue(),
+                AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_YAW.get().floatValue()));
     }
 
     public static Component buildStatusMessage(ServerPlayer player) {
