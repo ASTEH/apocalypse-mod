@@ -2,9 +2,11 @@ package dev.aftermath.clothing;
 
 import dev.aftermath.AftermathMod;
 import dev.aftermath.content.AftermathContent;
+import dev.aftermath.network.ApplyClothingPatchPayload;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -12,12 +14,12 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -59,15 +61,12 @@ public final class ClothingPatchService {
      * and consumption are performed only by the server.
      */
     public static void onItemStackedOnOther(ItemStackedOnOtherEvent event) {
-        // NeoForge 1.21.1 passes the two ItemStack arguments to this event in the
-        // opposite order at the call site (clicked slot first, cursor second).
-        // Read the actual slot and cursor through their dedicated accessors instead
-        // of relying on the swapped getCarriedItem()/getStackedOnItem() fields.
+        // Read the real cursor and clicked slot through their accessors. This keeps the
+        // interaction independent of the ItemStack argument fields on the event.
         ItemStack carried = event.getCarriedSlotAccess().get();
         ItemStack garment = event.getSlot().getItem();
         if (carried.isEmpty() || garment.isEmpty()
-                || !carried.is(AftermathContent.CLOTHING_PATCH.get())
-                || event.getClickAction() != ClickAction.SECONDARY) {
+                || !carried.is(AftermathContent.CLOTHING_PATCH.get())) {
             return;
         }
 
@@ -75,11 +74,22 @@ public final class ClothingPatchService {
         EquipmentSlot equipmentSlot = player.getEquipmentSlotForItem(garment);
         if (equipmentSlot == null || !equipmentSlot.isArmor()) return;
 
-        // Creative inventory stacking is client-only in this event. Leave it to vanilla
-        // rather than consume a patch locally without a matching server-side update.
-        if (player.getAbilities().instabuild) return;
+        // The creative inventory fires this event only on the client. Route the
+        // validated player-inventory slot to the server instead of mutating client data.
+        if (player.getAbilities().instabuild) {
+            if (player.level().isClientSide()) {
+                int inventorySlot = event.getSlot().getContainerSlot();
+                if (inventorySlot >= 0
+                        && inventorySlot < player.getInventory().getContainerSize()
+                        && player.getInventory().getItem(inventorySlot) == garment) {
+                    event.setCanceled(true);
+                    PacketDistributor.sendToServer(new ApplyClothingPatchPayload(inventorySlot));
+                }
+            }
+            return;
+        }
 
-        // This is our interaction, not a normal stack operation.
+        // In survival, handle either mouse button; other item/slot combinations stay vanilla.
         event.setCanceled(true);
         if (player.level().isClientSide()) return;
 
@@ -94,14 +104,46 @@ public final class ClothingPatchService {
         remaining.shrink(1);
         if (!event.getCarriedSlotAccess().set(remaining)) return;
 
+        event.getSlot().setChanged();
+        applyPatch(player, garment);
+        player.containerMenu.broadcastChanges();
+    }
+
+    /** Server-side creative-mode path; creative players do not consume the patch item. */
+    public static void applyCreativePatch(ServerPlayer player, int inventorySlot) {
+        if (!player.getAbilities().instabuild
+                || inventorySlot < 0
+                || inventorySlot >= player.getInventory().getContainerSize()) {
+            return;
+        }
+
+        ItemStack garment = player.getInventory().getItem(inventorySlot);
+        if (garment.isEmpty()) return;
+
+        EquipmentSlot equipmentSlot = player.getEquipmentSlotForItem(garment);
+        if (equipmentSlot == null || !equipmentSlot.isArmor()) return;
+
+        if (applyPatch(player, garment)) {
+            player.getInventory().setChanged();
+            player.containerMenu.broadcastChanges();
+        }
+    }
+
+    private static boolean applyPatch(Player player, ItemStack garment) {
+        int current = patchCount(garment);
+        if (current >= MAX_PATCHES_PER_ITEM) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.aftermath.clothing_patches.maxed", MAX_PATCHES_PER_ITEM));
+            return false;
+        }
+
         int updated = current + 1;
         setPatchCount(garment, updated);
-        event.getSlot().setChanged();
-        player.containerMenu.broadcastChanges();
         player.level().playSound(null, player.blockPosition(),
                 SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.PLAYERS, 0.65F, 1.15F);
         player.sendSystemMessage(Component.translatable(
                 "message.aftermath.clothing_patches.applied", updated, MAX_PATCHES_PER_ITEM));
+        return true;
     }
 
     /** Display both the patch count and the bonus, including for third-party armor items. */
