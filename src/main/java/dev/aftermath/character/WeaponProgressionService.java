@@ -150,9 +150,11 @@ public final class WeaponProgressionService {
     }
 
     public static double reloadDurationMultiplier(ServerPlayer player, String weaponClass) {
-        if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
-                || weaponClass == null || !WEAPON_CLASSES.contains(weaponClass)) return 1.0D;
-        double penalty = handlingPenaltyForLevel(levelFor(player, weaponClass));
+        double penalty = 0.0D;
+        if (AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
+                && weaponClass != null && WEAPON_CLASSES.contains(weaponClass)) {
+            penalty = handlingPenaltyForLevel(levelFor(player, weaponClass));
+        }
         double multiplier = 1.0D + penalty
                 * (AftermathServerConfig.UNTRAINED_FIREARM_RELOAD_DURATION.get() - 1.0D);
         if (TraitRuntimeService.hasHook(player, "quick_reload")) {
@@ -186,6 +188,7 @@ public final class WeaponProgressionService {
                 .map(weaponClass -> weaponClass + "=" + progress.experienceFor(weaponClass))
                 .collect(Collectors.joining(";"));
         PacketDistributor.sendToPlayer(player, new WeaponProgressSyncPayload(csv,
+                AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get(),
                 AftermathServerConfig.UNTRAINED_FIREARM_AIM_TIME.get().floatValue(),
                 AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_PITCH.get().floatValue(),
                 AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_YAW.get().floatValue()));
