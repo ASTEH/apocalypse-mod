@@ -211,7 +211,8 @@ Parkour is provided by the standalone **ParCool!** mod rather than reimplemented
 - [x] Removed the in-mod parkour prototype, keybind, network payload, service, and server config toggle; movement is delegated to ParCool!.
 - [x] Added independent server-config toggles: `enableZombieCamouflage`, `enableNoiseDecoys`.
 - [x] Documented crafting, interaction, limitations, noise profiles and acceptance tests in `docs/STAGE_26_MOVEMENT_STEALTH_DECOYS.md`.
-- [ ] Confirm Java 21 / NeoForge GitHub Actions build on the final Stage26 head.
+- [x] Confirm Java 21 / NeoForge GitHub Actions build on the final Stage26 head after removing the internal parkour prototype.
+- [x] Selected external ParCool! 1.21.1-4.0.1.6 NeoForge + Curios API 9.5.1+1.21.1 as the modpack-level parkour implementation; neither is an Aftermath dependency.
 - [ ] Confirm clean client and dedicated-server startup.
 - [ ] Maintainer in-game acceptance for camouflage and both decoys.
 
