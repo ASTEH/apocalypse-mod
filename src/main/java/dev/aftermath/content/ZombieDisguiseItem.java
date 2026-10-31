@@ -21,6 +21,9 @@ public final class ZombieDisguiseItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (level instanceof net.minecraft.server.level.ServerLevel
                 && player instanceof ServerPlayer serverPlayer) {
+            if (!dev.aftermath.config.AftermathServerConfig.ENABLE_ZOMBIE_CAMOUFLAGE.get()) {
+                return InteractionResultHolder.fail(stack);
+            }
             if (ZombieCamouflageService.isActive(serverPlayer)) {
                 serverPlayer.sendSystemMessage(Component.translatable("message.aftermath.camouflage.already_active"));
                 return InteractionResultHolder.fail(stack);
