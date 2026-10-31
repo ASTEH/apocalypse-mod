@@ -20,6 +20,7 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_HOSTILE_SPAWN_FILTER;
     public static final ModConfigSpec.BooleanValue ENABLE_SPAWNER_REMOVAL;
     public static final ModConfigSpec.BooleanValue ENABLE_ZOMBIE_VARIANTS;
+    public static final ModConfigSpec.BooleanValue ENABLE_MILITARY_SPAWN_CONTROL;
 
     public static final ModConfigSpec.IntValue WEAPON_XP_PER_KILL;
     public static final ModConfigSpec.IntValue MAX_XP_PER_VICTIM_PER_MINUTE;
@@ -64,6 +65,8 @@ public final class AftermathServerConfig {
                 .define("enableSpawnerRemoval", true);
         ENABLE_ZOMBIE_VARIANTS = builder.comment("Enable weighted, datapack-driven zombie stat and sense archetypes.")
                 .define("enableZombieVariants", true);
+        ENABLE_MILITARY_SPAWN_CONTROL = builder.comment("Reduce the spawn frequency of selected military NPCs using world_rules/military_spawn_control.json.")
+                .define("enableMilitarySpawnControl", true);
         builder.pop();
 
         builder.push("weapon_progression");
