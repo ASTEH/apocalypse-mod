@@ -4,7 +4,7 @@ Minecraft 1.21.1 · NeoForge · Java 21
 
 **Aftermath** is a server-authoritative survival framework for a zombie-apocalypse modpack inspired by *Project Zomboid*. Its goal is to add character traits, weapon proficiency, learning through books and television, and configurable zombie meta-events without requiring Create, TaCZ, Farmer's Delight, or any other gameplay mod.
 
-> **Status:** The Stage22 unified skills menu is complete. User-roadmap Stage23 adds server-authoritative scavenging search, contextual loot tables and a non-blocking radar HUD on branch `stage-23-scavenging-search`; in-game acceptance tests and final CI verification remain pending.
+> **Status:** Stage22 unified skills menu is complete. Stage23 scavenging search is implemented on branch `stage-23-scavenging-search`; the Java 21 / NeoForge GitHub Actions build passes. Manual in-game acceptance tests remain.
 
 ## Requirements
 
@@ -47,6 +47,7 @@ Custom definitions use the `data/aftermath/` namespace (not hard-coded Java IDs)
 - `metagame_events/*.json`
 - `zombie_archetypes/*.json`
 - `day_progression/*.json`
+- `foraging/categories/*.json`
 - `tags/item/weapon_classes/*.json`
 - `tags/entity_type/horde_members.json`
 
