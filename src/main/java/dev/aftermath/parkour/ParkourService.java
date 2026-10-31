@@ -1,6 +1,7 @@
 package dev.aftermath.parkour;
 
 import net.minecraft.core.BlockPos;
+import dev.aftermath.config.AftermathServerConfig;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,6 +28,7 @@ public final class ParkourService {
     private ParkourService() {}
 
     public static void request(ServerPlayer player) {
+        if (!AftermathServerConfig.ENABLE_PARKOUR.get()) return;
         if (!player.isAlive() || player.isPassenger() || player.isFallFlying()
                 || player.isInWaterOrBubble() || player.isInLava()
                 || player.isSpectator() || !player.onGround() || !player.isSprinting()) {
