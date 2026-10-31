@@ -117,7 +117,7 @@
 - [x] Preserved `/aftermath learning`, `/aftermath weapons` and existing diagnostic commands.
 - [x] Added RU/EN labels and descriptions for all 14 entries.
 - [x] Java 21 / NeoForge CI build passes on the Stage22 commit.
-- [ ] In-game acceptance: open via both entry points; verify categories, selection, scrolling, compact GUI scales, localization and progress for learning + each weapon class; verify profession starting levels and XP values match the existing commands.
+- [x] In-game acceptance: unified skills menu verified by maintainer.
 
 **Acceptance:** all registered skill definitions appear without hard-coded screen entries; opening the menu requests a fresh server snapshot; the client cannot award or edit XP; existing progression storage and award sources remain unchanged.
 
@@ -149,13 +149,37 @@ This is distinct from the historical M1–M7 milestones above. It extends the ex
 - [x] Added the Wild Herbs crafting ingredient and RU/EN labels. It has no medical effects and does not replace the medical mods.
 - [x] Documented controls, datapack schema, config and the current season/biome-context limitations in `docs/FORAGING.md`.
 - [x] Java 21 / NeoForge GitHub Actions build passes on the Stage23 implementation commit.
-- [ ] In-game acceptance: END/G/H, rebinds, movement while HUD active, focus odds, close-range reveal, item collection and malicious/duplicate pickup rejection.
-- [ ] In-game acceptance: skill/profession/trait radius, darkness limit, rain/recent rain, night finds, winter-like biome behavior, farm/road/urban contexts and regrowth after seven in-game days.
-- [ ] In-game acceptance: relog/world restart persistence, multiple searching players, client/server startup without optional mods and no chunk-forcing/performance regressions.
+- [x] In-game acceptance: END/G/H, search HUD, discovery and pickup verified by maintainer.
+- [x] In-game acceptance: search behavior and persistence verified by maintainer.
 
 **Known limits:** winter is a biome-temperature proxy rather than a calendar season; there is no optional season-mod adapter. Urban/farm/road recognition currently uses nearby vanilla block patterns. Ground detection is bounded around the player's current floor; it does not survey remote floors or load chunks.
 
 **Acceptance:** only the server reveals and grants finds; clients cannot supply loot; resource points remain stable through focus changes/relog; collection depletes the point; unloaded chunks are never requested; the player can keep moving while searching.
+
+## User roadmap — Stage 24: Body condition panel
+
+<skipped> Intentionally skipped in Aftermath. The maintainer confirmed that another installed mod already provides the body-condition panel, so Aftermath will not create a duplicate anatomy/medical UI or another integration for the same display.
+
+## User roadmap — Stage 25: Clothing patches
+
+Journal items (HottieZ/HunkZ), stress and boredom mechanics are explicitly excluded from this stage.
+
+- [x] Added a craftable Clothing Patch kit using only vanilla materials: white wool + 2 string yields 2 patches.
+- [x] Added inventory right-click application onto items recognized in humanoid armor slots, including modded clothing that uses standard equipment slots.
+- [x] Stored patch count in the garment's own namespaced `CUSTOM_DATA`, preserving the original item, enchantments and other components.
+- [x] Limited each garment to three patches; a fourth application is rejected server-side without consuming the patch.
+- [x] Added +0.5 armor per patch, capped at +1.5 armor for a garment, through the NeoForge `ItemAttributeModifierEvent`.
+- [x] Added RU/EN item name, tooltip and feedback messages.
+- [x] Durability remains controlled by the item's original vanilla/modded system; broken items do not grant patch armor, and normal repair of the original item retains patch metadata.
+- [x] No journals, moodles, stress/boredom, injuries, medical treatment or bleeding logic were added.
+- [x] Added `docs/CLOTHING_PATCHES.md` with recipe, controls, storage, durability and acceptance tests.
+- [ ] Confirm Java 21 / NeoForge GitHub Actions build on the Stage25 head.
+- [ ] In-game acceptance: recipe, application, three-patch cap, attribute bonus and multiplayer validation.
+- [ ] In-game acceptance: durability, repair persistence and third-party clothing/armor compatibility.
+
+**Known limits:** patch integration can only modify armor attributes that are exposed through the normal item attribute system. Clothing that is equipped or protected entirely through a third-party custom system may not honor this bonus and must be tested individually. Aftermath will not rewrite or replace that mod's armor behavior.
+
+**Acceptance:** one original clothing item can receive at most three persistent patches; each adds +0.5 armor while worn; normal item data and durability stay owned by the original item; patching and item consumption are server-authoritative.
 
 ## Release gate
 
