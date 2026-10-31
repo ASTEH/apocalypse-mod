@@ -371,5 +371,6 @@
   "message.aftermath.decoy.stopped": "The device is switched off.",
   "message.aftermath.decoy.empty": "The device has no charge. Install a Noise Decoy Battery first.",
   "message.aftermath.decoy.battery_full": "The device battery is already full.",
-  "message.aftermath.decoy.battery_added": "Battery installed: +%1$s minutes of operating time."
+  "message.aftermath.decoy.battery_added": "Battery installed: +%1$s minutes of operating time.",
+  "message.aftermath.decoy.disabled": "Noise decoys are disabled on this server."
 }
