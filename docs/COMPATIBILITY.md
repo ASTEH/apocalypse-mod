@@ -27,3 +27,14 @@ The core requires only Minecraft/NeoForge. TaCZ compatibility is isolated and us
 - Create and its add-ons overlap in production systems; that matters only for future optional adapters.
 - Do not remove GeckoLib, Curios, CoroUtil, GlitchCore, Kotlin for Forge, Moonlight Lib, Fzzy Config, YACL, Cloth Config, Atlas Lib, OctoLib, MRU or Navaronee Core just because they look like libraries; other installed mods may require them.
 - Earlier logs showed a Mixin redirect warning between Navaronee CoreLib and Lithium. That is a pack-level warning, not proof of an Aftermath issue. Core gameplay avoids mixins; the narrow Create adapter is isolated in a config that loads only when Create is present.
+
+
+## TaCZ 1.21.1 firearm handling
+
+TaCZ handling penalties are an optional integration and activate only when the `tacz` mod is present. No TaCZ classes are referenced from Aftermath's common Java code.
+
+Firearm proficiency is 0–10. Level 0 is untrained; handling penalties decrease linearly and reach zero at level 10. The existing damage bonus thresholds remain unchanged: level 2 at 50 XP, level 5 at 425 XP, and level 10 at 2050 XP. The level-1 threshold is 25 XP so level 0 is a real starting state.
+
+Verified hooks cover server projectile spread, server reload progress through TaCZ's `ModernKineticGunScriptAPI.getReloadTime()`, server/client aim transition speed, and one additional client camera kick per successful trigger action. Eagle Eye reduces the spread/aim handling penalty; Quick Reload reduces the reload-duration multiplier. TaCZ's authored recoil curves and weapon JSON values are not overwritten.
+
+Custom gunpack reload scripts that bypass `getReloadTime()`, weapon sway, and universal draw/switch speed are not altered. See `API_VERIFICATION.md` for the exact inspected methods and limitations.
