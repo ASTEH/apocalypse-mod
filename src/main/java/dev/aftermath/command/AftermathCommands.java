@@ -66,14 +66,10 @@ public final class AftermathCommands {
                                         return 0;
                                     }
                                     String weaponClass = FirearmDefinitions.classForGun(gunId);
-                                    Component className = Component.translatable("weapon_class.aftermath." + weaponClass);
-                                    Component classification = Component.translatable(
-                                            FirearmDefinitions.hasExplicitClassForGun(gunId)
-                                                    ? "message.aftermath.weapon_held.mapped"
-                                                    : "message.aftermath.weapon_held.inferred");
-                                    context.getSource().sendSuccess(() -> Component.translatable(
-                                            "message.aftermath.weapon_held.info", gunId.toString(),
-                                            className, classification), false);
+                                    context.getSource().sendSuccess(() ->
+                                            WeaponProgressionService.buildHeldDiagnosticsMessage(
+                                                    player, gunId, weaponClass,
+                                                    FirearmDefinitions.hasExplicitClassForGun(gunId)), false);
                                     return 1;
                                 })))
                         .then(Commands.literal("learning").executes(context -> {
