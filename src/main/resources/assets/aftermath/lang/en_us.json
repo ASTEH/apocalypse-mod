@@ -354,5 +354,22 @@
   "tooltip.aftermath.clothing_patch.protection": "Additional armor: +%1$s",
   "tooltip.aftermath.clothing_patch.durability": "Garment durability: %1$s/%2$s",
   "message.aftermath.clothing_patches.applied": "Reinforced clothing: %1$s/%2$s patches applied.",
-  "message.aftermath.clothing_patches.maxed": "This garment already has the maximum of %1$s patches."
+  "message.aftermath.clothing_patches.maxed": "This garment already has the maximum of %1$s patches.",
+  "item.aftermath.radio_decoy": "Portable Radio",
+  "item.aftermath.alarm_clock_decoy": "Alarm Clock",
+  "item.aftermath.noise_battery": "Noise Decoy Battery",
+  "item.aftermath.zombie_disguise": "Zombie Camouflage Paste",
+  "key.aftermath.parkour": "Parkour / Vault / Mantle",
+  "tooltip.aftermath.zombie_disguise": "3 minutes of reduced zombie visual detection. Close-range detection and noise still work.",
+  "message.aftermath.camouflage.already_active": "Zombie camouflage is already active.",
+  "message.aftermath.camouflage.started": "You mask your scent and appearance for %1$s seconds.",
+  "message.aftermath.camouflage.expired": "Your zombie camouflage has worn off.",
+  "message.aftermath.camouflage.broken_attack": "Your attack gives away your position. Camouflage is broken.",
+  "message.aftermath.camouflage.broken_damage": "The hit ruins your camouflage.",
+  "message.aftermath.camouflage.broken_noise": "A loud noise gives away your position. Camouflage is broken.",
+  "message.aftermath.decoy.started": "The device starts transmitting noise.",
+  "message.aftermath.decoy.stopped": "The device is switched off.",
+  "message.aftermath.decoy.empty": "The device has no charge. Install a Noise Decoy Battery first.",
+  "message.aftermath.decoy.battery_full": "The device battery is already full.",
+  "message.aftermath.decoy.battery_added": "Battery installed: +%1$s minutes of operating time."
 }
