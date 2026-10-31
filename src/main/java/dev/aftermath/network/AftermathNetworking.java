@@ -3,7 +3,6 @@ package dev.aftermath.network;
 import dev.aftermath.character.CharacterSelectionService;
 import dev.aftermath.foraging.ForagingService;
 import dev.aftermath.clothing.ClothingPatchService;
-import dev.aftermath.parkour.ParkourService;
 import dev.aftermath.skills.SkillsMenuService;
 import dev.aftermath.network.TraitStatePayload;
 import dev.aftermath.network.ZombieKillCountPayload;
@@ -15,7 +14,6 @@ import dev.aftermath.network.SetForagingFocusPayload;
 import dev.aftermath.network.CollectForagePayload;
 import dev.aftermath.network.ApplyClothingPatchPayload;
 import dev.aftermath.network.ForagingSnapshotPayload;
-import dev.aftermath.network.ParkourActionPayload;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
@@ -79,13 +77,6 @@ public final class AftermathNetworking {
                         ClothingPatchService.applyCreativePatch(player, payload.inventorySlot());
                     }
                 }));
-        registrar.playToServer(ParkourActionPayload.TYPE, ParkourActionPayload.STREAM_CODEC,
-                (payload, context) -> context.enqueueWork(() -> {
-                    if (context.player() instanceof net.minecraft.server.level.ServerPlayer player
-                            && dev.aftermath.config.AftermathServerConfig.ENABLE_PARKOUR.get()) {
-                        ParkourService.request(player);
-                    }
-                }));
         registrar.playToClient(ForagingSnapshotPayload.TYPE, ForagingSnapshotPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() ->
                         invokeClient("handleForagingSnapshot", ForagingSnapshotPayload.class, payload)));
@@ -108,8 +99,6 @@ public final class AftermathNetworking {
             foragingClientEvents.getMethod("register", IEventBus.class).invoke(null, modEventBus);
             Class<?> foragingHud = Class.forName("dev.aftermath.client.ForagingHud");
             foragingHud.getMethod("register", IEventBus.class).invoke(null, modEventBus);
-            Class<?> parkourClientEvents = Class.forName("dev.aftermath.client.ParkourClientEvents");
-            parkourClientEvents.getMethod("register", IEventBus.class).invoke(null, modEventBus);
         } catch (ReflectiveOperationException exception) {
             throw new IllegalStateException("Could not register Aftermath client hooks", exception);
         }
