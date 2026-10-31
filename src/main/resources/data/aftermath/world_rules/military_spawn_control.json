@@ -3,38 +3,14 @@
   "dimensions": [
     "minecraft:overworld"
   ],
-  "entity_types": [],
-  "entity_namespaces": [],
-  "path_keywords": [
-    "soldier",
-    "military",
-    "army",
-    "infantry",
-    "trooper",
-    "marine",
-    "russian",
-    "soviet",
-    "american",
-    "usa",
-    "us_army",
-    "usmc",
-    "rifleman",
-    "mercenary",
-    "russia",
-    "rus",
-    "ussr",
-    "red_army"
+  "entity_types": [
+    "simpleenemymod:ruunit",
+    "simpleenemymod:usunit"
   ],
+  "entity_namespaces": [],
+  "path_keywords": [],
   "spawn_types": [
-    "natural",
-    "chunk_generation",
-    "patrol",
-    "structure",
-    "event",
-    "triggered",
-    "mob_summoned",
-    "spawner",
-    "reinforcement"
+    "event"
   ],
   "default_spawn_chance": 0.08,
   "outside_zone_spawn_chance": 0.01,
