@@ -32,7 +32,6 @@ import java.util.UUID;
 public final class WeaponProgressionService {
     private static final TagKey<Item> MELEE_WEAPONS = TagKey.create(
             Registries.ITEM, ResourceLocation.fromNamespaceAndPath(AftermathMod.MOD_ID, "weapon_classes/melee"));
-    private static final int[] LEVEL_THRESHOLDS = {0, 25, 50, 125, 250, 425, 650, 925, 1250, 1625, 2050};
     private static final List<String> WEAPON_CLASSES = List.of("melee", "pistol", "shotgun", "rifle", "heavy");
     private static final long VICTIM_REPEAT_WINDOW_TICKS = 20L * 60L;
     private static final Map<UUID, RewardStamp> RECENTLY_REWARDED_VICTIMS = new HashMap<>();
@@ -62,6 +61,7 @@ public final class WeaponProgressionService {
                 new RewardStamp(victim.level().dimension().location(), now));
         cleanOldVictims(now, victim.level().dimension().location());
         if (gainedXp <= 0) return;
+
         int learningXp = Math.max(1, gainedXp / 2);
         if ("melee".equals(weaponClass)) {
             LearningService.awardMeleeXp(killer, learningXp);
@@ -104,7 +104,8 @@ public final class WeaponProgressionService {
 
         int level = levelFor(attacker.getData(AftermathAttachments.WEAPON_PROGRESS)
                 .experienceFor(weaponClass));
-        float multiplier = level >= 10 ? 1.10F : level >= 5 ? 1.05F : level >= 2 ? 1.02F : 1.0F;
+        // Every level now matters: +1% damage per level, up to +10% at level 10.
+        float multiplier = 1.0F + Math.max(0, Math.min(10, level)) * 0.01F;
         if (multiplier > 1.0F) event.setNewDamage(event.getNewDamage() * multiplier);
     }
 
@@ -116,12 +117,12 @@ public final class WeaponProgressionService {
         return TaczCompatibility.weaponClassForBullet(source.getDirectEntity(), attacker);
     }
 
-    /** Level 0 is untrained. Existing damage milestones remain at 50 / 425 / 2050 XP for levels 2 / 5 / 10. */
+    /** Level 10 requires 6000 XP; at the default 10 XP per kill this is about 600 eligible kills. */
     public static int levelFor(int experience) {
         int xp = Math.max(0, experience);
         int level = 0;
         for (int candidate = 1; candidate <= 10; candidate++) {
-            if (xp >= LEVEL_THRESHOLDS[candidate]) level = candidate;
+            if (xp >= WeaponProgress.thresholdForLevel(candidate)) level = candidate;
             else break;
         }
         return level;
@@ -137,10 +138,20 @@ public final class WeaponProgressionService {
         return levelFor(player.getData(AftermathAttachments.WEAPON_PROGRESS).experienceFor(weaponClass));
     }
 
+    /** Class-specific difficulty is strongest at level 0 and fades smoothly to neutral at level 10. */
+    public static double handlingClassMultiplier(String weaponClass) {
+        return switch (weaponClass == null ? "" : weaponClass) {
+            case "shotgun" -> AftermathServerConfig.UNTRAINED_SHOTGUN_HANDLING_MULTIPLIER.get();
+            case "heavy" -> AftermathServerConfig.UNTRAINED_HEAVY_HANDLING_MULTIPLIER.get();
+            default -> 1.0D;
+        };
+    }
+
     public static double spreadPenalty(ServerPlayer player, String weaponClass) {
         if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
                 || weaponClass == null || !WEAPON_CLASSES.contains(weaponClass)) return 0.0D;
         double penalty = AftermathServerConfig.UNTRAINED_FIREARM_SPREAD.get()
+                * handlingClassMultiplier(weaponClass)
                 * handlingPenaltyForLevel(levelFor(player, weaponClass));
         if (TraitRuntimeService.hasHook(player, "eagle_eye")) {
             penalty *= Math.max(0.0D, Math.min(1.0D,
@@ -153,7 +164,8 @@ public final class WeaponProgressionService {
         double penalty = 0.0D;
         if (AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
                 && weaponClass != null && WEAPON_CLASSES.contains(weaponClass)) {
-            penalty = handlingPenaltyForLevel(levelFor(player, weaponClass));
+            penalty = handlingPenaltyForLevel(levelFor(player, weaponClass))
+                    * handlingClassMultiplier(weaponClass);
         }
         double multiplier = 1.0D + penalty
                 * (AftermathServerConfig.UNTRAINED_FIREARM_RELOAD_DURATION.get() - 1.0D);
@@ -167,7 +179,8 @@ public final class WeaponProgressionService {
     public static double aimTimeMultiplier(ServerPlayer player, String weaponClass) {
         if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
                 || weaponClass == null || !WEAPON_CLASSES.contains(weaponClass)) return 1.0D;
-        double penalty = handlingPenaltyForLevel(levelFor(player, weaponClass));
+        double penalty = handlingPenaltyForLevel(levelFor(player, weaponClass))
+                * handlingClassMultiplier(weaponClass);
         if (TraitRuntimeService.hasHook(player, "eagle_eye")) {
             penalty *= Math.max(0.0D, Math.min(1.0D,
                     TraitRuntimeService.hookValue(player, "eagle_eye", 1.0D)));
@@ -177,7 +190,12 @@ public final class WeaponProgressionService {
 
     /** Same formula on the client, using the server-synchronized trait and progression snapshot. */
     public static double aimTimeMultiplier(int level, boolean eagleEye, double untrainedMultiplier) {
-        double penalty = handlingPenaltyForLevel(level);
+        return aimTimeMultiplier(level, eagleEye, untrainedMultiplier, 1.0D);
+    }
+
+    public static double aimTimeMultiplier(int level, boolean eagleEye, double untrainedMultiplier,
+                                           double classHandlingMultiplier) {
+        double penalty = handlingPenaltyForLevel(level) * Math.max(1.0D, classHandlingMultiplier);
         if (eagleEye) penalty *= 0.8D;
         return 1.0D + penalty * (Math.max(1.0D, untrainedMultiplier) - 1.0D);
     }
@@ -191,7 +209,9 @@ public final class WeaponProgressionService {
                 AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get(),
                 AftermathServerConfig.UNTRAINED_FIREARM_AIM_TIME.get().floatValue(),
                 AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_PITCH.get().floatValue(),
-                AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_YAW.get().floatValue()));
+                AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_YAW.get().floatValue(),
+                AftermathServerConfig.UNTRAINED_SHOTGUN_HANDLING_MULTIPLIER.get().floatValue(),
+                AftermathServerConfig.UNTRAINED_HEAVY_HANDLING_MULTIPLIER.get().floatValue()));
     }
 
     public static Component buildStatusMessage(ServerPlayer player) {
