@@ -3,7 +3,6 @@ package dev.aftermath.network;
 import dev.aftermath.character.CharacterSelectionService;
 import dev.aftermath.network.TraitStatePayload;
 import dev.aftermath.network.ZombieKillCountPayload;
-import dev.aftermath.network.MoodlesSyncPayload;
 import dev.aftermath.network.WeaponProgressSyncPayload;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -29,9 +28,6 @@ public final class AftermathNetworking {
         registrar.playToClient(TraitStatePayload.TYPE, TraitStatePayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() ->
                         invokeClient("handleTraitState", TraitStatePayload.class, payload)));
-        registrar.playToClient(MoodlesSyncPayload.TYPE, MoodlesSyncPayload.STREAM_CODEC,
-                (payload, context) -> context.enqueueWork(() ->
-                        invokeClient("handleMoodles", MoodlesSyncPayload.class, payload)));
         registrar.playToClient(ZombieKillCountPayload.TYPE, ZombieKillCountPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() ->
                         invokeClient("handleZombieKillCount", ZombieKillCountPayload.class, payload)));
@@ -49,8 +45,6 @@ public final class AftermathNetworking {
         try {
             Class<?> clientEvents = Class.forName("dev.aftermath.client.TraitClientEvents");
             clientEvents.getMethod("register").invoke(null);
-            Class<?> moodlesHud = Class.forName("dev.aftermath.client.MoodlesHud");
-            moodlesHud.getMethod("register", IEventBus.class).invoke(null, modEventBus);
             Class<?> zombieKillHud = Class.forName("dev.aftermath.client.ZombieKillHud");
             zombieKillHud.getMethod("register", IEventBus.class).invoke(null, modEventBus);
         } catch (ReflectiveOperationException exception) {
