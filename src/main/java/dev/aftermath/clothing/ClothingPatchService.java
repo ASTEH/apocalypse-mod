@@ -95,7 +95,7 @@ public final class ClothingPatchService {
         event.getSlot().setChanged();
         player.containerMenu.broadcastChanges();
         player.level().playSound(null, player.blockPosition(),
-                SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.PLAYERS, 0.65F, 1.15F);
+                SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.PLAYERS, 0.65F, 1.15F);
         player.sendSystemMessage(Component.translatable(
                 "message.aftermath.clothing_patches.applied", updated, MAX_PATCHES_PER_ITEM));
     }
