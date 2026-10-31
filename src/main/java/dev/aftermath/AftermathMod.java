@@ -21,6 +21,8 @@ import dev.aftermath.command.AftermathCommands;
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.network.AftermathNetworking;
 import dev.aftermath.zombie.ZombieKillService;
+import dev.aftermath.zombie.ZombieVariantDefinitions;
+import dev.aftermath.zombie.ZombieVariantService;
 import dev.aftermath.state.PlayerStateDefinitions;
 import dev.aftermath.state.PlayerStateManager;
 import dev.aftermath.world.WorldSpawnControlService;
@@ -50,6 +52,8 @@ public final class AftermathMod {
         NeoForge.EVENT_BUS.addListener(WorldSpawnDefinitions::register);
         NeoForge.EVENT_BUS.addListener(WorldSpawnControlService::onMobPositionCheck);
         NeoForge.EVENT_BUS.addListener(WorldSpawnControlService::onChunkLoad);
+        NeoForge.EVENT_BUS.addListener(ZombieVariantDefinitions::register);
+        NeoForge.EVENT_BUS.addListener(ZombieVariantService::onFinalizeSpawn);
         NeoForge.EVENT_BUS.addListener(PlayerStateManager::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(PlayerStateManager::onLivingDamage);
         NeoForge.EVENT_BUS.addListener(CharacterDefinitions::register);
