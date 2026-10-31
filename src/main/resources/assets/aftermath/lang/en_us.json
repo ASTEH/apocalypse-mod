@@ -359,7 +359,6 @@
   "item.aftermath.alarm_clock_decoy": "Alarm Clock",
   "item.aftermath.noise_battery": "Noise Decoy Battery",
   "item.aftermath.zombie_disguise": "Zombie Camouflage Paste",
-  "key.aftermath.parkour": "Parkour / Vault / Mantle",
   "tooltip.aftermath.zombie_disguise": "3 minutes of reduced zombie visual detection. Close-range detection and noise still work.",
   "message.aftermath.camouflage.already_active": "Zombie camouflage is already active.",
   "message.aftermath.camouflage.started": "You mask your scent and appearance for %1$s seconds.",
