@@ -18,7 +18,7 @@ public record WeaponProgress(Map<String, Integer> experience, int schemaVersion)
 
     /** 10 XP per kill means level 10 is reached after approximately 600 eligible kills. */
     private static final int[] LEVEL_THRESHOLDS = {
-            0, 300, 700, 1200, 1800, 2500, 3300, 4100, 4900, 5600, 6000
+            0, 300, 700, 1200, 1800, 2500, 3300, 4200, 5100, 5800, 6500
     };
 
     public static final Codec<WeaponProgress> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -76,7 +76,7 @@ public record WeaponProgress(Map<String, Integer> experience, int schemaVersion)
 
     /**
      * Preserve the player's level and progress within that level when old saves are upgraded
-     * from the 2050 XP cap to the new 6000 XP level-10 requirement.
+     * from the 2050 XP cap to the new 6500 XP level-10 requirement.
      */
     private static Map<String, Integer> migrateLegacyExperience(Map<String, Integer> legacy) {
         Map<String, Integer> migrated = new LinkedHashMap<>();
