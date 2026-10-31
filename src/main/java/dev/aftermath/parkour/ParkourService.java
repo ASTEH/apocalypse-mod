@@ -1,6 +1,7 @@
 package dev.aftermath.parkour;
 
 import net.minecraft.core.BlockPos;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import dev.aftermath.config.AftermathServerConfig;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -136,8 +137,12 @@ public final class ParkourService {
         int maxX = net.minecraft.util.Mth.floor(box.maxX);
         int minZ = net.minecraft.util.Mth.floor(box.minZ);
         int maxZ = net.minecraft.util.Mth.floor(box.maxZ);
-        return level.hasChunkAt(new BlockPos(minX, net.minecraft.util.Mth.floor(box.minY), minZ))
-                && level.hasChunkAt(new BlockPos(maxX, net.minecraft.util.Mth.floor(box.maxY), maxZ));
+        int minY = net.minecraft.util.Mth.floor(box.minY);
+        int maxY = net.minecraft.util.Mth.floor(box.maxY);
+        return level.hasChunkAt(new BlockPos(minX, minY, minZ))
+                && level.hasChunkAt(new BlockPos(minX, maxY, maxZ))
+                && level.hasChunkAt(new BlockPos(maxX, minY, minZ))
+                && level.hasChunkAt(new BlockPos(maxX, maxY, maxZ));
     }
 
     private static boolean hasSupport(ServerLevel level, double x, double y, double z) {
@@ -154,6 +159,10 @@ public final class ParkourService {
 
     public static void clear() {
         LAST_ACTION.clear();
+    }
+
+    public static void onServerStopping(ServerStoppingEvent event) {
+        clear();
     }
 
     private record Candidate(double x, double y, double z, boolean straightPathWasBlocked) {}
