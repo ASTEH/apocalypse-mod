@@ -133,9 +133,9 @@ public final class AftermathServerConfig {
         FORAGING_MAX_BASE_RADIUS = builder.comment("Maximum skill-derived radius before profession and trait bonuses.")
                 .defineInRange("maxBaseRadius", 10.0D, 3.0D, 10.0D);
         FORAGING_PROFESSION_RADIUS_BONUS = builder.comment("Extra radius for the Scavenger profession.")
-                .defineInRange("professionRadiusBonus", 2.0D, 0.0D, 5.0D);
+                .defineInRange("professionRadiusBonus", 2.5D, 0.0D, 5.0D);
         FORAGING_TRAIT_RADIUS_BONUS = builder.comment("Extra radius for the Keen Eye scavenger trait.")
-                .defineInRange("traitRadiusBonus", 2.0D, 0.0D, 5.0D);
+                .defineInRange("traitRadiusBonus", 2.5D, 0.0D, 5.0D);
         FORAGING_SPOT_CHANCE = builder.comment("Chance that a five-block search cell contains one natural forage point.")
                 .defineInRange("spotChance", 0.32D, 0.01D, 1.0D);
         FORAGING_FOCUS_WEIGHT_MULTIPLIER = builder.comment("Loot weight multiplier for the selected search category; other categories remain possible.")
