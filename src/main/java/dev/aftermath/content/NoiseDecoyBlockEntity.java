@@ -1,6 +1,7 @@
 package dev.aftermath.content;
 
 import dev.aftermath.noise.NoiseService;
+import dev.aftermath.config.AftermathServerConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -27,7 +28,8 @@ public final class NoiseDecoyBlockEntity extends BlockEntity {
 
     public void serverTick() {
         Level currentLevel = getLevel();
-        if (!(currentLevel instanceof ServerLevel level) || level.isClientSide || !active) return;
+        if (!(currentLevel instanceof ServerLevel level) || level.isClientSide || !active
+                || !AftermathServerConfig.ENABLE_NOISE_DECOYS.get()) return;
         if (!(getBlockState().getBlock() instanceof NoiseDecoyBlock device)) {
             active = false;
             setChanged();
