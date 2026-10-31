@@ -16,6 +16,7 @@ import dev.aftermath.weapon.FirearmDefinitions;
 import dev.aftermath.weapon.TaczCompatibility;
 import dev.aftermath.foraging.ForagingDefinitions;
 import dev.aftermath.foraging.ForagingService;
+import dev.aftermath.clothing.ClothingPatchService;
 import dev.aftermath.noise.HordeDirector;
 import dev.aftermath.noise.NoiseDefinitions;
 import dev.aftermath.noise.NoiseService;
@@ -50,7 +51,10 @@ public final class AftermathMod {
         AftermathAttachments.register(modEventBus);
         AftermathContent.register(modEventBus);
         modEventBus.addListener(AftermathNetworking::registerPayloads);
+        modEventBus.addListener(ClothingPatchService::onItemAttributeModifier);
         NeoForge.EVENT_BUS.addListener(AftermathCommands::registerCommands);
+        NeoForge.EVENT_BUS.addListener(ClothingPatchService::onItemStackedOnOther);
+        NeoForge.EVENT_BUS.addListener(ClothingPatchService::onItemTooltip);
         NeoForge.EVENT_BUS.addListener(WorldSpawnDefinitions::register);
         NeoForge.EVENT_BUS.addListener(MilitarySpawnControlService::onLevelTick);
         NeoForge.EVENT_BUS.addListener(MilitarySpawnControlService::onServerStopping);
