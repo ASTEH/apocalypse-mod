@@ -1,0 +1,31 @@
+{
+  "id": "aftermath:fast",
+  "name_key": "zombie.aftermath.fast",
+  "description_key": "zombie.aftermath.fast.description",
+  "entity_type": "minecraft:zombie",
+  "spawn": {
+    "weight": 20,
+    "time_of_day": "any",
+    "dimensions": [
+      "minecraft:overworld"
+    ],
+    "group_size": {
+      "min": 1,
+      "max": 2
+    }
+  },
+  "attributes": {
+    "max_health": 16,
+    "movement_speed": 0.32,
+    "attack_damage": 3,
+    "follow_range": 32,
+    "knockback_resistance": 0
+  },
+  "senses": {
+    "vision_range": 24,
+    "hearing_range": 30
+  },
+  "abilities": [
+    "sprint_burst"
+  ]
+}

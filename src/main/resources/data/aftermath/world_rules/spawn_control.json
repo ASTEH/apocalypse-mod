@@ -1,0 +1,18 @@
+{
+  "hostile_spawns": {
+    "enabled": true,
+    "deny_unlisted_hostiles": true,
+    "dimensions": [],
+    "allow_hostile_entity_tag": "aftermath:allowed_hostile_spawns",
+    "allow_entity_namespaces": [],
+    "blocked_entity_types": []
+  },
+  "spawner_removal": {
+    "enabled": true,
+    "dimensions": [],
+    "block_ids": [
+      "minecraft:spawner",
+      "minecraft:trial_spawner"
+    ]
+  }
+}

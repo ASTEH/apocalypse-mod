@@ -19,6 +19,8 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_DAY_PROGRESSION;
     public static final ModConfigSpec.BooleanValue ENABLE_BLEEDING;
     public static final ModConfigSpec.BooleanValue ENABLE_MOODLES;
+    public static final ModConfigSpec.BooleanValue ENABLE_HOSTILE_SPAWN_FILTER;
+    public static final ModConfigSpec.BooleanValue ENABLE_SPAWNER_REMOVAL;
 
     public static final ModConfigSpec.IntValue WEAPON_XP_PER_KILL;
     public static final ModConfigSpec.IntValue MAX_XP_PER_VICTIM_PER_MINUTE;
@@ -57,6 +59,10 @@ public final class AftermathServerConfig {
                 .define("enableBleeding", true);
         ENABLE_MOODLES = builder.comment("Enable server-authoritative tiredness, exertion and panic Moodles.")
                 .define("enableMoodles", true);
+        ENABLE_HOSTILE_SPAWN_FILTER = builder.comment("Block unlisted hostile mob spawns using the world_rules/spawn_control.json datapack policy.")
+                .define("enableHostileSpawnFilter", true);
+        ENABLE_SPAWNER_REMOVAL = builder.comment("Remove configured vanilla spawner blocks when their chunks finish loading.")
+                .define("enableSpawnerRemoval", true);
         builder.pop();
 
         builder.push("weapon_progression");

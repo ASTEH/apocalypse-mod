@@ -1,0 +1,29 @@
+{
+  "id": "aftermath:slow",
+  "name_key": "zombie.aftermath.slow",
+  "description_key": "zombie.aftermath.slow.description",
+  "entity_type": "minecraft:zombie",
+  "spawn": {
+    "weight": 75,
+    "time_of_day": "any",
+    "dimensions": [
+      "minecraft:overworld"
+    ],
+    "group_size": {
+      "min": 2,
+      "max": 4
+    }
+  },
+  "attributes": {
+    "max_health": 20,
+    "movement_speed": 0.18,
+    "attack_damage": 3,
+    "follow_range": 24,
+    "knockback_resistance": 0
+  },
+  "senses": {
+    "vision_range": 18,
+    "hearing_range": 20
+  },
+  "abilities": []
+}
