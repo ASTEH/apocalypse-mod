@@ -723,7 +723,7 @@ public final class LearningService {
     private static double learningMultiplier(ServerPlayer player, ResourceLocation skillId, long now) {
         CharacterProfile profile = player.getData(AftermathAttachments.CHARACTER_PROFILE);
         LearningProgress progress = player.getData(AftermathAttachments.LEARNING_PROGRESS);
-        double multiplier = progress.bookMultiplierFor(skillId.toString(), now)
+        double multiplier = progress.bookMultiplierFor(skillId.toString(), now);
         for (String rawId : profile.traitIds()) {
             ResourceLocation traitId = ResourceLocation.tryParse(rawId);
             if (traitId == null) continue;
