@@ -12,6 +12,7 @@ same spawn. Ranges are rolled separately for each spawned entity.
 | Slow | 75 | Day or night | Slow movement, above-average durability and shorter detection |
 | Fast | 20 | Day or night | High movement speed, less health, longer sight/hearing and more damage |
 | Volatile | 5 | Night | Fast, durable and high damage; longest sight/hearing |
+| Brute | 3 | Night | Very durable, slow, high damage and strong knockback resistance |
 
 The data fields are defined in `docs/zombie-variant.schema.json`. Numeric
 fields accept either a fixed value or an object with `min` and `max`.
@@ -29,6 +30,8 @@ fields accept either a fixed value or an object with `min` and `max`.
 - `spawn.spawn_types`: lowercase `MobSpawnType` names. Defaults to
   `natural` and `chunk_generation`.
 - Empty `dimensions` and `biomes` arrays mean all dimensions/biomes.
+
+New zombie-like hostiles in the Overworld are blocked during daytime by the independent `enableZombieNightOnlySpawning` server feature (enabled by default). Natural, chunk-generation, spawner, structure and event-style spawns are blocked; commands, spawn eggs and conversions remain available. Night is ticks 13000–22999 of the 24000-tick Minecraft day.
 
 Only vanilla zombies are included in the built-in
 `aftermath:zombie_variant_targets` tag. Add other entity IDs through a
