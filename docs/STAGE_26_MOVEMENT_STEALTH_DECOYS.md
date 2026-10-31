@@ -1,16 +1,6 @@
-# Stage 26 — Parkour, zombie camouflage and noise decoys
+# Stage 26 — Zombie camouflage and noise decoys
 
-## Parkour controls
-
-The default key is **V** (Options → Controls → Aftermath → Parkour). It is rebindable.
-
-- Move while sprinting and press V to request a vault or mantle.
-- The server derives direction from actual server-side movement. The packet contains no coordinates.
-- Short vaults can clear low obstacles; mantles can land on a sturdy surface up to approximately one block higher.
-- Hold crouch and press V to traverse an opening that fits the crouching player box but not the standing box.
-- The player must be on the ground and moving; parkour is not a flight or wall-clipping ability.
-
-The server samples the complete player bounding box along the route and checks collision at every sample. The destination must be in an already-loaded chunk and have a sturdy landing surface. Solid walls, unsupported ledges, arbitrary positions and unloaded chunks are rejected. A short server cooldown prevents repeated packet use.
+Player parkour is handled by the standalone [ParCool! mod for NeoForge 1.21.1](https://www.curseforge.com/minecraft/mc-mods/parcool/files/9205907), not by Aftermath. The 1.21.1-4.0.1.6 release requires [Curios API](https://www.curseforge.com/minecraft/mc-mods/curios/files/all). Install both mods on client and server. ParCool's skill tree can be disabled with `enable_skill_tree = false`; use its server config to disable actions that do not fit the apocalypse setting.
 
 ## Zombie camouflage
 
@@ -43,35 +33,32 @@ Each pulse is sent to the existing `NoiseService.emitNoise` API through a reload
 
 ## Server configuration
 
-These independent options are in the server config:
+These independent options are in the Aftermath server config:
 
 ```toml
 [features]
-enableParkour = true
 enableZombieCamouflage = true
 enableNoiseDecoys = true
 ```
 
-All three features can be disabled independently. Disabling noise events globally also stops the decoys from attracting mobs.
+Parkour is configured separately through ParCool. Disabling Aftermath noise events globally also stops the decoys from attracting mobs.
 
 ## Acceptance tests
 
-1. Sprint over low obstacles and press V; test fence/rail vaulting and short ledge mantles.
-2. Try V against a full solid wall and toward an unsupported edge; no movement must occur.
-3. Crouch and press V at suitable openings; verify the player cannot use it to pass through solid block collision.
-4. Test network latency/multiplayer: the server, not the client, determines the destination.
-5. Use Zombie Camouflage Paste; verify its tooltip and three-minute expiration.
-6. Compare zombie detection at medium/long sight distance and within five blocks.
-7. Verify attack, incoming damage and gunfire/loud noise end camouflage; footsteps and ordinary movement do not automatically remove it.
-8. Place a radio and alarm clock, install batteries and toggle them on/off.
-9. Verify radio/alarm noise profiles attract existing zombies only; no zombie is created at the decoy.
-10. Let the charge run out, save/reload the world and verify remaining charge and active state persist.
-11. Repeat with each server feature toggle disabled; ensure no unsupported behavior remains active.
-12. Start a dedicated server with Aftermath alone and verify no client-only classes are loaded.
+1. Install ParCool! and Curios API on client and dedicated server. Verify vault, crawl, hang and wall-run actions; disable grapple/zipline or other actions not wanted in a survival apocalypse.
+2. Optionally set `enable_skill_tree = false` in ParCool's server config and verify movement actions are immediately available.
+3. Use Zombie Camouflage Paste; verify its tooltip and three-minute expiration.
+4. Compare zombie detection at medium/long sight distance and within five blocks.
+5. Verify attack, incoming damage and gunfire/loud noise end camouflage; footsteps and ordinary movement do not automatically remove it.
+6. Place a radio and alarm clock, install batteries and toggle them on/off.
+7. Verify radio/alarm noise profiles attract existing zombies only; no zombie is created at the decoy.
+8. Let the charge run out, save/reload the world and verify remaining charge and active state persist.
+9. Repeat with each Aftermath feature toggle disabled; ensure the disabled feature stops working.
+10. Start a dedicated server with Aftermath alone (without ParCool) and verify no client-only classes are loaded.
 
 ## Current limits
 
-- Parkour is a geometry-validated baseline, not a full animation or stamina system. It intentionally does not attempt arbitrary climbing or collision bypass.
+- ParCool is maintained outside Aftermath. Its movement actions, stamina/skill-tree options and animation compatibility are configured by that mod; check its version-specific documentation when updating it.
 - Camouflage modifies zombie target acquisition, not external mod AI that does not use the vanilla target event.
 - The radio and alarm are vanilla-textured functional blocks; custom artwork and sound design can be refined separately.
 - Decoys use the global NoiseService and its existing caps; very large numbers of devices remain constrained by the configured per-event target cap, but device tick load should still be profiled in a large server.
