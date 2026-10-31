@@ -138,7 +138,8 @@ public final class ForagingService {
             return;
         }
 
-        ItemStack stack = new ItemStack(item, Math.min(stored.count(), item.getMaxStackSize()));
+        ItemStack stack = new ItemStack(item);
+        stack.setCount(Math.min(stored.count(), stack.getMaxStackSize()));
         Component itemName = stack.getHoverName();
         int count = stack.getCount();
         player.getInventory().add(stack);
