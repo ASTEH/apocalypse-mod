@@ -21,6 +21,9 @@ public final class AftermathServerConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_SPAWNER_REMOVAL;
     public static final ModConfigSpec.BooleanValue ENABLE_ZOMBIE_VARIANTS;
     public static final ModConfigSpec.BooleanValue ENABLE_ZOMBIE_NIGHT_ONLY_SPAWNING;
+    public static final ModConfigSpec.BooleanValue ENABLE_PARKOUR;
+    public static final ModConfigSpec.BooleanValue ENABLE_ZOMBIE_CAMOUFLAGE;
+    public static final ModConfigSpec.BooleanValue ENABLE_NOISE_DECOYS;
     public static final ModConfigSpec.BooleanValue ENABLE_MILITARY_SPAWN_CONTROL;
     public static final ModConfigSpec.DoubleValue MILITARY_EVENT_CHANCE_MULTIPLIER;
 
@@ -79,6 +82,12 @@ public final class AftermathServerConfig {
                 .define("enableZombieVariants", true);
         ENABLE_ZOMBIE_NIGHT_ONLY_SPAWNING = builder.comment("Allow new zombie-like hostile mobs to spawn in the Overworld only at night. Manual commands, spawn eggs and transformations are unaffected.")
                 .define("enableZombieNightOnlySpawning", true);
+        ENABLE_PARKOUR = builder.comment("Enable server-validated parkour vaults, mantles and crouched opening traversal.")
+                .define("enableParkour", true);
+        ENABLE_ZOMBIE_CAMOUFLAGE = builder.comment("Enable the temporary consumable zombie-camouflage system.")
+                .define("enableZombieCamouflage", true);
+        ENABLE_NOISE_DECOYS = builder.comment("Enable rechargeable radio and alarm-clock noise decoys.")
+                .define("enableNoiseDecoys", true);
         ENABLE_MILITARY_SPAWN_CONTROL = builder.comment("Reduce the frequency of TaCZ: Simple Enemy dynamic military events when that optional mod is installed.")
                 .define("enableMilitarySpawnControl", true);
         MILITARY_EVENT_CHANCE_MULTIPLIER = builder.comment("Fraction of TaCZ: Simple Enemy base chances retained by military_patrol, far_combat, and cave_extraction. 0.15 means 15% of their normal configured chance.")
