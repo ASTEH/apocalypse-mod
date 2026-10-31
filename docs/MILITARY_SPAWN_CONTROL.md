@@ -1,71 +1,67 @@
-# Military NPC spawn control
+# TaCZ: Simple Enemy military event frequency
 
-Aftermath reduces the frequency of Russian and US soldier squads from **TaCZ: Simple Enemy** without requiring that mod as a dependency.
+Aftermath reduces how often **TaCZ: Simple Enemy** creates Russian and US dynamic encounters. This integration is optional and does not add a compile-time or runtime dependency on Simple Enemy.
 
-Policy file: `data/aftermath/world_rules/military_spawn_control.json`
-
-## Verified target entities
-
-The current target modpack log contains the NeoForge 1.21.1 `simpleenemymod` mod. The upstream Simple Enemy registry uses these entity IDs:
+The modpack log confirms the installed mod ID is `simpleenemymod`. Its upstream 1.21.1 source defines these unit IDs:
 
 - `simpleenemymod:ruunit` — Russian unit.
 - `simpleenemymod:usunit` — US unit.
+- `simpleenemymod:pmcunit` — recruitable PMC/allied unit; deliberately unaffected.
 
-The PMC/allied unit is deliberately not included, so player-recruited allies are not reduced by this policy. The separate `tacznpcs:npc` entity is not targeted either.
+The separate `tacznpcs` mod and its generic NPC entity are also unaffected.
 
-The upstream Simple Enemy event implementation creates squads directly and calls `finalizeSpawn` with `MobSpawnType.EVENT` before adding the entities to the level. For this reason Aftermath filters the event/finalize + entity-join path instead of relying only on natural-spawn position checks.
+## What is controlled
 
-## Group-level filtering
+Simple Enemy has three dynamic world events that create military groups:
 
-The policy makes one probability decision for the first matching unit finalized in a level during a game tick. The decision is reused for the rest of that tick's event group. A squad is therefore allowed or rejected as a group instead of being reduced to one or two random survivors.
+- `military_patrol` — Russian or US patrol.
+- `far_combat` — distant firefight between the two factions.
+- `cave_extraction` — a military group appearing underground.
 
-Only `MobSpawnType.EVENT` is targeted by the default policy. Spawn eggs and command/recruitment paths that use another spawn type remain unaffected.
+Aftermath uses reflection to access Simple Enemy's per-player `EventProbabilityData`. It clamps the current saved chance for these three event IDs to a fraction of each event's own configured base chance.
 
-The default policy does not touch:
+This changes the probability of the event before Simple Enemy creates its squad. It does not remove individual soldiers after they have spawned, so squads remain complete.
 
-- Aftermath's zombie variants.
-- PMC/allied units.
-- TacZ NPCs from the separate `tacznpcs` mod.
-- Existing soldiers already saved in the world.
-- Spawn eggs and manually placed units.
+## Default balance
 
-## Spawn frequency
+Server configuration:
 
-- With no configured zones, matching event squads have an **8% chance** to pass the filter.
-- If one or more zones are configured, event squads outside all zones use `outside_zone_spawn_chance` (1% by default).
-- A squad whose first unit is inside a configured zone uses that zone's `spawn_chance` (100% by default).
-- If zones overlap, the highest matching zone chance is used.
-
-This makes squads rare across the general world while allowing normal or elevated rates around specified military facilities.
-
-## Example military base zone
-
-Replace the empty `zones` array with an entry like this, changing coordinates to the centre of a real military base in your world:
-
-```json
-"zones": [
-  {
-    "name": "north_military_base",
-    "dimension": "minecraft:overworld",
-    "x": 1200,
-    "z": -640,
-    "radius": 160,
-    "min_y": 40,
-    "max_y": 120,
-    "spawn_chance": 1.0
-  }
-]
+```toml
+[features]
+enableMilitarySpawnControl = true
+militaryEventChanceMultiplier = 0.15
 ```
 
-Coordinates are world coordinates. Radius is horizontal; vertical bounds are optional. The example coordinates are illustrative only and are not preconfigured. Simple Enemy chooses event locations near players, so the player must be exploring near the configured base for these events to land inside its zone.
+`militaryEventChanceMultiplier` is the fraction of Simple Enemy's normal event chance to retain:
 
-## Configuration
+- `0.15` = 15% of the normal chance.
+- `0.0` = dynamic military events disabled.
+- `1.0` = unchanged Simple Enemy event chance.
 
-- `features.enableMilitarySpawnControl` toggles the Aftermath filter.
-- `default_spawn_chance` controls global squad frequency when no zones are configured.
-- `outside_zone_spawn_chance` controls frequency outside all zones when at least one zone exists.
-- `entity_types` is an exact registry-ID allow-list for targets. Prefer exact IDs over namespaces or path keywords.
+For example, if the installed Simple Enemy config uses its upstream defaults, the effective maximum chances become approximately:
+
+| Event | Simple Enemy base chance | Aftermath default |
+|---|---:|---:|
+| `military_patrol` | 10% | 1.5% |
+| `far_combat` | 8% | 1.2% |
+| `cave_extraction` | 2% | 0.3% |
+
+When available, Aftermath reads the live base values from Simple Enemy's `EventSpawnConfig`, so custom values in that mod's server config are respected. If those fields are unavailable in a future version, Aftermath falls back to the known upstream defaults.
+
+Simple Enemy increases its per-player event chance after unsuccessful checks. Aftermath re-applies the cap once per second, preventing the accumulated chance from growing above the configured fraction.
+
+## What is not affected
+
+- Recruited or otherwise manually created `simpleenemymod:pmcunit` allies.
+- TacZ NPCs from the separate `tacznpcs` mod.
+- Existing soldiers already saved in the world.
+- Spawn eggs and command-created entities that do not use Simple Enemy's dynamic event probability data.
+- Aftermath's zombie variants, hostile-spawn filtering, or spawner removal.
+
+The integration is active only when the server has `simpleenemymod` installed and `features.enableMilitarySpawnControl` is enabled.
 
 ## Limitations
 
-This controls Simple Enemy's dynamic event-created squads. It does not relocate event generation to a base, alter the Simple Enemy event cooldowns, delete already spawned units, or modify TacZ NPC spawn tables. Coordinates for actual military facilities must be configured for each world; Aftermath does not guess where a base is located.
+This stage reduces the frequency of the three dynamic Simple Enemy encounters. It does not move those encounters to military bases or add structure ownership/garrison logic. That would require a separate verified integration with the world structures or Simple Enemy's event-position logic.
+
+If Simple Enemy changes its internal `EventProbabilityData` API, Aftermath logs a warning and disables this optional bridge rather than preventing the game from loading.
