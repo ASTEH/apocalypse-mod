@@ -20,7 +20,7 @@
 - `CharacterSelectionService`: validates profession/traits and applies effects.
 - `WeaponProgressionService`: XP and level damage bonuses for direct tagged melee hits and verified TaCZ projectile kills, with anti-farm controls.
 - `FirearmDefinitions`: reloads validated external gun-ID-to-class mappings from datapack JSON.
-- `TaczCompatibility`: reflection-only optional adapter for TaCZ server bullets; resolves actual projectile owner and gun ID, and emits shot noise without loading TaCZ types when absent.
+- `TaczCompatibility`: reflection-only optional adapter for TaCZ server bullets; resolves actual projectile owner and gun ID, preserves native TaCZ projectile direction/spread, and emits shot noise without loading TaCZ types when absent.
 - `LearningDefinitions`: loads and validates lesson, TV, book, VHS and skill definitions. Skill metadata and progression sources are data-driven; weapon skills point to their existing weapon-class XP buckets instead of copying their thresholds.
 - `SkillsMenuService`: builds a bounded server-authoritative snapshot by combining persistent `LearningProgress`, profession starting skill levels and `WeaponProgress`; it never mutates progression.
 - `ForagingDefinitions`: reloads and validates bounded, data-driven loot categories; focus, biome, wetness, time, season-proxy and nearby-block requirements are evaluated by the server.
