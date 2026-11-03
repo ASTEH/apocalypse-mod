@@ -28,7 +28,6 @@ public final class AftermathServerConfig {
 
     public static final ModConfigSpec.IntValue WEAPON_XP_PER_KILL;
     public static final ModConfigSpec.IntValue MAX_XP_PER_VICTIM_PER_MINUTE;
-    public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_SPREAD;
     public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_RELOAD_DURATION;
     public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_AIM_TIME;
     public static final ModConfigSpec.DoubleValue UNTRAINED_FIREARM_RECOIL_PITCH;
@@ -98,21 +97,19 @@ public final class AftermathServerConfig {
                 .defineInRange("weaponXpPerKill", 10, 0, 10000);
         MAX_XP_PER_VICTIM_PER_MINUTE = builder.comment("Safety cap on XP awarded for one victim. Keep this at or above weaponXpPerKill for the normal 650-kill progression.")
                 .defineInRange("maxXpPerVictimPerMinute", 10, 0, 10000);
-        UNTRAINED_FIREARM_SPREAD = builder.comment("Additional TaCZ projectile spread at firearm level 0, before weapon-class scaling. Reaches zero at level 10.")
-                .defineInRange("untrainedFirearmSpread", 0.65D, 0.0D, 5.0D);
         UNTRAINED_FIREARM_RELOAD_DURATION = builder.comment("Reload duration multiplier at firearm level 0, before weapon-class scaling. Reaches 1.0 at level 10; Quick Reload is applied afterward.")
                 .defineInRange("untrainedFirearmReloadDuration", 1.75D, 1.0D, 3.0D);
         UNTRAINED_FIREARM_AIM_TIME = builder.comment("Aim transition time multiplier at firearm level 0, before weapon-class scaling. Reaches 1.0 at level 10.")
                 .defineInRange("untrainedFirearmAimTime", 1.65D, 1.0D, 3.0D);
-        UNTRAINED_FIREARM_RECOIL_PITCH = builder.comment("Additional client camera pitch kick in degrees per successful TaCZ trigger at firearm level 0.")
-                .defineInRange("untrainedFirearmRecoilPitch", 2.0D, 0.0D, 10.0D);
-        UNTRAINED_FIREARM_RECOIL_YAW = builder.comment("Maximum additional random horizontal camera kick in degrees per successful TaCZ trigger at firearm level 0.")
-                .defineInRange("untrainedFirearmRecoilYaw", 0.8D, 0.0D, 10.0D);
-        UNTRAINED_SHOTGUN_HANDLING_MULTIPLIER = builder.comment("Extra untrained handling penalty for shotguns. Affects spread, reload time, aiming and camera recoil; fades out by level 10.")
+        UNTRAINED_FIREARM_RECOIL_PITCH = builder.comment("Additional client camera pitch kick in degrees per successful TaCZ trigger at firearm level 0, before weapon-class scaling.")
+                .defineInRange("untrainedFirearmCameraRecoilPitch", 3.0D, 0.0D, 10.0D);
+        UNTRAINED_FIREARM_RECOIL_YAW = builder.comment("Maximum additional random horizontal camera kick in degrees per successful TaCZ trigger at firearm level 0, before weapon-class scaling.")
+                .defineInRange("untrainedFirearmCameraRecoilYaw", 1.25D, 0.0D, 10.0D);
+        UNTRAINED_SHOTGUN_HANDLING_MULTIPLIER = builder.comment("Extra untrained handling penalty for shotguns. Affects reload time, aiming and camera recoil; fades out by level 10.")
                 .defineInRange("untrainedShotgunHandlingMultiplier", 1.25D, 1.0D, 3.0D);
-        UNTRAINED_HEAVY_HANDLING_MULTIPLIER = builder.comment("Extra untrained handling penalty for heavy weapons. Affects spread, reload time, aiming and camera recoil; fades out by level 10.")
+        UNTRAINED_HEAVY_HANDLING_MULTIPLIER = builder.comment("Extra untrained handling penalty for heavy weapons. Affects reload time, aiming and camera recoil; fades out by level 10.")
                 .defineInRange("untrainedHeavyHandlingMultiplier", 1.40D, 1.0D, 3.0D);
-        UNTRAINED_SNIPER_HANDLING_MULTIPLIER = builder.comment("Extra untrained handling penalty for sniper rifles. Affects spread, reload time, aiming and camera recoil; fades out by level 10.")
+        UNTRAINED_SNIPER_HANDLING_MULTIPLIER = builder.comment("Extra untrained handling penalty for sniper rifles. Affects reload time, aiming and camera recoil; fades out by level 10.")
                 .defineInRange("untrainedSniperHandlingMultiplier", 1.20D, 1.0D, 3.0D);
         builder.pop();
 
