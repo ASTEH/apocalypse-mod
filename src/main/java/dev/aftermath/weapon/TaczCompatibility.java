@@ -2,7 +2,6 @@ package dev.aftermath.weapon;
 
 import dev.aftermath.config.AftermathServerConfig;
 import dev.aftermath.noise.NoiseService;
-import dev.aftermath.character.WeaponProgressionService;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -77,36 +76,13 @@ public final class TaczCompatibility {
      * report noise; a 20-tick per-player cooldown in NoiseService prevents shotgun volleys from
      * producing duplicate noise scans.
      */
-    private static void applySkillSpread(Projectile projectile, ServerPlayer shooter) {
-        String weaponClass = FirearmDefinitions.classForGun(gunId(projectile));
-        double spread = WeaponProgressionService.spreadPenalty(shooter, weaponClass);
-        if (spread <= 0.0D) return;
-
-        Vec3 velocity = projectile.getDeltaMovement();
-        double speed = velocity.length();
-        if (speed < 0.0001D) return;
-
-        Vec3 forward = velocity.scale(1.0D / speed);
-        Vec3 reference = Math.abs(forward.y) < 0.9D
-                ? new Vec3(0.0D, 1.0D, 0.0D)
-                : new Vec3(1.0D, 0.0D, 0.0D);
-        Vec3 right = forward.cross(reference).normalize();
-        Vec3 up = right.cross(forward).normalize();
-        double deviation = Math.min(0.12D, spread * 0.12D);
-        double horizontal = shooter.getRandom().nextGaussian() * deviation;
-        double vertical = shooter.getRandom().nextGaussian() * deviation;
-        Vec3 adjusted = forward.add(right.scale(horizontal)).add(up.scale(vertical)).normalize();
-        projectile.setDeltaMovement(adjusted.scale(speed));
-    }
-
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
         if (!isTaczBullet(event.getEntity())) return;
         if (!(event.getEntity() instanceof Projectile projectile)
                 || !(projectile.getOwner() instanceof ServerPlayer shooter)) return;
 
-        // Firearm proficiency affects shot stability on the authoritative server.
-        applySkillSpread(projectile, shooter);
+        // Preserve projectile direction and velocity: native TaCZ spread stays authoritative.
         if (AftermathServerConfig.ENABLE_NOISE_EVENTS.get()) {
             NoiseService.emitNoise(level, new Vec3(shooter.getX(), shooter.getY(), shooter.getZ()),
                     NoiseService.gunshotEventId(), shooter.getUUID());
