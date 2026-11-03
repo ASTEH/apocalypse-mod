@@ -11,8 +11,8 @@ public final class WeaponProgressClientState {
     private static volatile Map<String, Integer> experience = Map.of();
     private static volatile boolean progressionEnabled = true;
     private static volatile float untrainedAimTimeMultiplier = 1.65F;
-    private static volatile float untrainedRecoilPitch = 2.0F;
-    private static volatile float untrainedRecoilYaw = 0.8F;
+    private static volatile float untrainedRecoilPitch = 3.0F;
+    private static volatile float untrainedRecoilYaw = 1.25F;
     private static volatile float untrainedShotgunHandlingMultiplier = 1.25F;
     private static volatile float untrainedHeavyHandlingMultiplier = 1.4F;
     private static volatile float untrainedSniperHandlingMultiplier = 1.2F;
