@@ -102,7 +102,7 @@
 - [ ] CI build and clean dedicated-server startup with and without First Aid New.
 - [ ] In-game test: completed body-part treatment awards First Aid XP; interrupted treatment does not.
 - [ ] In-game test: Medic Triage XP bonus applies and daily/action caps still prevent farming.
-- [ ] In-game test: Model Injuries limb restrictions and Aftermath stress/firearm-spread effects work together without duplicated injury penalties.
+- [ ] In-game test: Model Injuries limb restrictions and Aftermath stress/firearm-handling penalties work together without duplicated injury penalties.
 
 **Acceptance:** Aftermath does not register its own anatomy, wound timer, blood loss or bandage. First Aid New / Model Injuries remain authoritative for injuries; Aftermath adds skill progression and stress/Moodle systems without overriding medical mechanics.
 
