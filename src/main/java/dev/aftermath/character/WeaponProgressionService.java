@@ -149,19 +149,6 @@ public final class WeaponProgressionService {
         };
     }
 
-    public static double spreadPenalty(ServerPlayer player, String weaponClass) {
-        if (!AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
-                || weaponClass == null || !WEAPON_CLASSES.contains(weaponClass)) return 0.0D;
-        double penalty = AftermathServerConfig.UNTRAINED_FIREARM_SPREAD.get()
-                * handlingClassMultiplier(weaponClass)
-                * handlingPenaltyForLevel(levelFor(player, weaponClass));
-        if (TraitRuntimeService.hasHook(player, "eagle_eye")) {
-            penalty *= Math.max(0.0D, Math.min(1.0D,
-                    TraitRuntimeService.hookValue(player, "eagle_eye", 1.0D)));
-        }
-        return Math.max(0.0D, penalty);
-    }
-
     public static double reloadDurationMultiplier(ServerPlayer player, String weaponClass) {
         double penalty = 0.0D;
         if (AftermathServerConfig.ENABLE_WEAPON_PROGRESSION.get()
@@ -242,7 +229,6 @@ public final class WeaponProgressionService {
         double remainingPenalty = handlingPenaltyForLevel(level) * classMultiplier;
         double aimMultiplier = aimTimeMultiplier(player, weaponClass);
         double reloadMultiplier = reloadDurationMultiplier(player, weaponClass);
-        double spread = spreadPenalty(player, weaponClass);
         double damageBonusPercent = level * 1.0D;
         double recoilPitch = AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_PITCH.get() * remainingPenalty;
         double recoilYaw = AftermathServerConfig.UNTRAINED_FIREARM_RECOIL_YAW.get() * remainingPenalty;
@@ -255,7 +241,6 @@ public final class WeaponProgressionService {
                         : "message.aftermath.weapon_held.inferred"),
                 level, xp, xpToNextLevel,
                 formatDiagnosticNumber(damageBonusPercent),
-                formatDiagnosticNumber(spread),
                 formatDiagnosticNumber(aimMultiplier),
                 formatDiagnosticNumber(reloadMultiplier),
                 formatDiagnosticNumber(recoilPitch),
